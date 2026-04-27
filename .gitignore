@@ -1,0 +1,32 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Simulation output (tracked in results/ dir via CSV/PNG only)
+*.xml
+!accident_highway.net.xml
+!accident_highway.rou.xml
+!accident_highway.sumocfg
+!viewsettings.xml
+
+# Large result artifacts (track only aggregated CSVs and images)
+results/**/*.pkl
+results/**/_checkpoint.json
+results/nohup*.log
+
+# Thesis build artifacts
+Thesis/*.aux
+Thesis/*.bbl
+Thesis/*.blg
+Thesis/*.fdb_latexmk
+Thesis/*.fls
+Thesis/*.log
+Thesis/*.out
+Thesis/*.synctex*
+Thesis/*.toc
+Thesis/*.thm
+Thesis/*.xdv
+
+# OS
+Thumbs.db
+.DS_Store
