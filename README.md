@@ -1,133 +1,133 @@
-# SUMO-CAV Game-Theoretic Lane Change Simulation
+# SUMO-CAV 博弈换道仿真系统
 
-Full-CAV (Connected Automated Vehicle) traffic simulation in SUMO under an accident-induced lane closure scenario, featuring game-theoretic lane change decision-making with Level-k cognitive hierarchy, Stackelberg game, and queue coordination.
+全 CAV（网联自动驾驶）交通仿真，基于 SUMO 事故场景，实现博弈换道决策，融合 Level-k 认知层级、Stackelberg 博弈与队列协调机制。
 
-## Overview
+## 概述
 
-A three-lane highway section (E0) with a mid-block accident blocking the middle lane (lane 1) at ~3000m, forcing a bidirectional merge. All vehicles are CAVs equipped with V2X communication, perception noise models, and multi-stage lane change decision logic.
+三段式高速公路（E0）中间车道（车道 1）在约 3000m 处因事故封闭，迫使车辆向两侧合流。所有车辆均为 CAV，配备 V2X 通信、感知噪声模型和多阶段换道决策逻辑。
 
-### Accident Phases
+### 事故阶段
 
-| Phase | Timing | Behavior |
-|-------|--------|----------|
-| Normal | t < 90s | Free-flow cruising with CACC-like car-following |
-| Sudden | 90-100s | Accident occurs; local V2X only; high urgency |
-| Informed | 100s+ | Global V2X broadcast active; orderly evacuation |
+| 阶段 | 时间 | 行为 |
+|------|------|------|
+| 正常行驶 | t < 90s | CACC 类跟驰巡航 |
+| 突发期 | 90-100s | 事故发生，仅局部 V2X，高紧迫度 |
+| 有序期 | 100s+ | 全局 V2X 广播激活，有序疏散 |
 
-## Key Features
+## 核心功能
 
-### 1. Level-k Cognitive Hierarchy (`assign_level_k`)
-Vehicles are assigned cognitive levels (0/1/2) that govern how they model opponent behavior. Level-1 vehicles sharpen their predictions using the knowledge that others are Level-0; Level-2 vehicles account for recursive reasoning.
+### 1. Level-k 认知层级 (`assign_level_k`)
+车辆被分配认知层级（0/1/2），影响其对对手行为的建模方式。Level-1 利用"对方是 Level-0"的知识锐化预测；Level-2 进行递归推理。
 
-### 2. Stackelberg Game (`compute_stackelberg_payoff`)
-Sequential leader-follower game: the lane-changing vehicle (leader) commits to a decision, and the target-lane follower responds optimally. The leader's payoff is evaluated under the follower's best response.
+### 2. Stackelberg 博弈 (`compute_stackelberg_payoff`)
+序贯领导-跟随博弈：换道车辆（领导者）先承诺决策，目标车道后车（跟随者）选择最优响应，领导者收益在跟随者最优响应下评估。
 
-### 3. Queue Coordination (`build_lc_queue`)
-When queue coordination is enabled, vehicles on the blocked lane are sorted by distance from the obstacle. Up to `MAX_QUEUE_ALLOWED` vehicles (default: 3) may attempt lane changes per step, preventing single-vehicle deadlocks.
+### 3. 队列协调 (`build_lc_queue`)
+启用时，被阻塞车道上的车辆按距障碍物距离排序。每步最多 `MAX_QUEUE_ALLOWED`（默认 3 辆）可同时尝试换道，防止单点死锁。
 
-### 4. Emergency Braking Coverage
-A safety overlay on the blocked lane: vehicles approaching the obstacle are speed-capped by a safe-speed envelope and force-braked within the final 95m. Lane changes are prohibited within `EMERGENCY_NO_LC_DIST` (90m) of the obstacle.
+### 4. 紧急制动覆盖
+被阻塞车道上的安全覆盖层：接近障碍物的车辆受安全速度包络限制，在最后 95m 强制刹停。距障碍 `EMERGENCY_NO_LC_DIST`（90m）内禁止发起新换道。
 
-### 5. Cooperative Yielding
-Target-lane followers may receive a cooperative deceleration request to open a gap. Once the gap reaches `COOP_MIN_GAP`, the lane change proceeds, and the supporter resumes normal control.
+### 5. 协同让行
+目标车道后车可接收协同减速请求以打开间隙。间隙达到 `COOP_MIN_GAP` 后，换道执行，支援车恢复正常控制。
 
-## Configuration
+## 配置参数
 
-All parameters are in `config.py`, organized into sections:
+所有参数集中在 `config.py`，按模块组织：
 
-- **Simulation**: step length, total steps
-- **Accident**: location, lane, timing
-- **Communication**: V2X range, packet loss, perception noise
-- **Safety**: TTC thresholds, minimum gaps
-- **Emergency braking**: reaction time, deceleration, coverage zones
-- **Lane change game**: gain thresholds, cost, cooldown
-- **Cooperative yielding**: headway thresholds, deceleration magnitude
-- **Dynamics**: lateral acceleration limits, lane change duration
-- **Level-k**: max cognitive level, population distribution
-- **Parameter profiles**: balanced, balanced_plus, conservative, aggressive
+- **仿真基础**：步长、总步数
+- **事故参数**：位置、车道、触发时间
+- **通信参数**：V2X 范围、丢包率、感知噪声
+- **安全参数**：TTC 阈值、最小间距
+- **紧急制动**：反应时间、减速度、覆盖区域
+- **换道博弈**：增益阈值、换道代价、冷却时间
+- **协同换道**：头距阈值、减速幅度
+- **动力学约束**：横向加速度、换道时长
+- **Level-k**：最大认知层级、分布概率
+- **参数标定预设**：balanced、balanced_plus、conservative、aggressive
 
-### Parameter Profiles
+### 参数预设对比
 
-| Profile | Headway (s) | Sudden Gain Threshold | LC Cost | Description |
-|---------|-------------|----------------------|---------|-------------|
-| balanced | 1.00 | 0.030 | 0.060 | Default, balanced efficiency and safety |
-| balanced_plus | 1.18 | 0.060 | 0.100 | More conservative cruising |
-| conservative | 1.25 | 0.050 | 0.090 | Larger headways, higher LC threshold |
-| aggressive | 0.85 | 0.020 | 0.040 | Tighter headways, more aggressive merging |
+| 预设 | 时距(s) | 突发期换道阈值 | 换道代价 | 说明 |
+|------|---------|--------------|---------|------|
+| balanced | 1.00 | 0.030 | 0.060 | 默认，效率与安全均衡 |
+| balanced_plus | 1.18 | 0.060 | 0.100 | 更保守的巡航 |
+| conservative | 1.25 | 0.050 | 0.090 | 更大时距，更高换道门槛 |
+| aggressive | 0.85 | 0.020 | 0.040 | 更紧时距，更激进并线 |
 
-## Usage
+## 使用方式
 
-### Prerequisites
+### 依赖
 
-- SUMO 1.x installed (default path: `C:\Program Files (x86)\Eclipse\Sumo`)
-- Python 3.10+ with `traci`, `sumolib`, `numpy`, `pandas`, `matplotlib`
+- SUMO 1.x 已安装（默认路径：`C:\Program Files (x86)\Eclipse\Sumo`）
+- Python 3.10+，需安装 `traci`、`sumolib`、`numpy`、`pandas`、`matplotlib`
 
-### Run Full Simulation
+### 运行完整仿真
 
 ```bash
 python game_lane_change.py
 ```
 
-Select parameter profile(s) when prompted, or pipe input:
+按提示选择参数预设，或通过管道输入：
 
 ```bash
-# Single profile
+# 单预设
 echo "b" | PYTHONIOENCODING=utf-8 python game_lane_change.py
 
-# All profiles comparison
+# 全预设对比
 echo "all" | PYTHONIOENCODING=utf-8 python game_lane_change.py
 ```
 
-### Run Quick LKSQ Test
+### 快速验证 LKSQ
 
 ```bash
 python test_lksq_fix.py
 ```
 
-Runs both Original Game and LKSQ modes at 1200 pcu/h and reports lane change counts.
+分别在原始博弈和 LKSQ 模式下跑 1200 pcu/h，输出换道次数。
 
-### Environment Variables
+### 环境变量
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SIM_STEPS` | 3600 | Total simulation steps |
-| `SKIP_GUI_DEMO` | 0 | Set to `1` to skip interactive GUI demo |
-| `PYTHONIOENCODING` | - | Set to `utf-8` to fix GBK encoding errors on Windows |
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `SIM_STEPS` | 3600 | 仿真总步数 |
+| `SKIP_GUI_DEMO` | 0 | 设为 `1` 跳过交互式 GUI 演示 |
+| `PYTHIOENCODING` | - | 设为 `utf-8` 可修复 Windows GBK 编码错误 |
 
-## Output
+## 输出
 
-Results are saved to `results/<timestamp>/`:
+结果保存至 `results/<时间戳>/`：
 
-- `results_<timestamp>.csv` — aggregated metrics per scenario
-- `lanechange_dynamics_<timestamp>.csv` — per-vehicle lane change logs
-- `comparison_<timestamp>.png` — 4-panel bar chart (throughput, travel time, delay, queue)
-- `queue_timeseries_<timestamp>.png` — queue length over time
-- `speed_timeseries_<timestamp>.png` — average speed over time
-- `phase_lanechange_<timestamp>.png` — sudden vs. informed phase lane change counts
-- `coop_metrics_<timestamp>.png` — cooperative behavior statistics
-- `robustness_metrics_<timestamp>.png` — jerk/acc violations, energy, comm load
+- `results_<时间戳>.csv` — 各场景聚合指标
+- `lanechange_dynamics_<时间戳>.csv` — 每车换道日志
+- `comparison_<时间戳>.png` — 四指标柱状图（流量、行程时间、延误、队列）
+- `queue_timeseries_<时间戳>.png` — 队列长度时序
+- `speed_timeseries_<时间戳>.png` — 平均速度时序
+- `phase_lanechange_<时间戳>.png` — 突发期/有序期换道对比
+- `coop_metrics_<时间戳>.png` — 协同行为统计
+- `robustness_metrics_<时间戳>.png` — 冲击度/加速度违规、能耗、通信负载
 
-### Multi-profile Comparison
+### 多预设对比
 
-When running with `all` profiles, additional outputs include:
-- `profile_comparison_<timestamp>.png` — cross-profile bar charts
-- `profile_delay_by_scenario_<timestamp>.png` — delay breakdown by scenario
+`all` 模式下额外输出：
+- `profile_comparison_<时间戳>.png` — 跨预设对比柱状图
+- `profile_delay_by_scenario_<时间戳>.png` — 各场景延误对比
 
-## Project Structure
+## 项目结构
 
 ```
 SUMO-1/
-├── game_lane_change.py      # Main simulation & lane change logic
-├── config.py                # Centralized parameters (import-safe)
-├── metrics.py               # Comfort & fairness evaluation
-├── test_lksq_fix.py         # Quick LKSQ validation script
-├── baseline_comparison.py   # Baseline model comparison
-├── plot_baseline_results.py # Baseline result visualization
-├── run_baseline_stepwise.py # Stepwise baseline runner
-├── test_baselines_quick.py  # Quick baseline validation
-├── accident_highway.net.xml # SUMO network
-├── accident_highway.rou.xml # Route definition
-├── accident_highway.sumocfg # SUMO configuration
-├── viewsettings.xml         # GUI view settings
-└── results/                 # Simulation output directory
+├── game_lane_change.py      # 主仿真与换道逻辑
+├── config.py                # 集中参数配置（可被安全 import）
+├── metrics.py               # 舒适性与公平性评价
+├── test_lksq_fix.py         # LKSQ 快速验证脚本
+├── baseline_comparison.py   # 基线模型对比
+├── plot_baseline_results.py # 基线结果可视化
+├── run_baseline_stepwise.py # 分步基线运行
+├── test_baselines_quick.py  # 基线快速验证
+├── accident_highway.net.xml # SUMO 路网
+├── accident_highway.rou.xml # 路由定义
+├── accident_highway.sumocfg # SUMO 配置
+├── viewsettings.xml         # GUI 视图设置
+└── results/                 # 仿真输出目录
 ```
