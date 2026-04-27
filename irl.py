@@ -27,29 +27,40 @@ import game_lane_change as glc
 # ====================== 1. AD4CHE 数据加载 ======================
 
 def load_ad4che_tracks(data_dir: str) -> pd.DataFrame:
-    """加载 AD4CHE 某一段录制的 tracks.csv"""
-    path = os.path.join(data_dir, "01_tracks.csv")
-    if not os.path.exists(path):
-        # 尝试遍历子目录
-        for root, _, files in os.walk(data_dir):
-            if "01_tracks.csv" in files:
-                path = os.path.join(root, "01_tracks.csv")
-                break
-    df = pd.read_csv(path)
-    # AD4CHE 用 id 作车辆标识
-    df.rename(columns={"id": "trackId"}, inplace=True)
-    return df
+    """加载 AD4CHE 某一段录制的 tracks.csv（支持递归查找）。"""
+    candidates = []
+    for root, _, files in os.walk(data_dir):
+        for f in files:
+            if f.endswith("_tracks.csv"):
+                candidates.append(os.path.join(root, f))
+    if not candidates:
+        raise FileNotFoundError(f"在 {data_dir} 下未找到 *_tracks.csv 文件")
+    # 加载所有找到的录制并合并
+    frames = []
+    for path in sorted(candidates):
+        df = pd.read_csv(path)
+        df.rename(columns={"id": "trackId"}, inplace=True)
+        rec_id = os.path.basename(os.path.dirname(path))
+        df["recording"] = rec_id
+        frames.append(df)
+    result = pd.concat(frames, ignore_index=True)
+    print(f"  加载 {len(candidates)} 段录制，共 {len(result)} 帧，{result['trackId'].nunique()} 辆车")
+    return result
 
 
 def load_ad4che_meta(data_dir: str) -> pd.DataFrame:
-    """加载 tracksMeta.csv"""
-    path = os.path.join(data_dir, "01_tracksMeta.csv")
-    if not os.path.exists(path):
-        for root, _, files in os.walk(data_dir):
-            if "01_tracksMeta.csv" in files:
-                path = os.path.join(root, "01_tracksMeta.csv")
-                break
-    return pd.read_csv(path)
+    """加载所有 tracksMeta.csv。"""
+    candidates = []
+    for root, _, files in os.walk(data_dir):
+        for f in files:
+            if f.endswith("_tracksMeta.csv"):
+                candidates.append(os.path.join(root, f))
+    frames = []
+    for path in sorted(candidates):
+        df = pd.read_csv(path)
+        df["recording"] = os.path.basename(os.path.dirname(path))
+        frames.append(df)
+    return pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
 
 
 def extract_lane_change_episodes(tracks: pd.DataFrame,
@@ -141,21 +152,23 @@ def row_to_features(row: pd.Series, action: int) -> np.ndarray:
 
     返回: [eff, safe, coop, lc_cost]
     """
-    v = max(float(row.get("xVelocity", 0)), 1e-6)
-    vmax = max(v * 1.3, 20.0)
+    # 纵向速度：取绝对值（AD4CHE 双向车道）
+    v = max(abs(float(row.get("xVelocity", 0))), 1e-6)
+    vmax = max(v * 1.3, 25.0)
 
-    # 效率特征：速度比 + 紧迫度（从数据中估计）
+    # 效率特征
     speed_ratio = float(np.clip(v / vmax, 0.0, 1.0))
-    urgency = 0.0  # AD4CHE 无事故场景，紧迫度设为 0
+    urgency = 0.0  # AD4CHE 无事故场景
     eff = 0.55 * speed_ratio + 0.45 * urgency
 
-    # 安全特征：TTC
-    ttc = float(row.get("ttc", 10.0))
-    if ttc <= 0 or ttc > 50:
-        ttc = 10.0
-    safe = float(np.clip(ttc / 10.0, 0.0, 1.0))
+    # 安全特征：用 dhw（车头时距）或 ttc
+    # AD4CHE 中 ttc 负数表示无碰撞风险
+    dhw = float(row.get("dhw", 10.0))
+    if dhw <= 0 or dhw > 100:
+        dhw = 10.0
+    safe = float(np.clip(dhw / 30.0, 0.0, 1.0))  # 30m 以上视为安全
 
-    # 协同特征：有后车时才有协同可能
+    # 协同特征
     has_follower = int(pd.notna(row.get("followingId", None)))
     coop = 0.18 if has_follower else 0.0
 
@@ -309,8 +322,8 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="最大熵逆强化学习 (MaxEnt IRL)")
     parser.add_argument("--data-dir", type=str,
-                        default="data/AD4CHE/AD4CHE_dataset_V1.0/AD4CHE_Data_V1.0/DJI_0001",
-                        help="AD4CHE 数据目录（包含 tracks.csv）")
+                        default="data/AD4CHE_dataset_V1.0/AD4CHE_dataset_V1.0/AD4CHE_Data_V1.0",
+                        help="AD4CHE 数据根目录（自动遍历所有子目录中的 *_tracks.csv）")
     parser.add_argument("--iterations", type=int, default=100,
                         help="IRL 迭代次数")
     parser.add_argument("--lr", type=float, default=0.01,
