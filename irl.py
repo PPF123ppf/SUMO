@@ -183,27 +183,23 @@ def learner_rollout(weights: np.ndarray,
                     sim_steps: int = 3600,
                     n_rollouts: int = 5) -> np.ndarray:
     """
-    用当前权重运行仿真，收集学习者策略的特征期望。
+    用当前权重运行仿真，通过 _irl_feature_log 收集特征。
 
     返回: (n_samples, n_features) 特征矩阵
     """
-    # 注入权重
+    import copy
     glc.PAYOFF_WEIGHTS["informed"] = weights.copy()
+    os.environ['SIM_STEPS'] = str(sim_steps)
 
     all_feats = []
     for _ in range(n_rollouts):
-        result = glc.run_once(n_cav, "IRL_rollout")
-        # 从仿真日志中提取换道时/非换道时的特征
-        for lc_log in result.get("lc_logs", []):
-            step = lc_log["step"]
-            to_lane = lc_log["to_lane"]
-            from_lane = lc_log["from_lane"]
-            # 构造简易特征（实际应记录更丰富）
-            feats = np.array([0.5, 0.8, 0.18, 1.0])  # 占位，需对接 compute_features
-            all_feats.append(feats)
-        # 也收集未换道的帧
-        if not all_feats:
-            all_feats.append(np.array([0.3, 0.9, 0.0, 0.0]))
+        glc.run_once(n_cav, "IRL_rollout")
+        # 从特征日志快照中提取每个决策点的特征
+        for payoff, feats in glc._irl_feature_log_snapshot:
+            chosen_action = 0 if payoff[0].max() > payoff[1].max() else 1
+            best_fa = np.argmax(payoff[chosen_action])
+            fv = feats[(chosen_action, best_fa)]
+            all_feats.append(fv)
     return np.array(all_feats) if all_feats else np.zeros((1, 4))
 
 
@@ -305,7 +301,7 @@ def run_irl(data_dir: str, iterations: int = 100):
     learned_weights, loss = maxent_irl(
         expert_features=expert_feats,
         initial_weights=initial,
-        n_iterations=iterations,
+        n_iterations=args.iterations,
     )
 
     # 5. 应用

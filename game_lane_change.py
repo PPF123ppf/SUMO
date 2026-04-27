@@ -654,6 +654,10 @@ PAYOFF_WEIGHTS = {
 # 特征名称（对应 IRL 的 feature template）
 FEATURE_NAMES = ["eff", "safe", "coop", "lc_cost"]
 
+# IRL 特征日志（run_once 每次仿真开始时清空，结束时可供外部读取）
+_irl_feature_log: list = []  # [(action, feature_vector), ...]
+_irl_feature_log_snapshot: list = []  # run_once 结束时的快照
+
 def compute_features(vid, ego_speed, vmax, lead_spd, fol_spd, lead_gap, fol_gap,
                      cur_lead_gap, urgency, cur_lane_pressure, coop_bonus,
                      phase="informed") -> dict:
@@ -725,6 +729,9 @@ def compute_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap,
             if action == 0:
                 v -= LANE_CHANGE_COST
             payoff[action, fa] = v
+
+    # IRL 日志：记录决策点的特征（由外部清空）
+    _irl_feature_log.append((payoff, feats))
     return payoff
 
 def get_follower_prior(fol_id: str, fol_gap: float) -> np.ndarray:
@@ -917,6 +924,7 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     _normal_ctrl_vids.clear()
     _emergency_brake_vids.clear()
     OBSTACLE_IDS.clear()
+    _irl_feature_log.clear()
     for k in _perf_metrics:
         _perf_metrics[k] = 0 if isinstance(_perf_metrics[k], int) else 0.0
     _accident_state["happened"]         = False
@@ -1264,6 +1272,9 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     except Exception:
         pass
     OBSTACLE_IDS.clear()
+    _irl_feature_log_snapshot.clear()
+    _irl_feature_log_snapshot.extend(_irl_feature_log)
+    _irl_feature_log.clear()
     _lc_state.clear()
     _last_lc_step.clear()
     _perc_buf.clear()
