@@ -642,57 +642,89 @@ def safety_from_gap_ttc(gap: float, rel_speed: float) -> float:
         ttc_term = float(np.clip((gap / rel_speed) / 4.0, 0.0, 1.0))
     return 0.55 * gap_term + 0.45 * ttc_term
 
-# ====================== 博弈核心（原始=同时博弈） ======================
-def compute_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase="informed") -> np.ndarray:
+# ====================== 博弈核心（解耦特征 + 可学习权重） ======================
+
+# 可学习权重（IRL 目标）：[效率, 安全, 协同共享, 换道代价]
+# 突发期 vs 有序期共享结构，但数值可以不同
+PAYOFF_WEIGHTS = {
+    "sudden":  np.array([0.22, 0.58, 0.20, 1.0]),
+    "informed": np.array([0.38, 0.42, 0.20, 1.0]),
+}
+
+# 特征名称（对应 IRL 的 feature template）
+FEATURE_NAMES = ["eff", "safe", "coop", "lc_cost"]
+
+def compute_features(vid, ego_speed, vmax, lead_spd, fol_spd, lead_gap, fol_gap,
+                     cur_lead_gap, urgency, cur_lane_pressure, coop_bonus,
+                     phase="informed") -> dict:
+    """
+    提取换道决策的原子特征向量。
+
+    返回 dict of (action, fa) -> feature_vector，
+    action ∈ {0=change, 1=keep}，fa ∈ {0=acc, 1=maintain, 2=brake}
+    """
+    features = {}
+    for fa, delta_v in enumerate([2.0, 0.0, -3.0]):
+        fol_spd_new = float(np.clip(fol_spd + delta_v, 0.0, vmax))
+        rear_rel = max(fol_spd_new - ego_speed, 0.0)
+        front_rel = max(ego_speed - lead_spd, 0.0)
+
+        # ── 换道 (action=0) ──
+        safe = min(
+            safety_from_gap_ttc(lead_gap, front_rel),
+            safety_from_gap_ttc(fol_gap, rear_rel),
+        )
+        eff = (
+            0.55 * float(np.clip(lead_spd / max(vmax, 1e-3), 0.0, 1.0))
+            + 0.45 * urgency
+            + 0.20 * cur_lane_pressure
+        )
+        coop = coop_bonus + (0.12 if fa == 2 else 0.0)
+        features[(0, fa)] = np.array([eff, safe, coop, 1.0])
+
+        # ── 不换道 (action=1) ──
+        safe = safety_from_gap_ttc(cur_lead_gap, max(ego_speed - min(lead_spd, ego_speed), 0.0))
+        eff = (
+            0.60 * float(np.clip(ego_speed / max(vmax, 1e-3), 0.0, 1.0))
+            + 0.40 * (1.0 - urgency)
+        )
+        coop = 0.05
+        features[(1, fa)] = np.array([eff, safe, coop, 0.0])
+
+    return features
+
+
+def compute_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap,
+                   cur_lead_gap, phase="informed") -> np.ndarray:
     """
     2×3 收益矩阵: ego{换道/不换道} × follower{加速/保持/减速}
-    phase="sudden"   : 突发期，安全权重上调(w2=0.6)，效率权重下调(w1=0.2)
-    phase="informed" : 有序期，效率与安全并重(w1=w2=0.4)
+    权重由 PAYOFF_WEIGHTS 控制，可被 IRL 学习更新。
     """
-    if phase == "sudden":
-        w_eff, w_safe, w_coop = 0.22, 0.58, 0.20
-    else:
-        w_eff, w_safe, w_coop = 0.38, 0.42, 0.20
+    weights = PAYOFF_WEIGHTS[phase]
 
-    vmax     = traci.vehicle.getMaxSpeed(vid)
+    vmax = traci.vehicle.getMaxSpeed(vid)
     lead_spd = perc_speed(lead_id) if lead_id else vmax
-    fol_spd  = perc_speed(fol_id)  if fol_id  else 0.0
+    fol_spd = perc_speed(fol_id) if fol_id else 0.0
 
     detect = V2X_RANGE if phase == "sudden" else get_accident_broadcast_range(vid)
     dist = max(ACCIDENT_START - ego_pos, 0.1)
     safe_braking_dist = vmax * 1.0 + (vmax ** 2) / 5.0 + 50.0
     urgency_range = min(detect, max(safe_braking_dist, 100.0))
     urgency = float(np.clip(1.0 - dist / urgency_range, 0.0, 1.0))
-
     cur_lane_pressure = float(np.clip((30.0 - cur_lead_gap) / 30.0, 0.0, 1.0))
     coop_bonus = 0.18 if fol_id else 0.0
+
+    feats = compute_features(vid, ego_speed, vmax, lead_spd, fol_spd,
+                             lead_gap, fol_gap, cur_lead_gap,
+                             urgency, cur_lane_pressure, coop_bonus, phase)
+
     payoff = np.zeros((2, 3))
-
-    for fa, delta_v in enumerate([2.0, 0.0, -3.0]):
-        fol_spd_new = float(np.clip(fol_spd + delta_v, 0.0, vmax))
-        rear_rel = max(fol_spd_new - ego_speed, 0.0)
-        front_rel = max(ego_speed - lead_spd, 0.0)
-
-        safe_change = min(
-            safety_from_gap_ttc(lead_gap, front_rel),
-            safety_from_gap_ttc(fol_gap, rear_rel),
-        )
-        eff_change = (
-            0.55 * float(np.clip(lead_spd / max(vmax, 1e-3), 0.0, 1.0))
-            + 0.45 * urgency
-            + 0.20 * cur_lane_pressure
-        )
-        coop_change = coop_bonus + (0.12 if fa == 2 and fol_id else 0.0)
-
-        safe_keep = safety_from_gap_ttc(cur_lead_gap, max(ego_speed - min(lead_spd, ego_speed), 0.0))
-        eff_keep = (
-            0.60 * float(np.clip(ego_speed / max(vmax, 1e-3), 0.0, 1.0))
-            + 0.40 * (1.0 - urgency)
-        )
-        coop_keep = 0.05
-
-        payoff[0, fa] = w_eff * eff_change + w_safe * safe_change + w_coop * coop_change - LANE_CHANGE_COST
-        payoff[1, fa] = w_eff * eff_keep + w_safe * safe_keep + w_coop * coop_keep
+    for action in (0, 1):
+        for fa in (0, 1, 2):
+            v = np.dot(weights, feats[(action, fa)])
+            if action == 0:
+                v -= LANE_CHANGE_COST
+            payoff[action, fa] = v
     return payoff
 
 def get_follower_prior(fol_id: str, fol_gap: float) -> np.ndarray:
