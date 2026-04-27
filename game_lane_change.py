@@ -170,19 +170,6 @@ _perf_metrics    = {"packet_loss_cnt": 0, "comm_msgs": 0, "jerk_violations": 0, 
 _normal_ctrl_vids: set = set()   # 正在被常态巡航控制的车辆
 _emergency_brake_vids: set = set()  # 当前受紧急制动覆盖的车辆
 
-# ====================== ★ 创新1：Level-k 认知层级 ======================
-LEVEL_K_MAX = 2                     # 最高认知层级
-LEVEL_K_DIST = [0.20, 0.60, 0.20]   # Level-0/1/2 分布概率
-_level_k_estimates: dict = {}       # {vid: level_k} 各车自我认知层级
-
-# ====================== ★ 创新2：Stackelberg 博弈 ======================
-USE_STACKELBERG = False             # 是否启用 Stackelberg 序贯博弈（默认关，由 run_lksq 开启）
-
-# ====================== ★ 创新3：顺序队列协调 ======================
-USE_QUEUE_COORDINATION = False      # 是否启用顺序排队换道协调（默认关，由 run_lksq 开启）
-MAX_QUEUE_ALLOWED = 3              # 队列协调时同时允许换道的最大车辆数
-_lc_queue: list = []                # [(vid, dist_to_obs), ...] 按距离排序
-
 # ====================== 辅助函数 ======================
 def apply_parameter_profile(profile_name: str = "balanced") -> str:
     """应用参数预设，返回实际生效的预设名。"""
@@ -740,141 +727,9 @@ def get_follower_prior(fol_id: str, fol_gap: float) -> np.ndarray:
     base /= np.sum(base)
     return base
 
-# ====================== ★ 创新1+2：Level-k + Stackelberg 融合博弈 ======================
-
-def assign_level_k(vid: str) -> int:
-    """为车辆分配认知层级（基于 V2X 通信能力和随机初始化）"""
-    if vid in _level_k_estimates:
-        return _level_k_estimates[vid]
-    k = int(np.random.choice([0, 1, 2], p=LEVEL_K_DIST))
-    _level_k_estimates[vid] = k
-    return k
-
-def compute_level_k_prior(fol_id: str, fol_gap: float, ego_level_k: int) -> np.ndarray:
-    """
-    基于认知层级的后车行为先验估计。
-    
-    Level-0: 基础行为先验（原始 get_follower_prior 逻辑）
-    Level-1: "我知道后车是 Level-0，所以我能更精确地预测其行为"
-    Level-2: "后车认为我是 Level-0，但我实际上是 Level-1/2"
-    """
-    base = get_follower_prior(fol_id, fol_gap)
-    
-    if ego_level_k == 0:
-        # Level-0: 使用基础先验，不做额外认知处理
-        return base
-    
-    elif ego_level_k == 1:
-        # Level-1: 我知道后车是 Level-0 → 行为置信度更高（分布锐化）
-        # 对基础分布做指数锐化，降低不确定性
-        sharpened = np.power(np.clip(base, 0.01, None), 0.75)
-        sharpened /= np.sum(sharpened)
-        return sharpened
-    
-    else:  # Level-2
-        # Level-2: 递归认知 — "后车认为我是 Level-0，但实际不是"
-        # 利用对方对我行为的错误建模，获得更精确的预测
-        sharpened = np.power(np.clip(base, 0.01, None), 0.55)
-        sharpened /= np.sum(sharpened)
-        # 考虑到 Level-0 后车面对换道时倾向于保守（减速），给予减速更高权重
-        sharpened = sharpened * np.array([0.85, 0.95, 1.20])
-        sharpened /= np.sum(sharpened)
-        return sharpened
-
-
-def compute_stackelberg_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase="informed", ego_level_k=1) -> tuple:
-    """
-    ★ 创新2：Stackelberg 序贯换道博弈 ★
-    
-    核心思想：领导者（本车）先承诺换道/不换道，跟随者（目标车道后车）
-    观察到承诺后选择最优响应。领导者收益 = 跟随者最优响应下的领导者收益。
-    
-    返回: (leader_change_payoff, leader_keep_payoff, follower_best_action_idx)
-    """
-    # ── 权重 ──
-    if phase == "sudden":
-        w_eff, w_safe, w_coop = 0.22, 0.58, 0.20
-    else:
-        w_eff, w_safe, w_coop = 0.38, 0.42, 0.20
-
-    vmax     = traci.vehicle.getMaxSpeed(vid)
-    lead_spd = perc_speed(lead_id) if lead_id else vmax
-    fol_spd  = perc_speed(fol_id)  if fol_id  else 0.0
-
-    detect = V2X_RANGE if phase == "sudden" else get_accident_broadcast_range(vid)
-    dist = max(ACCIDENT_START - ego_pos, 0.1)
-    safe_braking_dist = vmax * 1.0 + (vmax ** 2) / 5.0 + 50.0
-    urgency_range = min(detect, max(safe_braking_dist, 100.0))
-    urgency = float(np.clip(1.0 - dist / urgency_range, 0.0, 1.0))
-    cur_lane_pressure = float(np.clip((30.0 - cur_lead_gap) / 30.0, 0.0, 1.0))
-    coop_bonus = 0.18 if fol_id else 0.0
-
-    # ── 构建双矩阵: leader{change, keep} × follower{acc, keep, dec} ──
-    leader_change = np.zeros(3)    # 领导者"换道"收益矩阵
-    leader_keep   = np.zeros(3)    # 领导者"不换道"收益矩阵
-    follower_change = np.zeros(3)  # 跟随者"领导者换道"时收益
-    follower_keep   = np.zeros(3)  # 跟随者"领导者不换道"时收益
-
-    for fa, delta_v in enumerate([2.0, 0.0, -3.0]):
-        fol_spd_new = float(np.clip(fol_spd + delta_v, 0.0, vmax))
-        
-        # === 情景 A: 领导者换道 ===
-        rear_rel = max(fol_spd_new - ego_speed, 0.0)
-        front_rel = max(ego_speed - lead_spd, 0.0)
-
-        # 领导者收益（换道）
-        safe_change = min(
-            safety_from_gap_ttc(lead_gap, front_rel),
-            safety_from_gap_ttc(fol_gap, rear_rel),
-        )
-        eff_change = (
-            0.55 * float(np.clip(lead_spd / max(vmax, 1e-3), 0.0, 1.0))
-            + 0.45 * urgency
-            + 0.20 * cur_lane_pressure
-        )
-        coop_change = coop_bonus + (0.12 if fa == 2 and fol_id else 0.0)
-        leader_change[fa] = w_eff * eff_change + w_safe * safe_change + w_coop * coop_change - LANE_CHANGE_COST
-
-        # 跟随者收益（领导者换道→跟随者需适应新前车 ego）
-        follower_rear_rel = max(fol_spd_new - ego_speed, 0.0)
-        fol_safe_change = safety_from_gap_ttc(fol_gap, follower_rear_rel)
-        fol_eff_change = float(np.clip(fol_spd_new / max(vmax, 1e-3), 0.0, 1.0))
-        # 跟随者权重：更侧重安全
-        follower_change[fa] = 0.55 * fol_safe_change + 0.45 * fol_eff_change
-
-        # === 情景 B: 领导者不换道 ===
-        # 跟随者收益（领导者不换道→跟随者在原车道正常行驶）
-        safe_keep = safety_from_gap_ttc(cur_lead_gap, max(ego_speed - min(lead_spd, ego_speed), 0.0))
-        eff_keep = (
-            0.60 * float(np.clip(ego_speed / max(vmax, 1e-3), 0.0, 1.0))
-            + 0.40 * (1.0 - urgency)
-        )
-        coop_keep = 0.05
-        leader_keep[fa] = w_eff * eff_keep + w_safe * safe_keep + w_coop * coop_keep
-
-        # 跟随者收益（不换道场景：跟随者保持原状态）
-        fol_safe_keep = safety_from_gap_ttc(fol_gap, 0.0)  # 无相对速度变化
-        fol_eff_keep = float(np.clip(fol_spd_new / max(vmax, 1e-3), 0.0, 1.0))
-        follower_keep[fa] = 0.55 * fol_safe_keep + 0.45 * fol_eff_keep
-
-    # ── Stackelberg 求解：跟随者最优响应 ──
-    fol_best_change = int(np.argmax(follower_change))  # 换道场景下跟随者最优行为
-    fol_best_keep   = int(np.argmax(follower_keep))    # 不换道场景下跟随者最优行为
-
-    # 领导者最终收益（考虑跟随者最优响应）
-    leader_payoff_change = leader_change[fol_best_change]
-    leader_payoff_keep   = leader_keep[fol_best_keep]
-
-    return leader_payoff_change, leader_payoff_keep, fol_best_change
-
-
 def decide_lanechange(vid, cur_lane, tgt_lane, road_id, phase="informed") -> float:
     """
-    增强版换道决策函数（融合 Level-k + Stackelberg 双创新）。
-    
-    当 USE_STACKELBERG=True 时使用 Stackelberg 序贯博弈，
-    否则使用原始同时博弈（2×3 期望收益）。
-    同时集成 Level-k 认知层级优化后车行为先验。
+    换道决策函数：基于同时博弈（2×3 收益矩阵）计算期望收益。
     """
     # 自车速度施加感知噪声 ±5%（模拟传感器测量误差）
     try:
@@ -909,32 +764,11 @@ def decide_lanechange(vid, cur_lane, tgt_lane, road_id, phase="informed") -> flo
     if ttc_min < ttc_hard_min:
         return -float('inf')
 
-    if USE_STACKELBERG:
-        # ── ★ 创新1+2：Level-k 认知 + Stackelberg 序贯博弈 ──
-        # 为当前车辆分配认知层级
-        ego_level_k = assign_level_k(vid)
-        # Stackelberg 博弈：计算领导者（本车）收益
-        leader_change, leader_keep, _ = compute_stackelberg_payoff(
-            vid, ego_spd, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase, ego_level_k
-        )
-        # Stackelberg 纯序贯收益（跟随者最优响应）
-        stackelberg_gain = leader_change - leader_keep
-        # 融合 Level-k 先验的混合策略期望收益（与同时博弈可比）
-        prior = compute_level_k_prior(fol_id, fol_gap, ego_level_k)
-        payoff = compute_payoff(vid, ego_spd, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase)
-        expected = payoff @ prior
-        mixed_gain = expected[0] - expected[1]
-        # 综合收益：80%混合策略 + 20% Stackelberg 纯策略
-        # 混合策略提供基准可比性，Stackelberg 加入序贯博弈保守性（降低权重避免拖累）
-        gain = 0.80 * mixed_gain + 0.20 * stackelberg_gain
-        expected_change = 0.80 * expected[0] + 0.20 * leader_change
-        expected_keep   = 0.80 * expected[1] + 0.20 * leader_keep
-    else:
-        # 原始同时博弈路径
-        prior = get_follower_prior(fol_id, fol_gap)
-        payoff = compute_payoff(vid, ego_spd, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase)
-        expected = payoff @ prior
-        gain = expected[0] - expected[1]
+    # 原始同时博弈路径
+    prior = get_follower_prior(fol_id, fol_gap)
+    payoff = compute_payoff(vid, ego_spd, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase)
+    expected = payoff @ prior
+    gain = expected[0] - expected[1]
 
     base_min_gain = GAME_MIN_GAIN_SUDDEN if phase == "sudden" else GAME_MIN_GAIN_INFORMED
     local_density = estimate_local_density(road_id, cur_lane, ego_pos)
@@ -945,7 +779,7 @@ def decide_lanechange(vid, cur_lane, tgt_lane, road_id, phase="informed") -> flo
         + ADAPT_GAIN_TTC_GAIN * ttc_risk
     )
     if gain > min_gain:
-        return float(expected_change if USE_STACKELBERG else expected[0])
+        return float(expected[0])
     return -float('inf')
 
 def decide_platoon_lanechange(platoon: list, cur_lane: int, tgt_lane: int, road_id: str, phase: str = "informed") -> float:
@@ -964,59 +798,6 @@ def decide_platoon_lanechange(platoon: list, cur_lane: int, tgt_lane: int, road_
     # 头车为 position 最大的车辆
     leader = max(platoon, key=lambda v: traci.vehicle.getLanePosition(v))
     return decide_lanechange(leader, cur_lane, tgt_lane, road_id, phase)
-
-# ====================== ★ 创新3：顺序排队换道协调 ======================
-
-def build_lc_queue(active_ids: set, obstacle_anchor: float) -> list:
-    """
-    构建事故车道上的换道候选顺序队列。
-    
-    规则：
-    - 仅考虑事故车道（ACCIDENT_LANE）上在事故区后方的车辆
-    - 按与障碍物的距离升序排列（最近障碍的排最前）
-    - 排除已在进行换道三阶段、冷却期内、或障碍物车辆
-    
-    返回: [(vid, dist_to_obs), ...] 按距离升序
-    """
-    candidates = []
-    for vid in active_ids:
-        if vid in OBSTACLE_IDS:
-            continue
-        try:
-            road_id = traci.vehicle.getRoadID(vid)
-            if road_id != "E0":
-                continue
-            cur_lane = traci.vehicle.getLaneIndex(vid)
-            if cur_lane != ACCIDENT_LANE:
-                continue
-            veh_pos = traci.vehicle.getLanePosition(vid)
-        except traci.exceptions.TraCIException:
-            continue
-        
-        # 必须在事故区检测范围内
-        detect = get_accident_broadcast_range(vid)
-        if not (-10.0 < (ACCIDENT_START - veh_pos) < detect):
-            continue
-        
-        # 不在换道执行中
-        if vid in _lc_state:
-            continue
-        
-        # 不在冷却期内
-        cooldown_steps = int(np.ceil(LC_COOLDOWN / STEP_LEN))
-        if _cur_step - _last_lc_step.get(vid, -10**9) < cooldown_steps:
-            continue
-        
-        # 距障碍物距离
-        dist_to_obs = obstacle_anchor - veh_pos
-        if dist_to_obs <= 0:
-            continue
-        
-        candidates.append((vid, dist_to_obs))
-    
-    # 按距离升序（最近障碍的排在最前面）
-    candidates.sort(key=lambda x: x[1])
-    return candidates
 
 
 # ====================== 事故障碍物 ======================
@@ -1090,7 +871,7 @@ def release_normal_cruise_control(vid: str):
 
 # ====================== 单次仿真 ======================
 def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
-    global _cur_step, _lc_queue
+    global _cur_step
     # 每次仿真开始前清空所有全局状态
     _lc_state.clear()
     _last_lc_step.clear()
@@ -1104,8 +885,6 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     _normal_ctrl_vids.clear()
     _emergency_brake_vids.clear()
     OBSTACLE_IDS.clear()
-    _level_k_estimates.clear()  # 创新1：清空认知层级
-    _lc_queue.clear()           # 创新3：清空换道队列
     for k in _perf_metrics:
         _perf_metrics[k] = 0 if isinstance(_perf_metrics[k], int) else 0.0
     _accident_state["happened"]         = False
@@ -1159,9 +938,6 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     }
     
     # ★ 创新统计指标
-    level_k_stats = {0: 0, 1: 0, 2: 0}  # 各层级车辆计数
-    stackelberg_adopted = 0           # Stackelberg 博弈决策次数
-    queue_coord_events = 0            # 队列协调事件数
 
     for step in range(sim_steps):
         try:
@@ -1321,21 +1097,7 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
             spd  = float(np.mean(speed_samples)) if speed_samples else 0.0
             ts_speed.append(round(spd, 2))
 
-        # ── ★ 创新3：构建顺序排队换道队列 ──
-        if USE_QUEUE_COORDINATION and _accident_state["happened"]:
-            _lc_queue = build_lc_queue(active_ids, obstacle_anchor)
-            # 从队列头部开始查找距障碍物足够远的车辆
-            # 允许 MAX_QUEUE_ALLOWED 辆车同时尝试换道，避免队首单点阻塞
-            allowed_vids = set()
-            for qvid, qdist in _lc_queue:
-                if qdist > EMERGENCY_NO_LC_DIST + 5.0:
-                    allowed_vids.add(qvid)
-                    if len(allowed_vids) >= MAX_QUEUE_ALLOWED:
-                        break
-            if allowed_vids:
-                queue_coord_events += 1
-        else:
-            allowed_vids = None  # 全部允许
+        allowed_vids = None  # 全部允许
 
         # 换道决策
         for vid in list(traci.vehicle.getIDList()):
@@ -1394,9 +1156,6 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
             if step - _last_lc_step.get(vid, -10**9) < cooldown_steps:
                 continue   # 冷却时间内避免频繁换道
 
-            # ── ★ 创新3：排队协调过滤 ──
-            if allowed_vids is not None and vid not in allowed_vids:
-                continue   # 仅允许队列最前车辆换道
 
             targets = []
             if cur_lane > 0:
@@ -1458,10 +1217,6 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
                     }
                     prepare_admit_cnt += 1
                     
-                    # 统计 Level-k 层级分布
-                    if USE_STACKELBERG and vid in _level_k_estimates:
-                        k = _level_k_estimates[vid]
-                        level_k_stats[k] = level_k_stats.get(k, 0) + 1
 
         total_veh += traci.simulation.getArrivedNumber()
 
@@ -1487,8 +1242,6 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     _phase_aware_vids.clear()
     _normal_ctrl_vids.clear()
     _emergency_brake_vids.clear()
-    _level_k_estimates.clear()
-    _lc_queue.clear()
 
     # GUI演示结束后尝试用ffmpeg合成视频 (只有当启用截图时才合成)
     ENABLE_SCREENSHOT = False
@@ -1569,10 +1322,6 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
         "ts_speed":        ts_speed,
         "lc_logs":         lc_logs,
         # ★ 创新统计信息
-        "use_lksq":        int(USE_STACKELBERG or USE_QUEUE_COORDINATION),
-        "level_k_stats":   level_k_stats,
-        "stackelberg_cnt": sum(level_k_stats.values()),
-        "queue_coord_events": queue_coord_events,
         # ★ 综合评价指标
         **comfort_metrics,
         **fairness_metrics,

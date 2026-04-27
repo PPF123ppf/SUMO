@@ -3,12 +3,11 @@ baseline_comparison.py
 ========================
 高速公路事故路段 CAV 换道决策模型 — 基线对比实验
 
-比较五种模型：
-  1. Game (Ours)   — 原文基于博弈论的换道决策（run_once）
+比较四种模型：
+  1. Game (Ours)   — 基于博弈论的换道决策
   2. SUMO Default  — 使用 SUMO 内置换道模型（SL2015 子车道），不做TraCI干预换道
   3. Rule-Based    — 基于固定 TTC/间隙阈值的规则式换道，无博弈
-  4. No-V2X        — 原文博弈模型，但关闭全局 V2X 广播
-  5. LKSQ (Ours)   — Level-k + Stackelberg + Sequential Queue 三重创新完全体
+  4. No-V2X        — 博弈模型，但关闭全局 V2X 广播
 
 使用方法：
   python baseline_comparison.py
@@ -299,33 +298,6 @@ def run_game(n_cav: int, label: str) -> dict:
     return glc.run_once(n_cav, label)
 
 
-def run_lksq(n_cav: int, label: str) -> dict:
-    """
-    ★ 模型5: LKSQ — Level-k + Stackelberg + Sequential Queue ★
-    
-    三重创新融合:
-    1. Level-k 认知层级: 车辆分为 Level-0/1/2，基于认知深度优化预测
-    2. Stackelberg 序贯博弈: 领导者先承诺，跟随者最优响应
-    3. Sequential Queue 顺序协调: 事故车道车辆排队，仅队首可换道
-    
-    使用 USE_STACKELBERG 和 USE_QUEUE_COORDINATION 切换创新开关
-    """
-    # 保存原始开关状态
-    orig_stackelberg = glc.USE_STACKELBERG
-    orig_queue = glc.USE_QUEUE_COORDINATION
-    
-    # 启用三重创新
-    glc.USE_STACKELBERG = True
-    glc.USE_QUEUE_COORDINATION = True
-    try:
-        result = glc.run_once(n_cav, label)
-        result["model"] = "LKSQ (Ours)"
-        return result
-    finally:
-        glc.USE_STACKELBERG = orig_stackelberg
-        glc.USE_QUEUE_COORDINATION = orig_queue
-
-
 def run_sumo_default(n_cav: int, label: str) -> dict:
     """
     模型2: SUMO 默认换道模型
@@ -610,9 +582,8 @@ def plot_baseline_comparison(all_results: dict, ts: str, out_dir: str):
         "SUMO Default": "#ff7f0e",
         "Rule-Based": "#2ca02c",
         "No-V2X": "#d62728",
-        "LKSQ (Ours)": "#9467bd",
     }
-    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X", "LKSQ (Ours)"]
+    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X"]
     scenarios = ["1200pcu/h", "2000pcu/h", "2800pcu/h", "3600pcu/h"]
 
     # 图1: 6指标分组柱状图
@@ -707,7 +678,7 @@ def plot_baseline_comparison(all_results: dict, ts: str, out_dir: str):
 
 
 def print_results_table(all_results: dict):
-    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X", "LKSQ (Ours)"]
+    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X"]
     scenarios = ["1200pcu/h", "2000pcu/h", "2800pcu/h", "3600pcu/h"]
     header = (f"{'模型':<14} {'场景':<10} {'通过':<7} {'行程':<8} {'延误':<7} "
               f"{'换道':<6} {'队列':<6} {'碰撞':<5} {'JerkP95':<8} {'违例率':<7} {'Gini':<6}")
@@ -748,7 +719,6 @@ def run_baseline_comparison():
         "SUMO Default": run_sumo_default,
         "Rule-Based": run_rule_based,
         "No-V2X": run_no_v2x,
-        "LKSQ (Ours)": run_lksq,
     }
     all_results = {name: {} for name in models}
 

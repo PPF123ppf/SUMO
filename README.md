@@ -1,10 +1,10 @@
 # SUMO-CAV 博弈换道仿真系统
 
-全 CAV（网联自动驾驶）交通仿真，基于 SUMO 事故场景，实现博弈换道决策，融合 Level-k 认知层级、Stackelberg 博弈与队列协调机制。
+全 CAV（网联自动驾驶）交通仿真，基于 SUMO 事故场景，实现博弈换道决策。
 
 ## 基线对比结果
 
-5 种换道决策模型在 4 种交通密度（1200/2000/2800/3600 pcu/h）下各运行 360 秒仿真，关键指标如下。
+4 种换道决策模型在 4 种交通密度（1200/2000/2800/3600 pcu/h）下各运行 360 秒仿真，关键指标如下。
 
 ### 综合对比
 
@@ -52,10 +52,6 @@
 | | 2000 | 93 | 163.07 | 4.64 | 68 | 0 | 33 |
 | | 2800 | 132 | 166.12 | 7.76 | 123 | 0 | 40 |
 | | 3600 | 165 | 169.24 | 10.76 | 178 | 0 | 46 |
-| **LKSQ (Ours)** | 1200 | 40 | 159.41 | 1.13 | 0 | 0 | 38 |
-| | 2000 | 69 | 161.32 | 2.81 | 0 | 0 | 69 |
-| | 2800 | 93 | 164.07 | 5.67 | 0 | 0 | 92 |
-| | 3600 | 118 | 167.53 | 8.96 | 0 | 0 | 119 |
 
 ---
 
@@ -73,14 +69,11 @@
 
 ## 核心功能
 
-### 1. Level-k 认知层级 (`assign_level_k`)
-车辆被分配认知层级（0/1/2），影响其对对手行为的建模方式。Level-1 利用"对方是 Level-0"的知识锐化预测；Level-2 进行递归推理。
+### 1. 同时博弈 (`compute_payoff`)
+基于 2×3 收益矩阵的换道博弈：本车可选择换道/不换道，目标车道后车可选择加速/保持/减速，计算期望收益后决策。
 
-### 2. Stackelberg 博弈 (`compute_stackelberg_payoff`)
-序贯领导-跟随博弈：换道车辆（领导者）先承诺决策，目标车道后车（跟随者）选择最优响应，领导者收益在跟随者最优响应下评估。
-
-### 3. 队列协调 (`build_lc_queue`)
-启用时，被阻塞车道上的车辆按距障碍物距离排序。每步最多 `MAX_QUEUE_ALLOWED`（默认 3 辆）可同时尝试换道，防止单点死锁。
+### 2. 行为预测 (`get_follower_prior`)
+根据后车速度和间距动态估计其行为概率（加速/保持/减速），在线加速度轨迹修正预测精度。
 
 ### 4. 紧急制动覆盖
 被阻塞车道上的安全覆盖层：接近障碍物的车辆受安全速度包络限制，在最后 95m 强制刹停。距障碍 `EMERGENCY_NO_LC_DIST`（90m）内禁止发起新换道。
@@ -100,7 +93,6 @@
 - **换道博弈**：增益阈值、换道代价、冷却时间
 - **协同换道**：头距阈值、减速幅度
 - **动力学约束**：横向加速度、换道时长
-- **Level-k**：最大认知层级、分布概率
 - **参数标定预设**：balanced、balanced_plus、conservative、aggressive
 
 ### 参数预设对比
@@ -148,16 +140,7 @@ set SIM_STEPS=600 && python run_baseline_stepwise.py
 python run_baseline_stepwise.py --resume results\baseline_20260424_211520
 
 # 只跑部分模型/场景
-python run_baseline_stepwise.py --models "Game (Ours),LKSQ (Ours)" --scenarios "1200pcu/h,2800pcu/h"
-```
-
-### 快速验证 LKSQ
-
-```bash
-python test_lksq_fix.py
-```
-
-分别在原始博弈和 LKSQ 模式下跑 1200 pcu/h，输出换道次数。
+python run_baseline_stepwise.py --models "Game (Ours),No-V2X" --scenarios "1200pcu/h,2800pcu/h"
 
 ### 环境变量
 
@@ -193,7 +176,6 @@ SUMO-1/
 ├── game_lane_change.py      # 主仿真与换道逻辑
 ├── config.py                # 集中参数配置（可被安全 import）
 ├── metrics.py               # 舒适性与公平性评价
-├── test_lksq_fix.py         # LKSQ 快速验证脚本
 ├── baseline_comparison.py   # 基线模型对比
 ├── plot_baseline_results.py # 基线结果可视化
 ├── run_baseline_stepwise.py # 分步基线运行

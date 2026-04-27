@@ -46,7 +46,6 @@ MODELS = {
     "SUMO Default":  "run_sumo_default",
     "Rule-Based":    "run_rule_based",
     "No-V2X":        "run_no_v2x",
-    "LKSQ (Ours)":   "run_lksq",
 }
 
 # ====================== 辅助函数 ======================
@@ -139,14 +138,13 @@ def cleanup_after_round():
 
 def run_single(model_name: str, n_cav: int, lbl: str, sim_steps: int) -> dict:
     """运行单轮实验"""
-    from baseline_comparison import run_game, run_sumo_default, run_rule_based, run_no_v2x, run_lksq
+    from baseline_comparison import run_game, run_sumo_default, run_rule_based, run_no_v2x
 
     func_map = {
         "Game (Ours)":  run_game,
         "SUMO Default": run_sumo_default,
         "Rule-Based":   run_rule_based,
         "No-V2X":       run_no_v2x,
-        "LKSQ (Ours)":  run_lksq,
     }
     run_func = func_map.get(model_name)
     if run_func is None:
