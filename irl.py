@@ -67,7 +67,7 @@ def extract_lane_change_episodes(tracks: pd.DataFrame,
                                   tracks_meta: pd.DataFrame,
                                   window: int = 30) -> list:
     """
-    从轨迹数据中提取换道片段。
+    从轨迹数据中提取换道片段（内存高效版：按 recording 分组处理）。
 
     参数:
         tracks: 完整轨迹表
@@ -75,35 +75,32 @@ def extract_lane_change_episodes(tracks: pd.DataFrame,
         window: 换道前后各取 frame 数（默认 30 = 1s @ 30fps）
 
     返回:
-        episodes: list of dict, 每个包含:
-            - frames: 片段内各帧的特征向量列表
-            - lane_change: 1=执行换道, 0=不换道
+        episodes: list of dict
     """
     lc_vehicles = tracks_meta[tracks_meta["numLaneChanges"] > 0]
+    lc_ids = set(lc_vehicles["id"].values)
     episodes = []
 
-    for _, veh in lc_vehicles.iterrows():
-        vid = veh["id"]
-        veh_tracks = tracks[tracks["trackId"] == vid].sort_values("frame")
-
-        # 检测换道发生的帧：laneId 发生变化
-        lane_changes = detect_lane_changes(veh_tracks)
-        if not lane_changes:
-            continue
-
-        for lc_frame in lane_changes:
-            # 取换道前后 window 帧
-            seg = veh_tracks[
-                (veh_tracks["frame"] >= lc_frame - window) &
-                (veh_tracks["frame"] <= lc_frame + window)
-            ].copy()
-            if len(seg) < window * 0.5:  # 至少一半帧数
+    # 按 recording 分组处理（避免大表过滤）
+    for rec, group in tracks.groupby("recording"):
+        for vid in lc_ids:
+            veh = group[group["trackId"] == vid]
+            if len(veh) < window:
                 continue
-            episodes.append({
-                "frames": seg,
-                "lc_frame": lc_frame,
-                "track_id": vid,
-            })
+            veh = veh.sort_values("frame")
+            lane_changes = detect_lane_changes(veh)
+            for lc_frame in lane_changes:
+                seg = veh[
+                    (veh["frame"] >= lc_frame - window) &
+                    (veh["frame"] <= lc_frame + window)
+                ].copy()
+                if len(seg) < window * 0.5:
+                    continue
+                episodes.append({
+                    "frames": seg,
+                    "lc_frame": lc_frame,
+                    "track_id": vid,
+                })
     return episodes
 
 
@@ -269,7 +266,29 @@ def apply_weights(weights_sudden: np.ndarray,
 
 # ====================== 6. 完整流程 ======================
 
-def run_irl(data_dir: str, iterations: int = 100):
+def save_weights(path: str = "irl_weights.npz"):
+    """保存当前权重到文件。"""
+    np.savez(path,
+             sudden=glc.PAYOFF_WEIGHTS["sudden"],
+             informed=glc.PAYOFF_WEIGHTS["informed"])
+    print(f"  权重已保存: {path}")
+
+
+def load_weights(path: str = "irl_weights.npz") -> bool:
+    """从文件加载权重。"""
+    try:
+        data = np.load(path)
+        glc.PAYOFF_WEIGHTS["sudden"] = data["sudden"]
+        glc.PAYOFF_WEIGHTS["informed"] = data["informed"]
+        print(f"  权重已加载: {path}")
+        print(f"    sudden={data['sudden']}")
+        print(f"    informed={data['informed']}")
+        return True
+    except (FileNotFoundError, OSError):
+        return False
+
+
+def run_irl(data_dir: str, iterations: int = 100, resume: bool = False):
     """完整的 IRL 流程。"""
     print("=" * 60)
     print("  最大熵逆强化学习 (MaxEnt IRL)")
@@ -310,6 +329,7 @@ def run_irl(data_dir: str, iterations: int = 100):
         weights_informed=learned_weights,
     )
     print("\n完成。新权重已写入 PAYOFF_WEIGHTS")
+    save_weights()
 
 
 # ====================== 命令行入口 ======================
@@ -322,8 +342,14 @@ if __name__ == "__main__":
                         help="AD4CHE 数据根目录（自动遍历所有子目录中的 *_tracks.csv）")
     parser.add_argument("--iterations", type=int, default=100,
                         help="IRL 迭代次数")
-    parser.add_argument("--lr", type=float, default=0.01,
+    parser.add_argument("--lr", type=float, default=0.03,
                         help="学习率")
+    parser.add_argument("--resume", type=str, default=None,
+                        help="从权重文件恢复（如 irl_weights.npz）")
     args = parser.parse_args()
+
+    if args.resume:
+        load_weights(args.resume)
+        print(f"恢复权重后继续训练 {args.iterations} 轮")
 
     run_irl(data_dir=args.data_dir, iterations=args.iterations)
