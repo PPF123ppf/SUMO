@@ -75,10 +75,10 @@
 ### 2. 行为预测 (`get_follower_prior`)
 根据后车速度和间距动态估计其行为概率（加速/保持/减速），在线加速度轨迹修正预测精度。
 
-### 4. 紧急制动覆盖
+### 3. 紧急制动覆盖
 被阻塞车道上的安全覆盖层：接近障碍物的车辆受安全速度包络限制，在最后 95m 强制刹停。距障碍 `EMERGENCY_NO_LC_DIST`（90m）内禁止发起新换道。
 
-### 5. 协同让行
+### 4. 协同让行
 目标车道后车可接收协同减速请求以打开间隙。间隙达到 `COOP_MIN_GAP` 后，换道执行，支援车恢复正常控制。
 
 ## 配置参数
@@ -130,7 +130,7 @@ echo "all" | PYTHONIOENCODING=utf-8 python game_lane_change.py
 ### 运行基线对比实验
 
 ```bash
-# 完整运行（5 模型 × 4 场景，约 48 分钟）
+# 完整运行（4 模型 × 4 场景，约 40 分钟）
 python run_baseline_stepwise.py
 
 # 快速验证（60 秒仿真）
@@ -141,6 +141,7 @@ python run_baseline_stepwise.py --resume results\baseline_20260424_211520
 
 # 只跑部分模型/场景
 python run_baseline_stepwise.py --models "Game (Ours),No-V2X" --scenarios "1200pcu/h,2800pcu/h"
+```
 
 ### 环境变量
 
@@ -174,7 +175,7 @@ python run_baseline_stepwise.py --models "Game (Ours),No-V2X" --scenarios "1200p
 ```
 SUMO-1/
 ├── game_lane_change.py      # 主仿真与换道逻辑
-├── config.py                # 集中参数配置（可被安全 import）
+├── config.py                # 集中参数配置
 ├── metrics.py               # 舒适性与公平性评价
 ├── baseline_comparison.py   # 基线模型对比
 ├── plot_baseline_results.py # 基线结果可视化
