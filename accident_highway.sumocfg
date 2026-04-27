@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumo_configuration.xsd">
+
+    <!-- 输入文件配置 -->
+    <input>
+        <!-- 指定路网文件（.net.xml），描述道路拓扑结构 -->
+        <net-file value="accident_highway.net.xml"/>
+        <!-- 指定车辆路线文件（.rou.xml），定义车辆出发时间、路径等 -->
+        <route-files value="accident_highway.rou.xml"/>
+    </input>
+
+    <!-- 仿真时间设置 -->
+    <time>
+        <!-- 仿真的起始时间（单位：秒） -->
+        <begin value="0"/>
+        <!-- 仿真的结束时间（单位：秒），此处为6分钟 -->
+        <end value="360"/>
+        <!-- 仿真步长（单位：秒），即每次仿真的时间粒度，此处为0.1秒 -->
+        <step-length value="0.1"/>
+    </time>
+
+    <!-- 输出文件配置 -->
+    <output>
+        <!-- 输出每辆车的行程信息（tripinfo.xml），包括行驶时间、等待时间等 -->
+        <tripinfo-output value="tripinfo.xml"/>
+        <!-- 输出浮动车数据（FCD, Floating Car Data），记录每辆车在每个时间步的位置和速度 -->
+        <fcd-output value="fcd.xml"/>
+        <!-- 输出车道变换信息，记录车辆换道行为 -->
+        <lanechange-output value="lanechanges.xml"/>
+    </output>
+
+    <!-- GUI 相关设置（仅适用于 sumo-gui） -->
+    <gui_only>
+        <!-- 启动 GUI 后自动开始仿真（无需手动点击“运行”按钮） -->
+        <start value="true"/>
+    </gui_only>
+
+</configuration>

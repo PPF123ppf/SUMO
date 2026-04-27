@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<net version="1.9" junctionCornerDetail="limit" turnJunctionDetail="limit" buildLaterals="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+    <location netOffset="0.00,0.00" convBoundary="0.00,0.00,4000.00,11.25" origBoundary="0.00,0.00,4000.00,11.25" projParameter="!"/>
+    <edge id="E0" from="J0" to="J1" priority="1" numLanes="3" speed="33.33" length="4000.00">
+        <lane id="E0_0" index="0" speed="33.33" length="4000.00" shape="0.00,1.88 4000.00,1.88"/>
+        <lane id="E0_1" index="1" speed="33.33" length="4000.00" shape="0.00,5.63 4000.00,5.63"/>
+        <lane id="E0_2" index="2" speed="33.33" length="4000.00" shape="0.00,9.38 4000.00,9.38"/>
+    </edge>
+    <junction id="J0" type="dead_end" x="0.00" y="5.63" incLanes="" intLanes="" shape="0.00,0.00 0.00,11.25"/>
+    <junction id="J1" type="dead_end" x="4000.00" y="5.63" incLanes="E0_0 E0_1 E0_2" intLanes="" shape="4000.00,0.00 4000.00,11.25"/>
+</net>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <!-- HDV：人工驾驶车，sigma=0.5表示驾驶行为随机性 -->
+    <vType id="hdv" accel="2.0" decel="4.0" sigma="0.5" length="4.5" minGap="2.5" maxSpeed="33.33" guiShape="passenger" color="0,0,255"/>
+    <!-- CAV：网联自动驾驶车，sigma=0.0表示精确执行，反应更快 -->
+    <vType id="cav" accel="2.6" decel="4.5" sigma="0.0" length="4.5" minGap="1.5" maxSpeed="33.33" guiShape="passenger" color="0,255,0"/>
+
+    <route id="r0" edges="E0"/>
+
+    <!-- 混合流：70% HDV + 30% CAV（论文CAV渗透率30%场景） -->
+    <flow id="f_hdv" type="hdv" route="r0" begin="0" end="360" number="140" departSpeed="max" departLane="random"/>
+    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="60"  departSpeed="max" departLane="random"/>
+</routes>

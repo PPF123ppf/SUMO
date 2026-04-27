@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<viewsettings>
+    <scheme name="real world">
+        <opengl antialiase="1" dither="1" fps="0" drawBoundaries="0" />
+        <background backgroundColor="255,255,255,255" showGrid="0" />
+        <vehicles vehicleMode="0" vehicleQuality="2" showBlinker="1"
+                  drawMinGap="0" drawBrakeGap="0"
+                  vehicleSize.minSize="1.00" vehicleSize.exaggeration="5.00"
+                  vehicleSize.constantSize="0"
+                  vehicleName.show="0" vehicleName.size="50" vehicleName.color="204,0,0,255" />
+        <edges laneEdgeMode="0" showLinkRules="1" showRails="1"
+               widthExaggeration="1.00" laneWidthExaggeration="1.00" />
+        <junctions junctionMode="0" drawShape="1" />
+        <additionals addMode="0" />
+        <pois poiMode="0" />
+        <polys polyMode="0" />
+        <legend showSizeLegend="1" showColorLegend="0" showParameterLegend="1" />
+        <decals />
+        <viewport x="1000.00" y="5.63" z="200.00" angle="0.00" />
+    </scheme>
+</viewsettings>

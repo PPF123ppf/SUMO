@@ -1,0 +1,6 @@
+﻿model,scenario,total_vehicles,avg_travel_time,avg_delay,lc_cnt,collisions,max_queue
+Game (Ours),1200pcu/h,86,89.57,0.11,29,2,4
+Game (Ours),2000pcu/h,102,87.61,1.23,0,0,26
+Game (Ours),2800pcu/h,161,89.75,1.66,19,10,34
+Game (Ours),3600pcu/h,186,89.68,2.97,0,2,34
+SUMO Default,1200pcu/h,49,97.51,13.4,0,0,4

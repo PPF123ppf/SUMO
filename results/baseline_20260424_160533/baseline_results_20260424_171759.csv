@@ -1,0 +1,17 @@
+﻿model,scenario,total_vehicles,avg_travel_time,avg_delay,lc_cnt,collisions,max_queue
+Game (Ours),1200pcu/h,86,89.55,0.09,29,2,4
+Game (Ours),2000pcu/h,126,91.64,3.36,57,0,19
+Game (Ours),2800pcu/h,195,91.53,1.93,71,10,5
+Game (Ours),3600pcu/h,238,92.16,3.29,116,2,19
+SUMO Default,1200pcu/h,49,97.51,13.4,0,0,4
+SUMO Default,2000pcu/h,69,94.1,12.27,0,2,32
+SUMO Default,2800pcu/h,72,82.13,5.11,0,2,34
+SUMO Default,3600pcu/h,113,85.15,5.0,0,2,27
+Rule-Based,1200pcu/h,64,87.24,0.21,0,2,14
+Rule-Based,2000pcu/h,102,88.21,1.59,0,0,26
+Rule-Based,2800pcu/h,142,89.28,2.33,0,10,34
+Rule-Based,3600pcu/h,186,90.33,3.62,0,2,34
+No-V2X,1200pcu/h,86,89.56,0.11,29,2,4
+No-V2X,2000pcu/h,126,90.88,2.59,53,0,19
+No-V2X,2800pcu/h,189,91.23,1.83,78,10,5
+No-V2X,3600pcu/h,237,91.75,2.9,102,2,20

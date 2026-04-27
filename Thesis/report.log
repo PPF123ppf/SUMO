@@ -1,0 +1,1774 @@
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.4.12)  18 APR 2026 23:13
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**report.tex
+(./report.tex
+LaTeX2e <2025-11-01>
+L3 programming layer <2026-03-20>
+(./heuthesisart.cls
+Document Class: heuthesisart 2021/05/06 3.0.15 Harbin Engineering University Th
+esis Template
+(c:/texlive/2026/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2024/03/16 v1.1e Standard LaTeX ifthen package (DPC)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks17
+)
+(c:/texlive/2026/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+))
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/ctexart.cls
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/config/ctexbackend.cfg
+File: ctexbackend.cfg 2022/07/14 v2.5.10 Backend configuration file (CTEX)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2026-03-20 L3 programming layer (loader) 
+
+(c:/texlive/2026/texmf-dist/tex/latex/l3backend/l3backend-xetex.def
+File: l3backend-xetex.def 2026-02-18 L3 backend support: XeTeX
+\g__graphics_track_int=\count271
+\g__pdfannot_backend_int=\count272
+\g__pdfannot_backend_link_int=\count273
+))
+Document Class: ctexart 2022/07/14 v2.5.10 Chinese adapter for class article (C
+TEX)
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/ctexhook.sty
+Package: ctexhook 2022/07/14 v2.5.10 Document and package hooks (CTEX)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/ctexpatch.sty
+Package: ctexpatch 2022/07/14 v2.5.10 Patching commands (CTEX)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/base/fix-cm.sty
+Package: fix-cm 2020/11/24 v1.1t fixes to LaTeX
+
+(c:/texlive/2026/texmf-dist/tex/latex/base/ts1enc.def
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding TS1 on input line 47.
+LaTeX Encoding Info:    Redeclaring text command \capitalcedilla (encoding TS1)
+ on input line 49.
+LaTeX Encoding Info:    Redeclaring text command \capitalogonek (encoding TS1) 
+on input line 52.
+LaTeX Encoding Info:    Redeclaring text command \capitalgrave (encoding TS1) o
+n input line 55.
+LaTeX Encoding Info:    Redeclaring text command \capitalacute (encoding TS1) o
+n input line 56.
+LaTeX Encoding Info:    Redeclaring text command \capitalcircumflex (encoding T
+S1) on input line 57.
+LaTeX Encoding Info:    Redeclaring text command \capitaltilde (encoding TS1) o
+n input line 58.
+LaTeX Encoding Info:    Redeclaring text command \capitaldieresis (encoding TS1
+) on input line 59.
+LaTeX Encoding Info:    Redeclaring text command \capitalhungarumlaut (encoding
+ TS1) on input line 60.
+LaTeX Encoding Info:    Redeclaring text command \capitalring (encoding TS1) on
+ input line 61.
+LaTeX Encoding Info:    Redeclaring text command \capitalcaron (encoding TS1) o
+n input line 62.
+LaTeX Encoding Info:    Redeclaring text command \capitalbreve (encoding TS1) o
+n input line 63.
+LaTeX Encoding Info:    Redeclaring text command \capitalmacron (encoding TS1) 
+on input line 64.
+LaTeX Encoding Info:    Redeclaring text command \capitaldotaccent (encoding TS
+1) on input line 65.
+LaTeX Encoding Info:    Redeclaring text command \t (encoding TS1) on input lin
+e 66.
+LaTeX Encoding Info:    Redeclaring text command \capitaltie (encoding TS1) on 
+input line 67.
+LaTeX Encoding Info:    Redeclaring text command \newtie (encoding TS1) on inpu
+t line 68.
+LaTeX Encoding Info:    Redeclaring text command \capitalnewtie (encoding TS1) 
+on input line 69.
+LaTeX Encoding Info:    Redeclaring text symbol \textcapitalcompwordmark (encod
+ing TS1) on input line 70.
+LaTeX Encoding Info:    Redeclaring text symbol \textascendercompwordmark (enco
+ding TS1) on input line 71.
+LaTeX Encoding Info:    Redeclaring text symbol \textquotestraightbase (encodin
+g TS1) on input line 72.
+LaTeX Encoding Info:    Redeclaring text symbol \textquotestraightdblbase (enco
+ding TS1) on input line 73.
+LaTeX Encoding Info:    Redeclaring text symbol \texttwelveudash (encoding TS1)
+ on input line 74.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreequartersemdash (encod
+ing TS1) on input line 75.
+LaTeX Encoding Info:    Redeclaring text symbol \textleftarrow (encoding TS1) o
+n input line 76.
+LaTeX Encoding Info:    Redeclaring text symbol \textrightarrow (encoding TS1) 
+on input line 77.
+LaTeX Encoding Info:    Redeclaring text symbol \textblank (encoding TS1) on in
+put line 78.
+LaTeX Encoding Info:    Redeclaring text symbol \textdollar (encoding TS1) on i
+nput line 79.
+LaTeX Encoding Info:    Redeclaring text symbol \textquotesingle (encoding TS1)
+ on input line 80.
+LaTeX Encoding Info:    Redeclaring text command \textasteriskcentered (encodin
+g TS1) on input line 81.
+LaTeX Encoding Info:    Redeclaring text symbol \textdblhyphen (encoding TS1) o
+n input line 92.
+LaTeX Encoding Info:    Redeclaring text symbol \textfractionsolidus (encoding 
+TS1) on input line 93.
+LaTeX Encoding Info:    Redeclaring text symbol \textzerooldstyle (encoding TS1
+) on input line 94.
+LaTeX Encoding Info:    Redeclaring text symbol \textoneoldstyle (encoding TS1)
+ on input line 95.
+LaTeX Encoding Info:    Redeclaring text symbol \texttwooldstyle (encoding TS1)
+ on input line 96.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreeoldstyle (encoding TS
+1) on input line 97.
+LaTeX Encoding Info:    Redeclaring text symbol \textfouroldstyle (encoding TS1
+) on input line 98.
+LaTeX Encoding Info:    Redeclaring text symbol \textfiveoldstyle (encoding TS1
+) on input line 99.
+LaTeX Encoding Info:    Redeclaring text symbol \textsixoldstyle (encoding TS1)
+ on input line 100.
+LaTeX Encoding Info:    Redeclaring text symbol \textsevenoldstyle (encoding TS
+1) on input line 101.
+LaTeX Encoding Info:    Redeclaring text symbol \texteightoldstyle (encoding TS
+1) on input line 102.
+LaTeX Encoding Info:    Redeclaring text symbol \textnineoldstyle (encoding TS1
+) on input line 103.
+LaTeX Encoding Info:    Redeclaring text symbol \textlangle (encoding TS1) on i
+nput line 104.
+LaTeX Encoding Info:    Redeclaring text symbol \textminus (encoding TS1) on in
+put line 105.
+LaTeX Encoding Info:    Redeclaring text symbol \textrangle (encoding TS1) on i
+nput line 106.
+LaTeX Encoding Info:    Redeclaring text symbol \textmho (encoding TS1) on inpu
+t line 107.
+LaTeX Encoding Info:    Redeclaring text symbol \textbigcircle (encoding TS1) o
+n input line 108.
+LaTeX Encoding Info:    Redeclaring text command \textcircled (encoding TS1) on
+ input line 109.
+LaTeX Encoding Info:    Redeclaring text symbol \textohm (encoding TS1) on inpu
+t line 115.
+LaTeX Encoding Info:    Redeclaring text symbol \textlbrackdbl (encoding TS1) o
+n input line 116.
+LaTeX Encoding Info:    Redeclaring text symbol \textrbrackdbl (encoding TS1) o
+n input line 117.
+LaTeX Encoding Info:    Redeclaring text symbol \textuparrow (encoding TS1) on 
+input line 118.
+LaTeX Encoding Info:    Redeclaring text symbol \textdownarrow (encoding TS1) o
+n input line 119.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciigrave (encoding TS1) 
+on input line 120.
+LaTeX Encoding Info:    Redeclaring text symbol \textborn (encoding TS1) on inp
+ut line 121.
+LaTeX Encoding Info:    Redeclaring text symbol \textdivorced (encoding TS1) on
+ input line 122.
+LaTeX Encoding Info:    Redeclaring text symbol \textdied (encoding TS1) on inp
+ut line 123.
+LaTeX Encoding Info:    Redeclaring text symbol \textleaf (encoding TS1) on inp
+ut line 124.
+LaTeX Encoding Info:    Redeclaring text symbol \textmarried (encoding TS1) on 
+input line 125.
+LaTeX Encoding Info:    Redeclaring text symbol \textmusicalnote (encoding TS1)
+ on input line 126.
+LaTeX Encoding Info:    Redeclaring text symbol \texttildelow (encoding TS1) on
+ input line 127.
+LaTeX Encoding Info:    Redeclaring text symbol \textdblhyphenchar (encoding TS
+1) on input line 128.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciibreve (encoding TS1) 
+on input line 129.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciicaron (encoding TS1) 
+on input line 130.
+LaTeX Encoding Info:    Redeclaring text symbol \textacutedbl (encoding TS1) on
+ input line 131.
+LaTeX Encoding Info:    Redeclaring text symbol \textgravedbl (encoding TS1) on
+ input line 132.
+LaTeX Encoding Info:    Redeclaring text symbol \textdagger (encoding TS1) on i
+nput line 133.
+LaTeX Encoding Info:    Redeclaring text symbol \textdaggerdbl (encoding TS1) o
+n input line 134.
+LaTeX Encoding Info:    Redeclaring text symbol \textbardbl (encoding TS1) on i
+nput line 135.
+LaTeX Encoding Info:    Redeclaring text symbol \textperthousand (encoding TS1)
+ on input line 136.
+LaTeX Encoding Info:    Redeclaring text symbol \textbullet (encoding TS1) on i
+nput line 137.
+LaTeX Encoding Info:    Redeclaring text symbol \textcelsius (encoding TS1) on 
+input line 138.
+LaTeX Encoding Info:    Redeclaring text symbol \textdollaroldstyle (encoding T
+S1) on input line 139.
+LaTeX Encoding Info:    Redeclaring text symbol \textcentoldstyle (encoding TS1
+) on input line 140.
+LaTeX Encoding Info:    Redeclaring text symbol \textflorin (encoding TS1) on i
+nput line 141.
+LaTeX Encoding Info:    Redeclaring text symbol \textcolonmonetary (encoding TS
+1) on input line 142.
+LaTeX Encoding Info:    Redeclaring text symbol \textwon (encoding TS1) on inpu
+t line 143.
+LaTeX Encoding Info:    Redeclaring text symbol \textnaira (encoding TS1) on in
+put line 144.
+LaTeX Encoding Info:    Redeclaring text symbol \textguarani (encoding TS1) on 
+input line 145.
+LaTeX Encoding Info:    Redeclaring text symbol \textpeso (encoding TS1) on inp
+ut line 146.
+LaTeX Encoding Info:    Redeclaring text symbol \textlira (encoding TS1) on inp
+ut line 147.
+LaTeX Encoding Info:    Redeclaring text symbol \textrecipe (encoding TS1) on i
+nput line 148.
+LaTeX Encoding Info:    Redeclaring text symbol \textinterrobang (encoding TS1)
+ on input line 149.
+LaTeX Encoding Info:    Redeclaring text symbol \textinterrobangdown (encoding 
+TS1) on input line 150.
+LaTeX Encoding Info:    Redeclaring text symbol \textdong (encoding TS1) on inp
+ut line 151.
+LaTeX Encoding Info:    Redeclaring text symbol \texttrademark (encoding TS1) o
+n input line 152.
+LaTeX Encoding Info:    Redeclaring text symbol \textpertenthousand (encoding T
+S1) on input line 153.
+LaTeX Encoding Info:    Redeclaring text symbol \textpilcrow (encoding TS1) on 
+input line 154.
+LaTeX Encoding Info:    Redeclaring text symbol \textbaht (encoding TS1) on inp
+ut line 155.
+LaTeX Encoding Info:    Redeclaring text symbol \textnumero (encoding TS1) on i
+nput line 156.
+LaTeX Encoding Info:    Redeclaring text symbol \textdiscount (encoding TS1) on
+ input line 157.
+LaTeX Encoding Info:    Redeclaring text symbol \textestimated (encoding TS1) o
+n input line 158.
+LaTeX Encoding Info:    Redeclaring text symbol \textopenbullet (encoding TS1) 
+on input line 159.
+LaTeX Encoding Info:    Redeclaring text symbol \textservicemark (encoding TS1)
+ on input line 160.
+LaTeX Encoding Info:    Redeclaring text symbol \textlquill (encoding TS1) on i
+nput line 161.
+LaTeX Encoding Info:    Redeclaring text symbol \textrquill (encoding TS1) on i
+nput line 162.
+LaTeX Encoding Info:    Redeclaring text symbol \textcent (encoding TS1) on inp
+ut line 163.
+LaTeX Encoding Info:    Redeclaring text symbol \textsterling (encoding TS1) on
+ input line 164.
+LaTeX Encoding Info:    Redeclaring text symbol \textcurrency (encoding TS1) on
+ input line 165.
+LaTeX Encoding Info:    Redeclaring text symbol \textyen (encoding TS1) on inpu
+t line 166.
+LaTeX Encoding Info:    Redeclaring text symbol \textbrokenbar (encoding TS1) o
+n input line 167.
+LaTeX Encoding Info:    Redeclaring text symbol \textsection (encoding TS1) on 
+input line 168.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciidieresis (encoding TS
+1) on input line 169.
+LaTeX Encoding Info:    Redeclaring text symbol \textcopyright (encoding TS1) o
+n input line 170.
+LaTeX Encoding Info:    Redeclaring text symbol \textordfeminine (encoding TS1)
+ on input line 171.
+LaTeX Encoding Info:    Redeclaring text symbol \textcopyleft (encoding TS1) on
+ input line 172.
+LaTeX Encoding Info:    Redeclaring text symbol \textlnot (encoding TS1) on inp
+ut line 173.
+LaTeX Encoding Info:    Redeclaring text symbol \textcircledP (encoding TS1) on
+ input line 174.
+LaTeX Encoding Info:    Redeclaring text symbol \textregistered (encoding TS1) 
+on input line 175.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciimacron (encoding TS1)
+ on input line 176.
+LaTeX Encoding Info:    Redeclaring text symbol \textdegree (encoding TS1) on i
+nput line 177.
+LaTeX Encoding Info:    Redeclaring text symbol \textpm (encoding TS1) on input
+ line 178.
+LaTeX Encoding Info:    Redeclaring text symbol \texttwosuperior (encoding TS1)
+ on input line 179.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreesuperior (encoding TS
+1) on input line 180.
+LaTeX Encoding Info:    Redeclaring text symbol \textasciiacute (encoding TS1) 
+on input line 181.
+LaTeX Encoding Info:    Redeclaring text symbol \textmu (encoding TS1) on input
+ line 182.
+LaTeX Encoding Info:    Redeclaring text symbol \textparagraph (encoding TS1) o
+n input line 183.
+LaTeX Encoding Info:    Redeclaring text symbol \textperiodcentered (encoding T
+S1) on input line 184.
+LaTeX Encoding Info:    Redeclaring text symbol \textreferencemark (encoding TS
+1) on input line 185.
+LaTeX Encoding Info:    Redeclaring text symbol \textonesuperior (encoding TS1)
+ on input line 186.
+LaTeX Encoding Info:    Redeclaring text symbol \textordmasculine (encoding TS1
+) on input line 187.
+LaTeX Encoding Info:    Redeclaring text symbol \textsurd (encoding TS1) on inp
+ut line 188.
+LaTeX Encoding Info:    Redeclaring text symbol \textonequarter (encoding TS1) 
+on input line 189.
+LaTeX Encoding Info:    Redeclaring text symbol \textonehalf (encoding TS1) on 
+input line 190.
+LaTeX Encoding Info:    Redeclaring text symbol \textthreequarters (encoding TS
+1) on input line 191.
+LaTeX Encoding Info:    Redeclaring text symbol \texteuro (encoding TS1) on inp
+ut line 192.
+LaTeX Encoding Info:    Redeclaring text symbol \texttimes (encoding TS1) on in
+put line 193.
+LaTeX Encoding Info:    Redeclaring text symbol \textdiv (encoding TS1) on inpu
+t line 194.
+))
+\l__ctex_tmp_int=\count274
+\l__ctex_tmp_box=\box53
+\l__ctex_tmp_dim=\dimen150
+\g__ctex_section_depth_int=\count275
+\g__ctex_font_size_int=\count276
+
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/config/ctexopts.cfg
+File: ctexopts.cfg 2022/07/14 v2.5.10 Option configuration file (CTEX)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2025/01/22 v1.4n Standard LaTeX document class
+(c:/texlive/2026/texmf-dist/tex/latex/base/size12.clo
+File: size12.clo 2025/01/22 v1.4n Standard LaTeX file (size option)
+)
+\c@part=\count277
+\c@section=\count278
+\c@subsection=\count279
+\c@subsubsection=\count280
+\c@paragraph=\count281
+\c@subparagraph=\count282
+\c@figure=\count283
+\c@table=\count284
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\bibindent=\dimen151
+)
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/engine/ctex-engine-xetex.def
+File: ctex-engine-xetex.def 2022/07/14 v2.5.10 XeLaTeX adapter (CTEX)
+
+(c:/texlive/2026/texmf-dist/tex/xelatex/xecjk/xeCJK.sty
+Package: xeCJK 2022/08/05 v3.9.1 Typesetting CJK scripts with XeLaTeX
+
+(c:/texlive/2026/texmf-dist/tex/latex/l3packages/xtemplate/xtemplate.sty
+Package: xtemplate 2025-10-09 L3 Experimental prototype document functions
+)
+\l__xeCJK_tmp_int=\count285
+\l__xeCJK_tmp_box=\box54
+\l__xeCJK_tmp_dim=\dimen152
+\l__xeCJK_tmp_skip=\skip51
+\g__xeCJK_space_factor_int=\count286
+\l__xeCJK_begin_int=\count287
+\l__xeCJK_end_int=\count288
+\c__xeCJK_CJK_class_int=\XeTeXcharclass1
+\c__xeCJK_FullLeft_class_int=\XeTeXcharclass2
+\c__xeCJK_FullRight_class_int=\XeTeXcharclass3
+\c__xeCJK_HalfLeft_class_int=\XeTeXcharclass4
+\c__xeCJK_HalfRight_class_int=\XeTeXcharclass5
+\c__xeCJK_NormalSpace_class_int=\XeTeXcharclass6
+\c__xeCJK_CM_class_int=\XeTeXcharclass7
+\c__xeCJK_HangulJamo_class_int=\XeTeXcharclass8
+\l__xeCJK_last_skip=\skip52
+\c__xeCJK_none_node=\count289
+\g__xeCJK_node_int=\count290
+\c__xeCJK_CJK_node_dim=\dimen153
+\c__xeCJK_CJK-space_node_dim=\dimen154
+\c__xeCJK_default_node_dim=\dimen155
+\c__xeCJK_CJK-widow_node_dim=\dimen156
+\c__xeCJK_normalspace_node_dim=\dimen157
+\c__xeCJK_default-space_node_skip=\skip53
+\l__xeCJK_ccglue_skip=\skip54
+\l__xeCJK_ecglue_skip=\skip55
+\l__xeCJK_punct_kern_skip=\skip56
+\l__xeCJK_indent_box=\box55
+\l__xeCJK_last_penalty_int=\count291
+\l__xeCJK_last_bound_dim=\dimen158
+\l__xeCJK_last_kern_dim=\dimen159
+\l__xeCJK_widow_penalty_int=\count292
+
+LaTeX template Info: Declaring template type 'xeCJK/punctuation' taking 0
+(template)           argument(s) on line 2396.
+
+\l__xeCJK_fixed_punct_width_dim=\dimen160
+\l__xeCJK_mixed_punct_width_dim=\dimen161
+\l__xeCJK_middle_punct_width_dim=\dimen162
+\l__xeCJK_fixed_margin_width_dim=\dimen163
+\l__xeCJK_mixed_margin_width_dim=\dimen164
+\l__xeCJK_middle_margin_width_dim=\dimen165
+\l__xeCJK_bound_punct_width_dim=\dimen166
+\l__xeCJK_bound_margin_width_dim=\dimen167
+\l__xeCJK_margin_minimum_dim=\dimen168
+\l__xeCJK_kerning_total_width_dim=\dimen169
+\l__xeCJK_same_align_margin_dim=\dimen170
+\l__xeCJK_different_align_margin_dim=\dimen171
+\l__xeCJK_kerning_margin_width_dim=\dimen172
+\l__xeCJK_kerning_margin_minimum_dim=\dimen173
+\l__xeCJK_bound_dim=\dimen174
+\l__xeCJK_reverse_bound_dim=\dimen175
+\l__xeCJK_margin_dim=\dimen176
+\l__xeCJK_minimum_bound_dim=\dimen177
+\l__xeCJK_kerning_margin_dim=\dimen178
+\g__xeCJK_family_int=\count293
+\l__xeCJK_fam_int=\count294
+\g__xeCJK_fam_allocation_int=\count295
+\l__xeCJK_verb_case_int=\count296
+\l__xeCJK_verb_exspace_skip=\skip57
+
+(c:/texlive/2026/texmf-dist/tex/latex/fontspec/fontspec.sty
+(c:/texlive/2026/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+Package: xparse 2025-10-09 L3 Experimental document command parser
+)
+Package: fontspec 2025/09/29 v2.9g Font selection for XeLaTeX and LuaLaTeX
+
+(c:/texlive/2026/texmf-dist/tex/latex/fontspec/fontspec-xetex.sty
+Package: fontspec-xetex 2025/09/29 v2.9g Font selection for XeLaTeX and LuaLaTe
+X
+\l__fontspec_script_int=\count297
+\l__fontspec_language_int=\count298
+\l__fontspec_strnum_int=\count299
+\l__fontspec_tmp_int=\count300
+\l__fontspec_tmpa_int=\count301
+\l__fontspec_tmpb_int=\count302
+\l__fontspec_tmpc_int=\count303
+\l__fontspec_em_int=\count304
+\l__fontspec_emdef_int=\count305
+\l__fontspec_strong_int=\count306
+\l__fontspec_strongdef_int=\count307
+\l__fontspec_tmpa_dim=\dimen179
+\l__fontspec_tmpb_dim=\dimen180
+\l__fontspec_tmpc_dim=\dimen181
+
+(c:/texlive/2026/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2025/07/18 v2.1d Standard LaTeX package
+)
+(c:/texlive/2026/texmf-dist/tex/latex/fontspec/fontspec.cfg)))
+(c:/texlive/2026/texmf-dist/tex/xelatex/xecjk/xeCJK.cfg
+File: xeCJK.cfg 2022/08/05 v3.9.1 Configuration file for xeCJK package
+))
+\ccwd=\dimen182
+\l__ctex_ccglue_skip=\skip58
+)
+\l__ctex_ziju_dim=\dimen183
+
+(c:/texlive/2026/texmf-dist/tex/latex/zhnumber/zhnumber.sty
+Package: zhnumber 2022/07/14 v3.0 Typesetting numbers with Chinese glyphs
+\l__zhnum_scale_int=\count308
+\l__zhnum_tmp_int=\count309
+
+(c:/texlive/2026/texmf-dist/tex/latex/zhnumber/zhnumber-utf8.cfg
+File: zhnumber-utf8.cfg 2022/07/14 v3.0 Chinese numerals with UTF8 encoding
+))
+\l__ctex_heading_skip=\skip59
+
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/scheme/ctex-scheme-plain-article.def
+File: ctex-scheme-plain-article.def 2022/07/14 v2.5.10 Plain scheme for article
+ (CTEX)
+) (c:/texlive/2026/texmf-dist/tex/latex/ctex/ctex-cs4size.clo
+File: ctex-cs4size.clo 2022/07/14 v2.5.10 cs4size option (CTEX)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/fontset/ctex-fontset-fandol.def
+File: ctex-fontset-fandol.def 2022/07/14 v2.5.10 Fandol fonts definition (CTEX)
+
+
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font
+(fontspec)             'FandolSong-Regular'. Check the typeset output, and if
+(fontspec)             it is okay then ignore this warning. Otherwise a
+(fontspec)             different font should be chosen.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'FandolSong-Regular(0)' created for font
+(fontspec)             'FandolSong-Regular' with options
+(fontspec)             [Script={CJK},Extension={.otf},BoldFont={FandolSong-Bold
+},ItalicFont={FandolKai-Regular}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[FandolSong-Regular.otf]/OT:script=hani;language=dfl
+t;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[FandolSong-Bold.otf]/OT:script=hani;language=dflt;"
+
+(fontspec)             - 'italic' (m/it) with NFSS spec.:
+(fontspec)             <->"[FandolKai-Regular.otf]/OT:script=hani;language=dflt
+;"
+
+))
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/config/ctex.cfg
+File: ctex.cfg 2022/07/14 v2.5.10 Configuration file (CTEX)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2025/10/02 v2.5m e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count310
+)
+(c:/texlive/2026/texmf-dist/tex/generic/iftex/ifxetex.sty
+Package: ifxetex 2019/10/25 v0.7 ifxetex legacy package. Use iftex instead.
+
+(c:/texlive/2026/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2024/12/12 v1.0g TeX engine tests
+))
+(c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2025/07/09 v2.17z AMS math features
+\@mathmargin=\skip60
+
+For additional information on amsmath, use the `?' option.
+(c:/texlive/2026/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2024/11/17 v2.01 AMS text
+
+(c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks18
+\ex@=\dimen184
+))
+(c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen185
+)
+(c:/texlive/2026/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count311
+LaTeX Info: Redefining \frac on input line 233.
+\uproot@=\count312
+\leftroot@=\count313
+LaTeX Info: Redefining \overline on input line 398.
+LaTeX Info: Redefining \colon on input line 409.
+\classnum@=\count314
+\DOTSCASE@=\count315
+LaTeX Info: Redefining \ldots on input line 495.
+LaTeX Info: Redefining \dots on input line 498.
+LaTeX Info: Redefining \cdots on input line 619.
+\Mathstrutbox@=\box56
+\strutbox@=\box57
+LaTeX Info: Redefining \big on input line 721.
+LaTeX Info: Redefining \Big on input line 722.
+LaTeX Info: Redefining \bigg on input line 723.
+LaTeX Info: Redefining \Bigg on input line 724.
+\big@size=\dimen186
+LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
+\macc@depth=\count316
+LaTeX Info: Redefining \bmod on input line 904.
+LaTeX Info: Redefining \pmod on input line 909.
+LaTeX Info: Redefining \smash on input line 939.
+LaTeX Info: Redefining \relbar on input line 969.
+LaTeX Info: Redefining \Relbar on input line 970.
+\c@MaxMatrixCols=\count317
+\dotsspace@=\muskip17
+\c@parentequation=\count318
+\dspbrk@lvl=\count319
+\tag@help=\toks19
+\row@=\count320
+\column@=\count321
+\maxfields@=\count322
+\andhelp@=\toks20
+\eqnshift@=\dimen187
+\alignsep@=\dimen188
+\tagshift@=\dimen189
+\tagwidth@=\dimen190
+\totwidth@=\dimen191
+\lineht@=\dimen192
+\@envbody=\toks21
+\multlinegap=\skip61
+\multlinetaggap=\skip62
+\mathdisplay@stack=\toks22
+LaTeX Info: Redefining \[ on input line 2950.
+LaTeX Info: Redefining \] on input line 2951.
+)
+(c:/texlive/2026/texmf-dist/tex/latex/ntheorem/ntheorem.sty
+Style `ntheorem', Version 1.33 <2011/08/15>
+Package: ntheorem 2011/08/15 1.33
+\theorem@style=\toks23
+\theorem@@style=\toks24
+\theorembodyfont=\toks25
+\theoremnumbering=\toks26
+\theorempreskipamount=\skip63
+\theorempostskipamount=\skip64
+\theoremframepreskipamount=\skip65
+\theoremframepostskipamount=\skip66
+\theoreminframepreskipamount=\skip67
+\theoreminframepostskipamount=\skip68
+\theorem@preskip=\toks27
+\theorem@postskip=\toks28
+\theorem@framepreskip=\toks29
+\theorem@framepostskip=\toks30
+\theorem@inframepreskip=\toks31
+\theorem@inframepostskip=\toks32
+\theoremindent=\dimen193
+\theorem@indent=\dimen194
+\theoremrightindent=\dimen195
+\theorem@rightindent=\dimen196
+\theoremheaderfont=\toks33
+\theoremseparator=\toks34
+\theoremprework=\toks35
+\theorempostwork=\toks36
+\theoremsymbol=\toks37
+\qedsymbol=\toks38
+\theoremkeyword=\toks39
+\qedsymbol=\toks40
+\thm@topsep=\skip69
+\thm@topsepadd=\skip70
+Package ntheorem Info: Option `thmmarks' loaded on input line 1175.
+\c@endNonectr=\count323
+\c@currNonectr=\count324
+\mysavskip=\skip71
+Package ntheorem Info: option `amsmath' handling for `thmmarks' loaded on input
+ line 1175.
+\thm@amstmpdepth=\dimen197
+\tagwidth=\dimen198
+) (c:/texlive/2026/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(c:/texlive/2026/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/newtxmath.sty
+Package: newtxmath 2024/09/22 v1.754
+
+`newtxmath' v1.754, 2024/09/22 Math macros based originally on txfonts (msharpe
+) (c:/texlive/2026/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+Package: xkeyval 2025/11/04 v2.10 package option processing (HA)
+
+(c:/texlive/2026/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(c:/texlive/2026/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+\XKV@toks=\toks41
+\XKV@tempa@toks=\toks42
+\XKV@tempb@toks=\toks43
+)
+\XKV@depth=\count325
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+(c:/texlive/2026/texmf-dist/tex/latex/oberdiek/centernot.sty
+Package: centernot 2016/05/16 v1.4 Centers the not symbol horizontally (HO)
+)
+\tx@cntz=\count326
+
+(c:/texlive/2026/texmf-dist/tex/generic/kastrup/binhex.tex)
+\tx@Isdigit=\count327
+\tx@IsAlNum=\count328
+\tx@tA=\toks44
+\tx@tB=\toks45
+\tx@su=\read2
+
+amsthm NOT loaded
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 402.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/cmr/m/n --> OT1/lmr/m/n on input line 402.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/m/n on input line 402.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/lmr/m/n --> OT1/lmr/b/n on input line 403.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 410.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> OT1/lmss/m/n on input line 410.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> OT1/lmss/m/n on input line 410.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/lmss/m/n --> OT1/lmss/b/n on input line 412.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 419.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/cmr/m/it --> OT1/lmr/m/it on input line 419.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/cmr/bx/it --> OT1/lmr/m/it on input line 419.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 420.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 420.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 420.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 422.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/b/n on input line 422.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/cmr/bx/n --> OT1/lmr/b/n on input line 422.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/lmr/m/it --> OT1/lmr/b/it on input line 423.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  TU/lmtt/m/n --> TU/lmtt/b/n on input line 426.
+LaTeX Font Info:    Redeclaring symbol font `letters' on input line 534.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/cmm/m/it --> OML/ntxmi/m/it on input line 534.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/cmm/b/it --> OML/ntxmi/m/it on input line 534.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/ntxmi/m/it --> OML/ntxmi/b/it on input line 535.
+\symlettersA=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `lettersA' in version `bold'
+(Font)                  U/ntxmia/m/it --> U/ntxmia/b/it on input line 582.
+LaTeX Font Info:    Redeclaring math alphabet \mathfrak on input line 584.
+LaTeX Font Info:    Redeclaring symbol font `symbols' on input line 604.
+LaTeX Font Info:    Encoding `OMS' has changed to `LMS' for symbol font
+(Font)              `symbols' in the math version `normal' on input line 604.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/cmsy/m/n --> LMS/ntxsy/m/n on input line 604.
+LaTeX Font Info:    Encoding `OMS' has changed to `LMS' for symbol font
+(Font)              `symbols' in the math version `bold' on input line 604.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/cmsy/b/n --> LMS/ntxsy/m/n on input line 604.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  LMS/ntxsy/m/n --> LMS/ntxsy/b/n on input line 605.
+\symAMSm=\mathgroup7
+LaTeX Font Info:    Overwriting symbol font `AMSm' in version `bold'
+(Font)                  U/ntxsym/m/n --> U/ntxsym/b/n on input line 630.
+\symsymbolsC=\mathgroup8
+LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
+(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 651.
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 664.
+LaTeX Font Info:    Encoding `OMX' has changed to `LMX' for symbol font
+(Font)              `largesymbols' in the math version `normal' on input line 6
+64.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/cmex/m/n --> LMX/ntxexx/m/n on input line 664.
+LaTeX Font Info:    Encoding `OMX' has changed to `LMX' for symbol font
+(Font)              `largesymbols' in the math version `bold' on input line 664
+.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/cmex/m/n --> LMX/ntxexx/m/n on input line 664.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  LMX/ntxexx/m/n --> LMX/ntxexx/b/n on input line 665.
+\symlargesymbolsTXA=\mathgroup9
+LaTeX Font Info:    Overwriting symbol font `largesymbolsTXA' in version `bold'
+
+(Font)                  U/ntxexa/m/n --> U/ntxexa/b/n on input line 679.
+\tx@sbptoks=\toks46
+LaTeX Font Info:    Redeclaring math delimiter \lfloor on input line 902.
+LaTeX Font Info:    Redeclaring math delimiter \rfloor on input line 903.
+LaTeX Font Info:    Redeclaring math delimiter \lceil on input line 904.
+LaTeX Font Info:    Redeclaring math delimiter \rceil on input line 905.
+LaTeX Font Info:    Redeclaring math delimiter \lbrace on input line 910.
+LaTeX Font Info:    Redeclaring math delimiter \rbrace on input line 911.
+LaTeX Font Info:    Redeclaring math delimiter \langle on input line 913.
+LaTeX Font Info:    Redeclaring math delimiter \rangle on input line 915.
+LaTeX Font Info:    Redeclaring math delimiter \arrowvert on input line 919.
+LaTeX Font Info:    Redeclaring math delimiter \vert on input line 920.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 991.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 992.
+LaTeX Font Info:    Redeclaring math accent \vec on input line 2057.
+LaTeX Info: Redefining \Bbbk on input line 2847.
+LaTeX Info: Redefining \not on input line 2995.
+) (c:/texlive/2026/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 106.
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics-def/xetex.def
+File: xetex.def 2025/11/01 v5.0p Graphics/color driver for xetex
+))
+\Gin@req@height=\dimen199
+\Gin@req@width=\dimen256
+)
+(c:/texlive/2026/texmf-dist/tex/latex/pdfpages/pdfpages.sty
+Package: pdfpages 2026/03/30 v0.6h Insert pages of external PDF documents (AM)
+
+(c:/texlive/2026/texmf-dist/tex/latex/tools/calc.sty
+Package: calc 2025/03/01 v4.3b Infix arithmetic (KKT,FJ)
+\calc@Acount=\count329
+\calc@Bcount=\count330
+\calc@Adimen=\dimen257
+\calc@Bdimen=\dimen258
+\calc@Askip=\skip72
+\calc@Bskip=\skip73
+LaTeX Info: Redefining \setlength on input line 86.
+LaTeX Info: Redefining \addtolength on input line 87.
+\calc@Ccount=\count331
+\calc@Cskip=\skip74
+)
+(c:/texlive/2026/texmf-dist/tex/latex/eso-pic/eso-pic.sty
+Package: eso-pic 2025/12/10 v3.0d eso-pic (RN)
+\ESO@tempdima=\dimen259
+\ESO@tempdimb=\dimen260
+
+(c:/texlive/2026/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: xetex.def on input line 274.
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+))
+\AM@pagewidth=\dimen261
+\AM@pageheight=\dimen262
+\AM@fboxrule=\dimen263
+
+(c:/texlive/2026/texmf-dist/tex/latex/pdfpages/ppxetex.def
+File: ppxetex.def 2026/03/30 v0.6h Pdfpages driver for XeTeX (AM)
+)
+\pdfpages@includegraphics@status=\count332
+\AM@pagebox=\box58
+\AM@global@opts=\toks47
+\AM@pagecnt=\count333
+\AM@toc@title=\toks48
+\AM@lof@heading=\toks49
+\c@AM@survey=\count334
+\AM@templatesizebox=\box59
+)
+(c:/texlive/2026/texmf-dist/tex/latex/enumitem/enumitem.sty
+Package: enumitem 2025/02/06 v3.11 Customized lists
+\labelindent=\skip75
+\enit@outerparindent=\dimen264
+\enit@toks=\toks50
+\enit@inbox=\box60
+\enit@count@id=\count335
+\enitdp@description=\count336
+)
+(c:/texlive/2026/texmf-dist/tex/latex/environ/environ.sty
+Package: environ 2014/05/04 v0.3 A new way to define environments
+
+(c:/texlive/2026/texmf-dist/tex/latex/trimspaces/trimspaces.sty
+Package: trimspaces 2009/09/17 v1.1 Trim spaces around a token list
+))
+(c:/texlive/2026/texmf-dist/tex/latex/footmisc/footmisc.sty
+Package: footmisc 2025/05/09 v7.0b a miscellany of footnote facilities
+\FN@temptoken=\toks51
+\footnotemargin=\dimen265
+
+(c:/texlive/2026/texmf-dist/tex/latex/bigfoot/perpage.sty
+Package: perpage 2014/10/25 2.0 Reset/sort counters per page
+\c@abspage=\count337
+)
+\c@pp@a@footnote=\count338
+Package footmisc Info: Declaring symbol style bringhurst on input line 549.
+Package footmisc Info: Declaring symbol style chicago on input line 557.
+Package footmisc Info: Declaring symbol style wiley on input line 566.
+Package footmisc Info: Declaring symbol style lamport-robust on input line 577.
+
+Package footmisc Info: Declaring symbol style lamport* on input line 597.
+Package footmisc Info: Declaring symbol style lamport*-robust on input line 618
+.
+)
+(c:/texlive/2026/texmf-dist/tex/latex/bbding/bbding.sty
+Package: bbding 1999/04/15 v1.01 Dingbats symbols
+)
+(c:/texlive/2026/texmf-dist/tex/xelatex/xecjk/xeCJKfntef.sty
+Package: xeCJKfntef 2022/08/05 v3.9.1 xeCJK font effect
+
+(c:/texlive/2026/texmf-dist/tex/generic/ulem/ulem.sty
+\UL@box=\box61
+\UL@hyphenbox=\box62
+\UL@skip=\skip76
+\UL@hook=\toks52
+\UL@height=\dimen266
+\UL@pe=\count339
+\UL@pixel=\dimen267
+\ULC@box=\box63
+Package: ulem 2019/11/18
+\ULdepth=\dimen268
+)
+\l__xeCJK_space_skip=\skip77
+\c__xeCJK_ulem-begin_node_dim=\dimen269
+\l__xeCJK_hidden_box=\box64
+\l__xeCJK_fntef_box=\box65
+\l__xeCJK_under_symbol_box=\box66
+\c__xeCJK_filll_skip=\skip78
+)
+(c:/texlive/2026/texmf-dist/tex/latex/diagbox/diagbox.sty
+Package: diagbox 2020/02/09 v2.3 Making table heads with diagonal lines
+
+(c:/texlive/2026/texmf-dist/tex/latex/pict2e/pict2e.sty
+Package: pict2e 2020/09/30 v0.4b Improved picture commands (HjG,RN,JT)
+
+(c:/texlive/2026/texmf-dist/tex/latex/pict2e/pict2e.cfg
+File: pict2e.cfg 2016/02/05 v0.1u pict2e configuration for teTeX/TeXLive
+)
+Package pict2e Info: Driver file: xetex.def on input line 112.
+Package pict2e Info: Driver file for pict2e: p2e-xetex.def on input line 114.
+
+(c:/texlive/2026/texmf-dist/tex/latex/pict2e/p2e-xetex.def
+File: p2e-xetex.def 2016/02/05 v0.1u Driver-dependant file (RN,HjG,JT)
+)
+\pIIe@GRAPH=\toks53
+\@arclen=\dimen270
+\@arcrad=\dimen271
+\pIIe@tempdima=\dimen272
+\pIIe@tempdimb=\dimen273
+\pIIe@tempdimc=\dimen274
+\pIIe@tempdimd=\dimen275
+\pIIe@tempdime=\dimen276
+\pIIe@tempdimf=\dimen277
+)
+(c:/texlive/2026/texmf-dist/tex/latex/tools/array.sty
+Package: array 2025/09/25 v2.6n Tabular extension package (FMi)
+\col@sep=\dimen278
+\ar@mcellbox=\box67
+\extrarowheight=\dimen279
+\NC@list=\toks54
+\extratabsurround=\skip79
+\backup@length=\skip80
+\ar@cellbox=\box68
+)
+\diagbox@boxa=\box69
+\diagbox@boxb=\box70
+\diagbox@boxm=\box71
+\diagbox@wd=\dimen280
+\diagbox@ht=\dimen281
+\diagbox@insepl=\dimen282
+\diagbox@insepr=\dimen283
+\diagbox@outsepl=\dimen284
+\diagbox@outsepr=\dimen285
+)
+(c:/texlive/2026/texmf-dist/tex/latex/tools/longtable.sty
+Package: longtable 2025-10-13 v4.24 Multi-page Table package (DPC)
+\LTleft=\skip81
+\LTright=\skip82
+\LTpre=\skip83
+\LTpost=\skip84
+\LTchunksize=\count340
+\LTcapwidth=\dimen286
+\LT@head=\box72
+\LT@firsthead=\box73
+\LT@foot=\box74
+\LT@lastfoot=\box75
+\LT@gbox=\box76
+\LT@cols=\count341
+\LT@rows=\count342
+\c@LT@tables=\count343
+\c@LT@chunks=\count344
+\LT@p@ftn=\toks55
+)
+(c:/texlive/2026/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen287
+\lightrulewidth=\dimen288
+\cmidrulewidth=\dimen289
+\belowrulesep=\dimen290
+\belowbottomsep=\dimen291
+\aboverulesep=\dimen292
+\abovetopsep=\dimen293
+\cmidrulesep=\dimen294
+\cmidrulekern=\dimen295
+\defaultaddspace=\dimen296
+\@cmidla=\count345
+\@cmidlb=\count346
+\@aboverulesep=\dimen297
+\@belowrulesep=\dimen298
+\@thisruleclass=\count347
+\@lastruleclass=\count348
+\@thisrulewidth=\dimen299
+)
+(c:/texlive/2026/texmf-dist/tex/latex/natbib/natbib.sty
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip85
+\bibsep=\skip86
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count349
+)
+(c:/texlive/2026/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2026-01-29 v7.01p Hypertext links for LaTeX
+
+(c:/texlive/2026/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(c:/texlive/2026/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+
+(c:/texlive/2026/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(c:/texlive/2026/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode not found.
+))
+(c:/texlive/2026/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(c:/texlive/2026/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2026-01-29 v2.58 Cross-referencing by name of section
+
+(c:/texlive/2026/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(c:/texlive/2026/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+)
+\c@section@level=\count350
+)
+(c:/texlive/2026/texmf-dist/tex/generic/stringenc/stringenc.sty
+Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
+)
+)
+\@linkdim=\dimen300
+\Hy@linkcounter=\count351
+\Hy@pagecounter=\count352
+
+(c:/texlive/2026/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2026-01-29 v7.01p Hyperref: PDFDocEncoding definition (HO)
+)
+(c:/texlive/2026/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count353
+
+(c:/texlive/2026/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2026-01-29 v7.01p Hyperref: PDF Unicode definition (HO)
+)
+Package hyperref Info: Option `unicode' set `true' on input line 4072.
+Package hyperref Info: Hyper figures OFF on input line 4201.
+Package hyperref Info: Link nesting OFF on input line 4206.
+Package hyperref Info: Hyper index ON on input line 4209.
+Package hyperref Info: Plain pages OFF on input line 4216.
+Package hyperref Info: Backreferencing OFF on input line 4221.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4468.
+\c@Hy@tempcnt=\count354
+
+(c:/texlive/2026/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip18
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 4807.
+\XeTeXLinkMargin=\dimen301
+
+(c:/texlive/2026/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(c:/texlive/2026/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count355
+\Field@Width=\dimen302
+\Fld@charsize=\dimen303
+Package hyperref Info: Hyper figures OFF on input line 6084.
+Package hyperref Info: Link nesting OFF on input line 6089.
+Package hyperref Info: Hyper index ON on input line 6092.
+Package hyperref Info: backreferencing OFF on input line 6099.
+Package hyperref Info: Link coloring OFF on input line 6104.
+Package hyperref Info: Link coloring with OCG OFF on input line 6109.
+Package hyperref Info: PDF/A mode OFF on input line 6114.
+\Hy@abspage=\count356
+\c@Item=\count357
+\c@Hfootnote=\count358
+)
+Package hyperref Info: Driver (autodetected): hxetex.
+
+(c:/texlive/2026/texmf-dist/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2026-01-29 v7.01p Hyperref driver for XeTeX
+\pdfm@box=\box77
+\c@Hy@AnnotLevel=\count359
+\HyField@AnnotCount=\count360
+\Fld@listcount=\count361
+\c@bookmark@seq@number=\count362
+
+(c:/texlive/2026/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
+
+(c:/texlive/2026/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+84.
+)
+\Hy@SectionHShift=\skip87
+)
+Package hyperref Info: Option `CJKbookmarks' set `true' on input line 191.
+Package hyperref Info: Option `bookmarksnumbered' set `true' on input line 191.
+
+Package hyperref Info: Option `bookmarksopen' set `true' on input line 191.
+Package hyperref Info: Option `breaklinks' set `true' on input line 191.
+Package hyperref Info: Option `colorlinks' set `false' on input line 191.
+Package hyperref Info: Option `plainpages' set `false' on input line 191.
+
+(c:/texlive/2026/texmf-dist/tex/latex/geometry/geometry.sty
+Package: geometry 2026/03/07 v6.0 Page Geometry
+
+(c:/texlive/2026/texmf-dist/tex/generic/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
+)
+\Gm@cnth=\count363
+\Gm@cntv=\count364
+\c@Gm@tempcnt=\count365
+\Gm@bindingoffset=\dimen304
+\Gm@wd@mp=\dimen305
+\Gm@odd@mp=\dimen306
+\Gm@even@mp=\dimen307
+\Gm@layoutwidth=\dimen308
+\Gm@layoutheight=\dimen309
+\Gm@layouthoffset=\dimen310
+\Gm@layoutvoffset=\dimen311
+\Gm@dimlist=\toks56
+)
+(c:/texlive/2026/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
+Package: fancyhdr 2025/02/07 v5.2 Extensive control of page headers and footers
+
+\f@nch@headwidth=\skip88
+\f@nch@offset@elh=\skip89
+\f@nch@offset@erh=\skip90
+\f@nch@offset@olh=\skip91
+\f@nch@offset@orh=\skip92
+\f@nch@offset@elf=\skip93
+\f@nch@offset@erf=\skip94
+\f@nch@offset@olf=\skip95
+\f@nch@offset@orf=\skip96
+\f@nch@height=\skip97
+\f@nch@footalignment=\skip98
+\f@nch@widthL=\skip99
+\f@nch@widthC=\skip100
+\f@nch@widthR=\skip101
+\@temptokenb=\toks57
+)
+(c:/texlive/2026/texmf-dist/tex/latex/tools/tabularx.sty
+Package: tabularx 2023/12/11 v2.12a `tabularx' package (DPC)
+\TX@col@width=\dimen312
+\TX@old@table=\dimen313
+\TX@old@col=\dimen314
+\TX@target=\dimen315
+\TX@delta=\dimen316
+\TX@cols=\count366
+\TX@ftn=\toks58
+)
+(c:/texlive/2026/texmf-dist/tex/latex/varwidth/varwidth.sty
+Package: varwidth 2009/03/30 ver 0.92;  Variable-width minipages
+\@vwid@box=\box78
+\sift@deathcycles=\count367
+\@vwid@loff=\dimen317
+\@vwid@roff=\dimen318
+)
+==> First Aid for varwidth.sty applied!
+(c:/texlive/2026/texmf-dist/tex/latex/changepage/changepage.sty
+Package: changepage 2009/10/20 v1.0c check page and change page layout
+\c@cp@cntr=\count368
+\cp@tempcnt=\count369
+)
+(c:/texlive/2026/texmf-dist/tex/latex/tools/multicol.sty
+Package: multicol 2025/10/21 v2.0b multicolumn formatting (FMi)
+\c@tracingmulticols=\count370
+\mult@box=\box79
+\multicol@leftmargin=\dimen319
+\c@unbalance=\count371
+\c@collectmore=\count372
+\doublecol@number=\count373
+\multicoltolerance=\count374
+\multicolpretolerance=\count375
+\full@width=\dimen320
+\page@free=\dimen321
+\premulticols=\dimen322
+\postmulticols=\dimen323
+\multicolsep=\skip102
+\multicolbaselineskip=\skip103
+\partial@page=\box80
+\last@line=\box81
+\mc@boxedresult=\box82
+\maxbalancingoverflow=\dimen324
+\mult@rightbox=\box83
+\mult@grightbox=\box84
+\mult@firstbox=\box85
+\mult@gfirstbox=\box86
+\@tempa=\box87
+\@tempa=\box88
+\@tempa=\box89
+\@tempa=\box90
+\@tempa=\box91
+\@tempa=\box92
+\@tempa=\box93
+\@tempa=\box94
+\@tempa=\box95
+\@tempa=\box96
+\@tempa=\box97
+\@tempa=\box98
+\@tempa=\box99
+\@tempa=\box100
+\@tempa=\box101
+\@tempa=\box102
+\@tempa=\box103
+\@tempa=\box104
+\@tempa=\box105
+\@tempa=\box106
+\@tempa=\box107
+\@tempa=\box108
+\@tempa=\box109
+\@tempa=\box110
+\@tempa=\box111
+\@tempa=\box112
+\@tempa=\box113
+\@tempa=\box114
+\@tempa=\box115
+\@tempa=\box116
+\@tempa=\box117
+\@tempa=\box118
+\@tempa=\box119
+\@tempa=\box120
+\@tempa=\box121
+\@tempa=\box122
+\c@minrows=\count376
+\c@columnbadness=\count377
+\c@finalcolumnbadness=\count378
+\last@try=\dimen325
+\multicolovershoot=\dimen326
+\multicolundershoot=\dimen327
+\mult@nat@firstbox=\box123
+\colbreak@box=\box124
+\mc@col@check@num=\count379
+\g__mc_curr_col_int=\count380
+)
+(c:/texlive/2026/texmf-dist/tex/latex/placeins/placeins.sty
+Package: placeins 2005/04/18  v 2.2
+)
+(c:/texlive/2026/texmf-dist/tex/latex/base/flafter.sty
+Package: flafter 2025/08/22 v1.4z Standard LaTeX floats after reference (FMi)
+Applying: [2025/06/01] float order in 2-column on input line 49.
+Already applied: [2015/01/01] float order in 2-column on input line 152.
+Already applied: [0000/00/00] float order in 2-column on input line 254.
+)
+(c:/texlive/2026/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+\multirow@colwidth=\skip104
+\multirow@cntb=\count381
+\multirow@dima=\skip105
+\bigstrutjot=\dimen328
+)
+(c:/texlive/2026/texmf-dist/tex/latex/subfigure/subfigure.sty
+Package: subfigure 2002/03/15 v2.1.5 subfigure package
+\subfigtopskip=\skip106
+\subfigcapskip=\skip107
+\subfigcaptopadj=\dimen329
+\subfigbottomskip=\skip108
+\subfigcapmargin=\dimen330
+\subfiglabelskip=\skip109
+\c@subfigure=\count382
+\c@lofdepth=\count383
+\c@subtable=\count384
+\c@lotdepth=\count385
+
+****************************************
+* Local config file subfigure.cfg used *
+****************************************
+(c:/texlive/2026/texmf-dist/tex/latex/subfigure/subfigure.cfg)
+\subfig@top=\skip110
+\subfig@bottom=\skip111
+)
+(c:/texlive/2026/texmf-dist/tex/latex/ccaption/ccaption.sty
+Package: ccaption 2011/08/07 v3.2c Extended captioning and new floats
+\@contcwidth=\skip112
+\@contindw=\skip113
+\abovelegendskip=\skip114
+\belowlegendskip=\skip115
+\c@@contsubnum=\count386
+\c@newflo@tctr=\count387
+)
+(c:/texlive/2026/texmf-dist/tex/xelatex/xltxtra/xltxtra.sty
+Package: xltxtra 2018/12/31 v0.7 Improvements for the "XeLaTeX" format
+
+(c:/texlive/2026/texmf-dist/tex/generic/iftex/ifluatex.sty
+Package: ifluatex 2019/10/25 v1.5 ifluatex legacy package. Use iftex instead.
+)
+(c:/texlive/2026/texmf-dist/tex/latex/realscripts/realscripts.sty
+Package: realscripts 2016/02/13 v0.3d Access OpenType subscripts and superscrip
+ts
+\subsupersep=\dimen331
+)
+(c:/texlive/2026/texmf-dist/tex/latex/metalogo/metalogo.sty
+Package: metalogo 2010/05/29 v0.12 Extended TeX logo macros
+\xl@everylogo=\toks59
+\xl@@everylogo=\toks60
+LaTeX Info: Redefining \TeX on input line 193.
+LaTeX Info: Redefining \LaTeX on input line 202.
+LaTeX Info: Redefining \LaTeXe on input line 219.
+)
+\l__xetex_show_hyphens_wrapping_box=\box125
+\l__xetex_show_hyphens_temp_box=\box126
+\l__xetex_show_hyphens_final_box=\box127
+\g__xetex_show_hyphens_word_box=\box128
+))
+(./heuthesisart.cfg
+File: heuthesisart.cfg 2021/05/06 3.0.15 Harbin Engineering University Thesis T
+emplate
+\c@currproofctr=\count388
+\c@endproofctr=\count389
+\c@proof=\count390
+\c@currassumptionctr=\count391
+\c@endassumptionctr=\count392
+\c@assumption=\count393
+\c@currdefinitionctr=\count394
+\c@enddefinitionctr=\count395
+\c@definition=\count396
+\c@currpropositionctr=\count397
+\c@endpropositionctr=\count398
+\c@proposition=\count399
+\c@currlemmactr=\count400
+\c@endlemmactr=\count401
+\c@lemma=\count402
+\c@currtheoremctr=\count403
+\c@endtheoremctr=\count404
+\c@theorem=\count405
+\c@curraxiomctr=\count406
+\c@endaxiomctr=\count407
+\c@axiom=\count408
+\c@currcorollaryctr=\count409
+\c@endcorollaryctr=\count410
+\c@corollary=\count411
+\c@currexercisectr=\count412
+\c@endexercisectr=\count413
+\c@exercise=\count414
+\c@currexamplectr=\count415
+\c@endexamplectr=\count416
+\c@example=\count417
+\c@currremarkctr=\count418
+\c@endremarkctr=\count419
+\c@remark=\count420
+\c@currproblemctr=\count421
+\c@endproblemctr=\count422
+\c@problem=\count423
+\c@currconjecturectr=\count424
+\c@endconjecturectr=\count425
+\c@conjecture=\count426
+)
+(c:/texlive/2026/texmf-dist/tex/latex/algorithms/algorithm.sty
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+
+(c:/texlive/2026/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count427
+\float@exts=\toks61
+\float@box=\box129
+\@float@everytoks=\toks62
+\@floatcapt=\box130
+)
+\@float@every@algorithm=\toks63
+\c@algorithm=\count428
+)
+(c:/texlive/2026/texmf-dist/tex/latex/algorithms/algorithmic.sty
+Invalid UTF-8 byte or sequence at line 11 replaced by U+FFFD.
+Package: algorithmic 2009/08/24 v0.1 Document Style `algorithmic'
+\c@ALC@unique=\count429
+\c@ALC@line=\count430
+\c@ALC@rem=\count431
+\c@ALC@depth=\count432
+\ALC@tlm=\skip116
+\algorithmicindent=\skip117
+) (./report.aux)
+\openout1 = `report.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 34.
+LaTeX Font Info:    Trying to load font information for OML+ntxmi on input line
+ 34.
+ (c:/texlive/2026/texmf-dist/tex/latex/newtx/omlntxmi.fd
+File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
+)
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 34.
+LaTeX Font Info:    Trying to load font information for U+ntxexa on input line 
+34.
+
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/untxexa.fd
+File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
+)
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 34.
+LaTeX Font Info:    Trying to load font information for LMS+ntxsy on input line
+ 34.
+
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/lmsntxsy.fd
+File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
+)
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 34.
+LaTeX Font Info:    Trying to load font information for LMX+ntxexx on input lin
+e 34.
+
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/lmxntxexx.fd
+File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
+)
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 34.
+LaTeX Font Info:    ... okay on input line 34.
+LaTeX Info: Command `\dddot' is already robust on input line 34.
+LaTeX Info: Command `\ddddot' is already robust on input line 34.
+
+(c:/texlive/2026/texmf-dist/tex/latex/pdflscape/pdflscape.sty
+Package: pdflscape 2025-06-23 v0.14 Display of landscape pages in PDF
+
+(c:/texlive/2026/texmf-dist/tex/latex/pdflscape/pdflscape-nometadata.sty
+Package: pdflscape-nometadata 2025-06-23 v0.14 Display of landscape pages in PD
+F (HO)
+
+(c:/texlive/2026/texmf-dist/tex/latex/graphics/lscape.sty
+Package: lscape 2020/05/28 v3.02 Landscape Pages (DPC)
+)
+Package pdflscape Info: Auto-detected driver: dvipdfm (xetex) on input line 98.
+
+))
+Package hyperref Info: Link coloring OFF on input line 34.
+ (./report.out)
+(./report.out)
+\@outlinefile=\write3
+\openout3 = `report.out'.
+
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+*geometry* verbose mode - [ preamble ] result:
+* driver: xetex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* hratio: 1:1
+* vratio: 1:1
+* modes: 
+* h-part:(L,W,R)=(85.35826pt, 426.79134pt, 85.35828pt)
+* v-part:(T,H,B)=(86.7809pt, 671.48503pt, 86.78091pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=426.79134pt
+* \textheight=671.48503pt
+* \oddsidemargin=13.08827pt
+* \evensidemargin=13.08827pt
+* \topmargin=-5.40599pt
+* \headheight=14.22636pt
+* \headsep=5.69054pt
+* \topskip=12.0pt
+* \footskip=14.79541pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=10.8pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+(./front/coverart.tex)
+
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font
+(fontspec)             'FandolSong-Regular'. Check the typeset output, and if
+(fontspec)             it is okay then ignore this warning. Otherwise a
+(fontspec)             different font should be chosen.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'FandolSong-Regular(1)' created for font
+(fontspec)             'FandolSong-Regular' with options
+(fontspec)             [Script={CJK},Extension={.otf},BoldFont={FandolSong-Bold
+}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[FandolSong-Regular.otf]/OT:script=hani;language=dfl
+t;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[FandolSong-Bold.otf]/OT:script=hani;language=dflt;"
+
+
+
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font
+(fontspec)             'FandolKai-Regular'. Check the typeset output, and if
+(fontspec)             it is okay then ignore this warning. Otherwise a
+(fontspec)             different font should be chosen.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'FandolKai-Regular(0)' created for font
+(fontspec)             'FandolKai-Regular' with options
+(fontspec)             [Script={CJK},Extension={.otf},AutoFakeBold={2}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[FandolKai-Regular.otf]/OT:script=hani;language=dflt
+;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[FandolKai-Regular.otf]/OT:script=hani;language=dflt
+;embolden=2;"
+
+LaTeX Font Info:    Calculating math sizes for size <16.16037> on input line 37
+.
+LaTeX Font Info:    Trying to load font information for OT1+lmr on input line 3
+7.
+ (c:/texlive/2026/texmf-dist/tex/latex/lm/ot1lmr.fd
+File: ot1lmr.fd 2015/05/01 v1.6.1 Font defs for Latin Modern
+)
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+LaTeX Font Info:    Trying to load font information for U+msa on input line 37.
+
+
+(c:/texlive/2026/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 37.
+
+
+(c:/texlive/2026/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+LaTeX Font Info:    Trying to load font information for U+ntxmia on input line 
+37.
+
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/untxmia.fd
+File: untxmia.fd 2024/04/09 Fontinst v1.933 font definitions for U/ntxmia.
+)
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+LaTeX Font Info:    Trying to load font information for U+ntxsym on input line 
+37.
+
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/untxsym.fd
+File: untxsym.fd 2023/08/16 Fontinst v1.933 font definitions for U/ntxsym.
+)
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+LaTeX Font Info:    Trying to load font information for U+ntxsyc on input line 
+37.
+
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/untxsyc.fd
+File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
+)
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 16.16037pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 11.797pt on input line 37.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 8.88824pt on input line 37.
+ [1
+
+] (./report.toc
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 6.0pt on input line 2.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 6.0pt on input line 2.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 6.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 6.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 6.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 6.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 12.045pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 8.0pt on input line 2.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 6.0pt on input line 2.
+)
+\tf@toc=\write4
+\openout4 = `report.toc'.
+
+
+[2
+
+] (./body/report_opening.tex
+
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font
+(fontspec)             'FandolHei-Regular'. Check the typeset output, and if
+(fontspec)             it is okay then ignore this warning. Otherwise a
+(fontspec)             different font should be chosen.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'FandolHei-Regular(0)' created for font
+(fontspec)             'FandolHei-Regular' with options
+(fontspec)             [Script={CJK},Extension={.otf},BoldFont={FandolHei-Bold}
+].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[FandolHei-Regular.otf]/OT:script=hani;language=dflt
+;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[FandolHei-Bold.otf]/OT:script=hani;language=dflt;"
+
+ [1
+
+] [2] [3]
+
+Package fontspec Info: 
+(fontspec)             Script 'CJK' not explicitly supported within font
+(fontspec)             'FandolFang-Regular'. Check the typeset output, and if
+(fontspec)             it is okay then ignore this warning. Otherwise a
+(fontspec)             different font should be chosen.
+
+
+Package fontspec Info: 
+(fontspec)             Font family 'FandolFang-Regular(0)' created for font
+(fontspec)             'FandolFang-Regular' with options
+(fontspec)             [Script={CJK},Extension={.otf},AutoFakeBold={2}].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS
+(fontspec)             series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.:
+(fontspec)             <->"[FandolFang-Regular.otf]/OT:script=hani;language=dfl
+t;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.:
+(fontspec)             <->"[FandolFang-Regular.otf]/OT:script=hani;language=dfl
+t;embolden=2;"
+
+ [4]
+File: figures/sim_results_1.png Graphic file (type bmp)
+<figures/sim_results_1.png>
+File: figures/sim_results_2.png Graphic file (type bmp)
+<figures/sim_results_2.png>
+File: figures/queue_timeseries_20260417_215736.png Graphic file (type bmp)
+<figures/queue_timeseries_20260417_215736.png>
+File: figures/speed_timeseries_20260417_215736.png Graphic file (type bmp)
+<figures/speed_timeseries_20260417_215736.png>
+ [5] [6] [7] [8]
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 163.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 5.0pt on input line 167.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 5.0pt on input line 167.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 5.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 5.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 5.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 5.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 7.0pt on input line 167.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 5.0pt on input line 167.
+ [9] [10]
+[11] [12] (./report.bbl))
+\tf@thm=\write5
+\openout5 = `report.thm'.
+
+ [13] (./report.aux)
+ ***********
+LaTeX2e <2025-11-01>
+L3 programming layer <2022/08/05>
+ ***********
+Package rerunfilecheck Info: File `report.out' has not changed.
+(rerunfilecheck)             Checksum: 1BC6D338413BE17C52B266963A1A14A5;4771.
+ )
+(\end occurred when \iffalse on line 37 was incomplete) 
+Here is how much of TeX's memory you used:
+ 24411 strings out of 467992
+ 501612 string characters out of 5433177
+ 912584 words of memory out of 5000000
+ 52823 multiletter control sequences out of 15000+600000
+ 688924 words of font info for 190 fonts, out of 8000000 for 9000
+ 1348 hyphenation exceptions out of 8191
+ 107i,12n,126p,1197b,981s stack positions out of 10000i,1000n,20000p,200000b,200000s
+
+Output written on report.xdv (15 pages, 254636 bytes).

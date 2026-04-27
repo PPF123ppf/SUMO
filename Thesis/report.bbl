@@ -1,0 +1,82 @@
+\begin{thebibliography}{1}
+\providecommand{\bibauthor}[1]{#1}
+\providecommand{\bibeditor}[1]{#1}
+\providecommand{\bibtranslator}[1]{#1}
+\providecommand{\bibtitle}[1]{#1}
+\providecommand{\bibbooktitle}[1]{#1}
+\providecommand{\bibjournal}[1]{#1}
+\providecommand{\bibmark}[1]{\mbox{#1}}
+\providecommand{\bibcountry}[1]{#1}
+\providecommand{\bibpatentid}[1]{#1}
+\providecommand{\bibedition}[1]{#1}
+\providecommand{\biborganization}[1]{#1}
+\providecommand{\bibaddress}[1]{#1}
+\providecommand{\bibpublisher}[1]{#1}
+\providecommand{\bibinstitution}[1]{#1}
+\providecommand{\bibschool}[1]{#1}
+\providecommand{\bibvolume}[1]{#1}
+\providecommand{\bibnumber}[1]{#1}
+\providecommand{\bibversion}[1]{#1}
+\providecommand{\bibpages}[1]{#1}
+\providecommand{\bibmodifydate}[1]{#1}
+\providecommand{\bibcitedate}[1]{#1}
+\providecommand{\bibyear}[1]{#1}
+\providecommand{\bibdate}[1]{#1}
+\providecommand{\biburl}[1]{\newline\url{#1}}
+
+\bibitem{gipps1986model}
+\bibauthor{Gipps P~G}\@. \bibtitle{A model for the structure of lane-changing
+  decisions}\bibmark{[J]}\@. \bibjournal{Transportation Research Part B:
+  Methodological}\@, \bibyear{1986}\@,
+  \bibvolume{20}\bibnumber{(5)}\textnormal{:
+  }\bibpages{403\textnormal{-}414}\@.
+
+\bibitem{kesting2007general}
+\bibauthor{Kesting A\@, Treiber M\@, Helbing D}\@. \bibtitle{General
+  lane-changing model MOBIL for car-following models}\bibmark{[J]}\@.
+  \bibjournal{Transportation Research Record}\@, \bibyear{2007}\@,
+  \bibvolume{1999}\bibnumber{(1)}\textnormal{:
+  }\bibpages{86\textnormal{-}94}\@.
+
+\bibitem{talebpour2016influence}
+\bibauthor{Talebpour A\@, Mahmassani H~S}\@. \bibtitle{Influence of connected
+  and autonomous vehicles on traffic flow stability and
+  throughput}\bibmark{[J]}\@. \bibjournal{Transportation Research Part C:
+  Emerging Technologies}\@, \bibyear{2016}\@, \bibvolume{71}\textnormal{:
+  }\bibpages{143\textnormal{-}163}\@.
+
+\bibitem{wegener2008traci}
+\bibauthor{Wegener A\@, Piorkowski M\@, Raya M, et~al}\@. \bibtitle{TraCI: an
+  interface for coupling road traffic and network simulators}\bibmark{[C]}
+  //\thinspace{}\bibbooktitle{Proceedings of the 11th communications and
+  networking simulation symposium}\@. \bibyear{2008}\textnormal{:
+  }\bibpages{155\textnormal{-}163}\@.
+
+\bibitem{lighthill1955kinematic}
+\bibauthor{Lighthill M~J\@, Whitham G~B}\@. \bibtitle{On kinematic waves II. A
+  theory of traffic flow on long crowded roads}\bibmark{[J]}\@.
+  \bibjournal{Proceedings of the Royal Society of London. Series A}\@,
+  \bibyear{1955}\@, \bibvolume{229}\bibnumber{(1178)}\textnormal{:
+  }\bibpages{317\textnormal{-}345}\@.
+
+\bibitem{wang2021evolutionary}
+\bibauthor{王畅\@, 孙剑}\@.
+  \bibtitle{基于演化博弈的智能网联车辆换道决策模型}\bibmark{[J]}\@.
+  \bibjournal{同济大学学报 (自然科学版)}\@, \bibyear{2021}\@,
+  \bibvolume{49}\bibnumber{(6)}\textnormal{:
+  }\bibpages{820\textnormal{-}828}\@.
+
+\bibitem{zhang2018cooperative}
+\bibauthor{张存保\@, 郭伟\@, 赵鑫}\@.
+  \bibtitle{车联网环境下高速公路突发事件与预警协同控制}\bibmark{[J]}\@.
+  \bibjournal{交通运输工程学报}\@, \bibyear{2018}\@,
+  \bibvolume{18}\bibnumber{(2)}\textnormal{:
+  }\bibpages{126\textnormal{-}135}\@.
+
+\bibitem{treiber2000congested}
+\bibauthor{Treiber M\@, Hennecke A\@, Helbing D}\@. \bibtitle{Congested traffic
+  states in empirical observations and microscopic simulations}\bibmark{[J]}\@.
+  \bibjournal{Physical review E}\@, \bibyear{2000}\@,
+  \bibvolume{62}\bibnumber{(2)}\textnormal{: }\bibpages{1805}\@.
+
+\end{thebibliography}

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-04-27T14:07:40.147107+08:00 by Eclipse SUMO sumo 1.26.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="accident_highway.net.xml"/>
+        <route-files value="tmp_routes.rou.xml"/>
+    </input>
+
+    <output>
+        <fcd-output value="fcd.xml"/>
+        <tripinfo-output value="tripinfo.xml"/>
+        <lanechange-output value="lanechanges.xml"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="360"/>
+        <step-length value="0.1"/>
+    </time>
+
+    <processing>
+        <collision.action value="warn"/>
+        <lanechange.duration value="1.0"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+    </report>
+
+    <traci_server>
+        <remote-port value="59425"/>
+    </traci_server>
+
+    <gui_only>
+        <gui-settings-file value="viewsettings.xml"/>
+        <quit-on-end value="true"/>
+        <start value="true"/>
+    </gui_only>
+
+</sumoConfiguration>
