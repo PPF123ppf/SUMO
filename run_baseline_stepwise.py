@@ -127,13 +127,18 @@ def save_intermediate_results(out_dir: str, all_results: dict, timestamp: str):
 
 
 def cleanup_after_round():
-    """清理本轮产生的中间文件"""
+    """清理本轮产生的中间文件（Windows 上重试等待文件解锁）"""
+    import time as _time
     for f in ["tripinfo.xml", "lanechanges.xml", "fcd.xml",
               "tmp_routes_baseline.rou.xml", "tmp_routes.rou.xml"]:
-        try:
-            os.remove(f)
-        except FileNotFoundError:
-            pass
+        for _ in range(10):
+            try:
+                os.remove(f)
+                break
+            except FileNotFoundError:
+                break
+            except PermissionError:
+                _time.sleep(0.5)
 
 
 def run_single(model_name: str, n_cav: int, lbl: str, sim_steps: int) -> dict:
