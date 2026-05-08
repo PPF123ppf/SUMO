@@ -17,18 +17,16 @@ def get_density(s):
         if d in str(s): return int(d)
     return 0
 
-def load_all_results(base='results/parallel_final'):
-    models = {'game':'Game (Ours)','sumo':'SUMO Default','rule':'Rule-Based','nov2x':'No-V2X'}
+def load_all_results(base='results/parallel_v5'):
+    models = ['Game (Ours)','SUMO Default','Rule-Based','No-V2X']
     all_rows = []
-    for key, mname in models.items():
-        for w in ['manual','irl']:
-            d = os.path.join(base, f'{key}_{w}')
-            csvs = sorted(glob.glob(os.path.join(d, 'baseline_results_*.csv')))
-            if not csvs: continue
-            df = pd.read_csv(csvs[-1])
-            df['model_name'] = mname
-            df['weight_name'] = 'Manual' if w=='manual' else 'IRL'
-            all_rows.append(df)
+    for mname in models:
+        d = os.path.join(base, mname)
+        csvs = sorted(glob.glob(os.path.join(d, 'baseline_results_*.csv')))
+        if not csvs: continue
+        df = pd.read_csv(csvs[-1])
+        df['model_name'] = mname
+        all_rows.append(df)
     return pd.concat(all_rows, ignore_index=True) if all_rows else pd.DataFrame()
 
 df = load_all_results()
@@ -37,14 +35,13 @@ df['density'] = df['scenario'].apply(get_density)
 outdir = 'results/figures'
 os.makedirs(outdir, exist_ok=True)
 
-dm = df[df['weight_name']=='Manual']
 models = ['Game (Ours)', 'SUMO Default', 'Rule-Based', 'No-V2X']
 pens_order = ['0%CAV','10%CAV','30%CAV','50%CAV','70%CAV','100%CAV']
 densities = [1200,2000,2800,3600]
 colors = ['#1f77b4','#ff7f0e','#2ca02c','#d62728']
 
 # === 图1: 渗透率扫描热图 ===
-game = dm[dm['model_name']=='Game (Ours)']
+game = df[df['model_name']=='Game (Ours)']
 fig, axes = plt.subplots(1, 2, figsize=(14, 5))
 for idx, metric in enumerate(['total_vehicles', 'max_queue']):
     data = np.zeros((len(pens_order), len(densities)))
@@ -72,7 +69,7 @@ plt.close()
 print('1/4: penetration_sweep.png')
 
 # === 图2: 全模型对比 ===
-all100 = dm[dm['pen']=='100%CAV']
+all100 = df[df['pen']=='100%CAV']
 fig, axes = plt.subplots(2, 2, figsize=(16, 10))
 metrics = [('total_vehicles', '通过车辆数'), ('avg_travel_time', '平均行程时间(s)'),
            ('lc_cnt', '换道次数'), ('max_queue', '最大队列长度')]
@@ -109,22 +106,20 @@ plt.savefig(os.path.join(outdir, 'penetration_throughput.png'), dpi=200, bbox_in
 plt.close()
 print('3/4: penetration_throughput.png')
 
-# === 图4: Manual vs IRL ===
-game_all = df[df['model_name']=='Game (Ours)']
-game100 = game_all[game_all['pen']=='100%CAV']
-fig, ax = plt.subplots(figsize=(10, 5))
-x = np.arange(len(densities)); w = 0.3
-for wi, weight in enumerate(['Manual', 'IRL']):
-    gw = game100[game100['weight_name']==weight]
-    vals = [float(gw[gw['density']==d]['total_vehicles'].values[0]) if len(gw[gw['density']==d]) else 0 for d in densities]
-    ax.bar(x + wi*w, vals, w, label=weight, alpha=0.8)
-ax.set_xticks(x + w/2)
-ax.set_xticklabels([f'{d}pcu/h' for d in densities])
-ax.set_title('Game (Ours) Manual vs IRL @ 100% CAV', fontsize=13)
-ax.set_ylabel('通过车辆数'); ax.legend(); ax.grid(axis='y', alpha=0.3)
+# === 图4: 换道活跃度渗透率折线图 ===
+fig, ax = plt.subplots(figsize=(12, 6))
+for d in densities:
+    r = game[game['density']==d].sort_values('pen')
+    if len(r):
+        vals = r['lc_cnt'].tolist()
+        ax.plot(range(len(vals)), vals, 'o-', label=f'{d}pcu/h', linewidth=2)
+ax.set_xticks(range(len(pens_order)))
+ax.set_xticklabels([p.replace('%CAV','') for p in pens_order])
+ax.set_xlabel('CAV 渗透率 (%)'); ax.set_ylabel('换道次数')
+ax.set_title('Game (Ours) 渗透率 vs 换道活跃度'); ax.legend(); ax.grid(alpha=0.3)
 plt.tight_layout()
-plt.savefig(os.path.join(outdir, 'manual_vs_irl.png'), dpi=200, bbox_inches='tight')
+plt.savefig(os.path.join(outdir, 'penetration_lc.png'), dpi=200, bbox_inches='tight')
 plt.close()
-print('4/4: manual_vs_irl.png')
+print('4/4: penetration_lc.png')
 
 print(f'\n图片已保存至 {outdir}/')
