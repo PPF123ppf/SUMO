@@ -1,195 +1,183 @@
-# SUMO-CAV 博弈换道仿真系统
+# SUMO 混合交通博弈换道仿真系统
 
-全 CAV（网联自动驾驶）交通仿真，基于 SUMO 事故场景，实现博弈换道决策 + 最大熵逆强化学习（MaxEnt IRL）。
+基于 SUMO 事故场景的混合交通仿真，实现 **Stackelberg 博弈 + 混合博弈结构 + 8维原子特征 + MaxEnt IRL** 的 CAV 换道决策模型。
 
-## 基线对比结果
+## 核心创新
 
-4 种换道决策模型在 4 种交通密度（1200/2000/2800/3600 pcu/h）下各运行 360 秒仿真（路长 4km，事故点在 3km 处），关键指标如下。
-
-最新完整结果：`results/baseline_20260428_213033/`
-
-### 数值结果总表
-
-| 模型 | 密度 (pcu/h) | 通过车辆 | 平均行程 (s) | 平均延误 (s) | 换道次数 | 碰撞 | 最大队列 | JerkP95 | 违章率 |
-|------|:-----------:|:--------:|:-----------:|:-----------:|:-------:|:----:|:-------:|:-------:|:-----:|
-| **Game (Ours)** | 1200 | **65** | 160.07 | 1.05 | 38 | **0** | 9 | 0.000 | 0.00% |
-| | 2000 | **109** | 161.24 | 2.49 | 81 | **0** | 17 | 0.000 | 0.00% |
-| | 2800 | **149** | 162.58 | 4.11 | 106 | **0** | 22 | 0.000 | 0.00% |
-| | 3600 | **192** | 165.81 | 7.19 | 138 | **0** | 27 | 0.000 | 0.00% |
-| **SUMO Default** | 1200 | 36 | 169.96 | 11.40 | 0 | 0 | 19 | 17.245 | 54.23% |
-| | 2000 | 25 | 162.12 | 3.18 | 0 | 0 | 62 | 15.047 | 27.36% |
-| | 2800 | 38 | 176.29 | 18.02 | 0 | 0 | 72 | 16.064 | 26.61% |
-| | 3600 | 60 | 175.20 | 15.85 | 0 | 0 | 89 | 16.916 | 31.08% |
-| **Rule-Based** | 1200 | 36 | 146.07 | 2.21 | 75 | **12** | 8 | 0.003 | 0.95% |
-| | 2000 | 110 | 163.12 | 11.93 | 142 | 0 | 12 | 3.451 | 4.93% |
-| | 2800 | 134 | 135.10 | 6.34 | 217 | **4** | 16 | 0.356 | 3.93% |
-| | 3600 | 89 | 156.44 | 6.58 | 411 | **6** | 25 | 0.099 | 1.05% |
-| **No-V2X** | 1200 | 65 | 160.16 | 1.14 | 33 | 0 | 11 | 0.000 | 0.00% |
-| | 2000 | 109 | 160.97 | 2.22 | 68 | 0 | 18 | 0.000 | 0.00% |
-| | 2800 | 146 | 162.57 | 4.04 | 91 | 0 | 24 | 0.000 | 0.00% |
-| | 3600 | 184 | 165.36 | 6.74 | 128 | 0 | 38 | 0.000 | 0.00% |
-
-> 注：Game (Ours) 与 No-V2X 均使用相同跟驰模型，区别在于 Game (Ours) 有 V2X 协同换道能力，在密集场景下碰撞风险和公平性指标更优。
+| 创新点 | 说明 |
+|--------|------|
+| **混合博弈结构** | 3种后车类型 × 3种博弈结构（静态 Nash / Stackelberg / Nash 合作）自适应选择 |
+| **8维原子特征** | speed, urgency, pressure, safe, coop, social, density, lc_cost — 每维可独立解释 |
+| **混合交通** | CAV 渗透率 0%~100%，3种异质人类车（保守/普通/激进） |
+| **低渗透率自适应** | 对抗性偏差 + 互惠记忆 + 渗透率自适应阈值 |
+| **IRL 数据驱动** | 从 AD4CHE 数据集学习换道决策权重 |
+| **在线学习** | 每次换道后 TD 微调权重 |
 
 ---
 
-## 概述
-
-三段式高速公路（E0）中间车道（车道 1）在约 3000m 处因事故封闭，迫使车辆向两侧合流。所有车辆均为 CAV，配备 V2X 通信、感知噪声模型和多阶段换道决策逻辑。
-
-### 事故阶段
-
-| 阶段 | 时间 | 行为 |
-|------|------|------|
-| 正常行驶 | t < 90s | CACC 类跟驰巡航 |
-| 突发期 | 90-100s | 事故发生，仅局部 V2X，高紧迫度 |
-| 有序期 | 100s+ | 全局 V2X 广播激活，有序疏散 |
-
-## 核心功能
-
-### 1. 同时博弈 (`compute_payoff`)
-基于 2×3 收益矩阵的换道博弈：本车可选择换道/不换道，目标车道后车可选择加速/保持/减速，计算期望收益后决策。
-
-### 2. 行为预测 (`get_follower_prior`)
-根据后车速度和间距动态估计其行为概率（加速/保持/减速），在线加速度轨迹修正预测精度。
-
-### 3. 紧急制动覆盖
-被阻塞车道上的安全覆盖层：接近障碍物的车辆受安全速度包络限制，在最后 95m 强制刹停。距障碍 `EMERGENCY_NO_LC_DIST`（90m）内禁止发起新换道。
-
-### 4. 协同让行
-目标车道后车可接收协同减速请求以打开间隙。间隙达到 `COOP_MIN_GAP` 后，换道执行，支援车恢复正常控制。
-
-### 5. 最大熵逆强化学习 (MaxEnt IRL)
-从 AD4CHE 自然驾驶数据中学习换道决策权重，使仿真行为与人类驾驶数据匹配。
-
-**特征定义**：
-
-| 特征 | 含义 | 换道时 | 不换道时 |
-|------|------|--------|---------|
-| eff | 效率 | 55%前车速度比 + 45%紧迫度 + 20%车道压力 | 60%自车速度 + 40%逆紧迫度 |
-| safe | 安全 | min(前车TTC, 后车TTC) | 当前车道前车TTC |
-| coop | 协同 | 后车协同奖励(0.18) + 制动加分(0.12) | 固定 0.05 |
-| lc_cost | 换道代价 | **1.0** | **0.0** |
-
-**IRL 训练结果**（50 轮收敛）：
+## 模型架构
 
 ```
-iter   0: loss=6.2869  weights=[0.380, 0.414, 0.199, 0.995]
-iter  49: loss=5.5848  weights=[0.349, 0.118, 0.140, 0.749]
+混合交通流量（CAV 渗透率 p%）
+│
+├── CAV (p%)
+│   ├── 感知层 → V2X 噪声/延迟/丢包模型
+│   ├── 门控层 → 间距 + 硬 TTC 安全门控
+│   ├── 特征层 → 8维原子特征提取 + 自适应权重
+│   ├── 博弈层 → 混合博弈求解器
+│   │   ├── Type 0 自私型 → 静态 Nash（双方同时决策）
+│   │   ├── Type 1 合作型 → Stackelberg（本车领导者）
+│   │   └── Type 2 高合作型 → Nash 合作（联合最优）
+│   ├── 决策层 → 增益 > 自适应阈值 → 执行换道
+│   ├── 执行层 → 准备(0.4s) → 执行(2.8s) → 稳定(0.5s)
+│   └── 学习层 → 在线 TD 微调
+│
+└── 人类车 ((1-p)%）
+    ├── 保守型 (33%) → sigma=0.3, 跟车3.0m, 极速108km/h
+    ├── 普通型 (33%) → sigma=0.5, 跟车2.5m, 极速120km/h
+    └── 激进型 (33%) → sigma=0.7, 跟车1.8m, 极速120km/h
+    └── SUMO SL2015 原生换道 + Krauss 跟驰
 ```
 
-`lc_cost` 权重最高（0.749），反映人类司机天然倾向于不频繁换道。
+---
 
-## 配置参数
+## 8维特征空间
 
-所有参数集中在 `config.py`，按模块组织：
+| 维度 | 特征 | 换道时 | 不换道时 | 物理含义 |
+|:--:|------|--------|---------|----------|
+| 0 | speed | 目标车道前车速度比 | 自车速度比 | 速度收益 |
+| 1 | urgency | 距事故归一化距离 | 0 | 紧迫驱动力 |
+| 2 | pressure | 当前车道头距压力 | 0 | 逃离压力 |
+| 3 | safe | min(前TTC, 后TTC)评分 | 当前车道前TTC | 安全评分 |
+| 4 | coop | 后车协同+制动加分 | 0.05 | 协同奖励 |
+| 5 | social | 换道对后车TTC缩减比 | 0 | 社会冲击 |
+| 6 | density | 局部车流密度 | 0 | 环境压力 |
+| 7 | lc_cost | 1.0 | 0.0 | 换道固有代价 |
 
-- **仿真基础**：步长、总步数
-- **事故参数**：位置、车道、触发时间
-- **通信参数**：V2X 范围、丢包率、感知噪声
-- **安全参数**：TTC 阈值、最小间距
-- **紧急制动**：反应时间、减速度、覆盖区域
-- **换道博弈**：增益阈值、换道代价、冷却时间
-- **协同换道**：头距阈值、减速幅度
-- **动力学约束**：横向加速度、换道时长
-- **参数标定预设**：balanced、balanced_plus、conservative、aggressive
+---
 
-### 参数预设对比
+## 场景
 
-| 预设 | 时距(s) | 突发期换道阈值 | 换道代价 | 说明 |
-|------|---------|--------------|---------|------|
-| balanced | 1.00 | 0.030 | 0.060 | 默认，效率与安全均衡 |
-| balanced_plus | 1.18 | 0.060 | 0.100 | 更保守的巡航 |
-| conservative | 1.25 | 0.050 | 0.090 | 更大时距，更高换道门槛 |
-| aggressive | 0.85 | 0.020 | 0.040 | 更紧时距，更激进并线 |
+- 4km 三车道高速（E0），3000m 处中间车道事故封堵
+- 事故时间线：t<90s 正常 → 90-100s 突发期 → 100s+ 有序疏散期
+- 全 CAV 配备 V2X 通信，人类车无 V2X
+
+### 4 种基线模型
+
+| 模型 | 换道方式 | V2X | 协同 |
+|------|---------|:--:|:--:|
+| **Game (Ours)** | 混合博弈 + 8维特征 | ✅ | ✅ |
+| SUMO Default | SL2015 原生 | — | — |
+| Rule-Based | 固定 TTC≥3.0s 阈值 | 部分 | ❌ |
+| No-V2X | 博弈模型但无全局广播 | 仅局部 | ✅ |
+
+---
+
+## 最新实验结果（全 CAV @ 100% 渗透率）
+
+| 模型 | 1200pcu/h | 2000pcu/h | 2800pcu/h | 3600pcu/h | 碰撞 |
+|------|:------:|:------:|:------:|:------:|:--:|
+| **Game (Ours)** | **65** | **110** | **149** | **190** | 0 |
+| No-V2X | 65 | 109 | 147 | 184 | 0 |
+| Rule-Based | 40 | 69 | 93 | 117 | 0 |
+| SUMO Default | 40 | 13 | 29 | 68 | 2 |
+
+### 渗透率效应（Game 模型）
+
+| 渗透率 | 1200 | 2000 | 2800 | 3600 |
+|:------:|:----:|:----:|:----:|:----:|
+| 0% | 3 | 4 | 4 | 4 |
+| 10% | 3 | 6 | 5 | 5 |
+| 30% | 11 | 8 | 7 | 24 |
+| 50% | 5 | 4 | 4 | 6 |
+| 70% | 2 | 6 | 5 | 4 |
+| **100%** | **65** | **110** | **149** | **190** |
+
+> 30%-70% 渗透率存在 "死亡谷"：CAV 不足，博弈失效，效率反而不如全人类。
+
+---
 
 ## 使用方式
 
 ### 依赖
 
-- SUMO 1.x 已安装（默认路径：`C:\Program Files (x86)\Eclipse\Sumo`）
-- Python 3.10+，需安装 `traci`、`sumolib`、`numpy`、`pandas`、`matplotlib`
+- SUMO 1.x（`C:\Program Files (x86)\Eclipse\Sumo`）
+- Python 3.10+，`traci`, `sumolib`, `numpy`, `pandas`, `matplotlib`
 
-### 运行 IRL 训练
-
-```bash
-# 完整训练 50 轮
-python irl.py --data-dir data/AD4CHE_dataset_V1.0/.../AD4CHE_Data_V1.0 --iterations 50
-
-# 从已有权重恢复继续训练
-python irl.py --data-dir <path> --iterations 40 --resume irl_weights.npz
-```
-
-### 运行完整仿真
+### 运行单次仿真
 
 ```bash
-python game_lane_change.py
-```
-
-按提示选择参数预设，或通过管道输入：
-
-```bash
-# 单预设
 echo "b" | PYTHONIOENCODING=utf-8 python game_lane_change.py
-
-# 全预设对比
-echo "all" | PYTHONIOENCODING=utf-8 python game_lane_change.py
 ```
 
 ### 运行基线对比实验
 
 ```bash
-# 完整运行（4 模型 × 4 场景，约 40 分钟）
-python run_baseline_stepwise.py
+# 完整实验（4模型 × 4密度 × 6渗透率 = 96组）
+python run_baseline_stepwise.py --sim-steps 3600 --out-dir results/exp1
 
-# 快速验证（60 秒仿真）
+# 使用 IRL 学出的权重
+python run_baseline_stepwise.py --irl-weights irl_weights_v2.npz --out-dir results/exp_irl
+
+# 快速验证
 set SIM_STEPS=600 && python run_baseline_stepwise.py
 
-# 续跑中断的实验
-python run_baseline_stepwise.py --resume results\baseline_20260424_211520
-
-# 只跑部分模型/场景
-python run_baseline_stepwise.py --models "Game (Ours),No-V2X" --scenarios "1200pcu/h,2800pcu/h"
+# 只跑部分模型
+python run_baseline_stepwise.py --models "Game (Ours)" --penetrations "0.3,0.5,1.0"
 ```
 
-### 环境变量
+### 多核并行（8核 8进程）
 
-| 变量 | 默认值 | 说明 |
-|------|--------|------|
-| `SIM_STEPS` | 3600 | 仿真总步数 |
-| `SKIP_GUI_DEMO` | 0 | 设为 `1` 跳过交互式 GUI 演示 |
-| `PYTHIOENCODING` | - | 设为 `utf-8` 可修复 Windows GBK 编码错误 |
+```bash
+for m in "Game (Ours)" "SUMO Default" "Rule-Based" "No-V2X"; do
+  python run_baseline_stepwise.py --models "$m" --out-dir "results/parallel/$m" &
+done
+```
 
-## 输出
+### IRL 训练
 
-结果保存至 `results/<时间戳>/`：
+```bash
+# 快速训练
+python run_irl_quick.py
 
-- `baseline_results_<时间戳>.csv` — 各模型×场景聚合指标
-- `baseline_detail_<时间戳>.csv` — 逐车详细数据
-- `baseline_ts_<时间戳>.pkl` — 时序数据
-- `baseline_comparison_<时间戳>.png` — 多指标柱状图
-- `baseline_speed_<时间戳>.png` — 速度时序图
-- `baseline_queue_<时间戳>.png` — 队列时序图
-- `baseline_high_density_<时间戳>.png` — 高密度场景分析
+# 完整训练
+python irl.py --data-dir data/AD4CHE_dataset_V1.0/.../AD4CHE_Data_V1.0 --iterations 50
+```
+
+---
 
 ## 项目结构
 
 ```
 SUMO-1/
-├── game_lane_change.py      # 主仿真与换道逻辑
-├── irl.py                   # 最大熵逆强化学习
-├── config.py                # 集中参数配置
-├── metrics.py               # 舒适性与公平性评价
-├── baseline_comparison.py   # 基线模型对比
-├── plot_baseline_results.py # 基线结果可视化
-├── run_baseline_stepwise.py # 分步基线运行
-├── test_baselines_quick.py  # 基线快速验证
-├── accident_highway.net.xml # SUMO 路网
-├── accident_highway.rou.xml # 路由定义
-├── accident_highway.sumocfg # SUMO 配置
-├── viewsettings.xml         # GUI 视图设置
-├── irl_weights.npz          # IRL 训练所得权重
-├── images/                  # README 引用图片
-├── results/                 # 仿真输出目录
-└── Thesis/                  # 论文相关文件
+├── game_lane_change.py       # 主仿真：博弈求解器、特征提取、状态机
+├── baseline_comparison.py    # 4种基线模型实现
+├── run_baseline_stepwise.py  # 分步基线运行（支持并行、渗透率、IRL权重）
+├── irl.py                    # 最大熵逆强化学习（8维特征）
+├── run_irl_quick.py          # 快速 IRL 训练脚本
+├── config.py                 # 集中参数配置
+├── metrics.py                # 舒适性与公平性评价
+├── plot_baseline_results.py  # 结果可视化
+│
+├── accident_highway.net.xml  # SUMO 路网
+├── accident_highway.sumocfg  # SUMO 配置
+├── viewsettings.xml          # GUI 视图设置
+│
+├── irl_weights_v2.npz       # IRL 学出的权重
+├── core_model_whitepaper.md  # 模型技术白皮书
+│
+├── data/                     # AD4CHE 数据集
+├── results/                  # 仿真输出
+└── Thesis/                   # 论文 LaTeX
 ```
+
+---
+
+## 参数预设
+
+| 预设 | 时距(s) | 换道阈值(突发) | 换道代价 | 说明 |
+|------|---------|:----------:|:------:|------|
+| balanced | 1.00 | 0.030 | 0.060 | 效率与安全均衡（默认） |
+| aggressive | 0.85 | 0.020 | 0.040 | 更紧时距，更激进 |
+| conservative | 1.25 | 0.050 | 0.090 | 更保守 |
+| balanced_plus | 1.18 | 0.060 | 0.100 | 最保守 |
