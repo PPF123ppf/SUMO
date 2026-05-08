@@ -435,7 +435,8 @@ def run_rule_based(n_cav: int, label: str) -> dict:
     accident_state = {"happened": False, "time_actual": -1.0, "broadcast_active": False}
     _last_lc_step: dict = {}
     cooldown_steps = int(np.ceil(LC_COOLDOWN / STEP_LEN))
-    RULE_TTC_THRESHOLD = 3.0
+    RULE_TTC_FRONT_MIN = 1.50   # 与本车前方车辆 TTC 最小要求
+    RULE_TTC_REAR_MIN  = 1.00   # 与后方车辆 TTC 最小要求（后车可制动）
     lc_cnt = 0
 
     safe_lbl = label.replace(" ", "_").replace("/", "_").replace("\\", "_")
@@ -551,7 +552,9 @@ def run_rule_based(n_cav: int, label: str) -> dict:
                 fol_spd = glc.perc_speed(fol_id) if fol_id else 0.0
                 ttc_front = compute_ttc(lead_gap, max(ego_spd - lead_spd, 0.0))
                 ttc_rear = compute_ttc(fol_gap, max(fol_spd - ego_spd, 0.0))
-                if min(ttc_front, ttc_rear) >= RULE_TTC_THRESHOLD:
+                # 多条件规则：前向TTC、后向TTC 分别判断
+                if (ttc_front >= RULE_TTC_FRONT_MIN and
+                    (ttc_rear >= RULE_TTC_REAR_MIN or not fol_id)):
                     best_tgt = tgt
                     break
 
