@@ -1636,12 +1636,19 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
 
         total_veh += traci.simulation.getArrivedNumber()
 
-    # 读取 tripinfo（独立文件名，避免多实验冲突）
+    # 从 tripinfo 读取行程数据（独立文件名，避免多实验冲突）
     tt_total, time_losses = 0.0, []
+    tripinfo_count = 0
     if os.path.exists(tripinfo_file):
         for trip in sumolib.xml.parse_fast(tripinfo_file, "tripinfo", ["duration", "timeLoss"]):
-            tt_total += float(trip.duration)
-            time_losses.append(float(trip.timeLoss))
+            dur = float(trip.duration)
+            if dur > 10.0:  # 过滤异常短的数据（<10s 不可能跑完 3.5km）
+                tt_total += dur
+                time_losses.append(float(trip.timeLoss))
+                tripinfo_count += 1
+    # 用 tripinfo 的条数覆盖 total_veh，保证分母分子同源
+    if tripinfo_count > 0:
+        total_veh = tripinfo_count
 
     try:
         traci.close()

@@ -281,12 +281,15 @@ def collect_ts_data(step, obstacle_ids):
 
 
 def read_tripinfo(filepath: str = "tripinfo.xml"):
-    tt_total, time_losses = 0.0, []
+    tt_total, time_losses, trip_count = 0.0, [], 0
     if os.path.exists(filepath):
         for trip in sumolib.xml.parse_fast(filepath, "tripinfo", ["duration", "timeLoss"]):
-            tt_total += float(trip.duration)
-            time_losses.append(float(trip.timeLoss))
-    return tt_total, time_losses
+            dur = float(trip.duration)
+            if dur > 10.0:  # 过滤异常短的数据
+                tt_total += dur
+                time_losses.append(float(trip.timeLoss))
+                trip_count += 1
+    return tt_total, time_losses, trip_count
 
 
 def read_travel_times(filepath: str = "tripinfo.xml"):
@@ -395,7 +398,9 @@ def run_sumo_default(n_cav: int, label: str) -> dict:
 
         total_veh += traci.simulation.getArrivedNumber()
 
-    tt_total, time_losses = read_tripinfo(tripinfo_f)
+    tt_total, time_losses, trip_cnt = read_tripinfo(tripinfo_f)
+    if trip_cnt > 0:
+        total_veh = trip_cnt
     veh_travel_times = read_travel_times(tripinfo_f)
     try:
         traci.close()
@@ -557,7 +562,9 @@ def run_rule_based(n_cav: int, label: str) -> dict:
 
         total_veh += traci.simulation.getArrivedNumber()
 
-    tt_total, time_losses = read_tripinfo(tripinfo_f)
+    tt_total, time_losses, trip_cnt = read_tripinfo(tripinfo_f)
+    if trip_cnt > 0:
+        total_veh = trip_cnt
     veh_travel_times = read_travel_times(tripinfo_f)
     try:
         traci.close()
