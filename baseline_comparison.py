@@ -587,17 +587,15 @@ def run_rule_based(n_cav: int, label: str) -> dict:
 
 
 def run_no_v2x(n_cav: int, label: str) -> dict:
-    """模型4: 无V2X广播（全局感知范围=300m）"""
-    orig_global = glc.GLOBAL_V2X_RANGE
-    orig_delay = glc.BROADCAST_DELAY
-    glc.GLOBAL_V2X_RANGE = glc.V2X_RANGE
+    """模型4: 无V2X通信 — 禁用协同让行、博弈通信、全局广播"""
+    orig_v2x = glc.V2X_ENABLED
+    glc.V2X_ENABLED = False
     try:
         result = glc.run_once(n_cav, label)
         result["model"] = "No-V2X"
         return result
     finally:
-        glc.GLOBAL_V2X_RANGE = orig_global
-        glc.BROADCAST_DELAY = orig_delay
+        glc.V2X_ENABLED = orig_v2x
 
 
 # ====================== 可视化 ======================

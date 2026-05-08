@@ -169,6 +169,7 @@ ACTIVE_PROFILE = "balanced"
 CAV_PENETRATION    = 0.30   # CAV 渗透率 (0.0~1.0)
 HUMAN_SIGMA        = 0.50   # 人类车随机性
 HUMAN_MIN_GAP      = 2.50   # m，人类车最小跟车间距
+V2X_ENABLED        = True   # No-V2X 基线设为 False
 
 def is_vehicle_cav(vid: str) -> bool:
     """判断车辆是否为 CAV（基于车辆类型 ID）。"""
@@ -176,6 +177,13 @@ def is_vehicle_cav(vid: str) -> bool:
         return traci.vehicle.getTypeID(vid) == "cav"
     except traci.exceptions.TraCIException:
         return False
+
+def can_v2x_communicate(vid: str) -> bool:
+    """
+    判断是否能与指定车辆进行 V2X 通信。
+    No-V2X 基线设为 False 时，所有 V2X 功能（博弈/协同/广播）禁用。
+    """
+    return V2X_ENABLED and is_vehicle_cav(vid)
 
 # 互惠记忆（改进 #3）：记录人类车的合作行为
 # {vid: cooperation_score}, 0.0=不合作, 1.0=很合作, 0.5=初始未知
@@ -280,9 +288,9 @@ def get_accident_broadcast_range(vid: str) -> float:
         """
         事故感知范围（混合交通）：
             - CAV 有序期（广播已激活）：全局广播
-            - CAV 突发期 / 人类车：仅局部感知
+            - CAV 突发期 / 人类车 / V2X禁用：仅局部感知
         """
-        if _accident_state["broadcast_active"] and is_vehicle_cav(vid):
+        if _accident_state["broadcast_active"] and can_v2x_communicate(vid):
             return GLOBAL_V2X_RANGE
         return V2X_RANGE
 
@@ -419,8 +427,8 @@ def apply_cooperative_yield(ego_vid: str, fol_id: str, fol_gap: float):
     """目标车道后车若为CAV，则主动减速让行，形成协同间隙。混合交通：仅CAV可协同。"""
     if not fol_id:
         return False
-    if not is_vehicle_cav(fol_id):
-        return False  # 人类车不接受协同请求
+    if not can_v2x_communicate(fol_id):
+        return False  # 无V2X或人类车不接受协同请求
     if fol_gap >= COOP_REQUEST_GAP:
         return False
     if fol_id in _coop_state:
@@ -1076,8 +1084,8 @@ def get_follower_prior(fol_id: str, fol_gap: float,
     elif level_k == 2:
         base += np.array([0.05, 0.10, -0.15])
 
-    # 改进 #1：对抗性偏差 — 后车=人类 → 不配合倾向
-    if fol_id and not is_vehicle_cav(fol_id):
+    # 改进 #1：对抗性偏差 — 后车无V2X → 不配合倾向
+    if fol_id and not can_v2x_communicate(fol_id):
         # 人类车缺乏合作动机，加速堵位或保持原速，很少主动减速让行
         base += np.array([0.10, 0.00, -0.10])  # acc ↑, brake ↓
 
@@ -1134,7 +1142,7 @@ def decide_lanechange(vid, cur_lane, tgt_lane, road_id, phase="informed") -> flo
                             fol_id, fol_gap, cur_lead_gap,
                             road_id, cur_lane, phase)
 
-    if fol_id and is_vehicle_cav(fol_id):
+    if fol_id and can_v2x_communicate(fol_id):
         # 改进 #1, #2, #3：混合博弈 — 按后车类型选博弈结构 + 混合策略
         lead_spd_est = perc_speed(lead_id) if lead_id else ego_spd
         expected = solve_hybrid_game(payoff, fol_id, ego_spd, fol_gap,
