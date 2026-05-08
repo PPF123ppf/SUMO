@@ -703,8 +703,8 @@ def safety_from_gap_ttc(gap: float, rel_speed: float) -> float:
 # 可学习权重（IRL 目标）：[speed, urgency, pressure, safe, coop, social, density, lc_cost]
 # 突发期 vs 有序期共享结构，但数值可以不同
 PAYOFF_WEIGHTS = {
-    "sudden":  np.array([0.25, 0.15, 0.08, 0.30, 0.10, 0.05, 0.05, 1.0]),
-    "informed": np.array([0.30, 0.10, 0.06, 0.25, 0.12, 0.05, 0.05, 1.0]),
+    "sudden":  np.array([0.1204, 0.1556, 0.1426, 0.2034, 0.0122, 0.0035, 0.0907, 0.5586]),
+    "informed": np.array([0.1505, 0.1944, 0.1782, 0.2542, 0.0153, 0.0043, 0.1133, 0.6983]),
 }
 
 # 特征名称（对应 IRL 的 feature template）

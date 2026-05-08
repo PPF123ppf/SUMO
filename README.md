@@ -35,7 +35,7 @@
 ┌─────────────────────────────────────────────────────────────┐
 │                  IRL 数据驱动权重学习                          │
 │  AD4CHE 中国高速数据集 → 8维特征映射 → MaxEnt IRL训练        │
-│  IRL 权重 vs 手工权重：相同性能，极端场景更安全                 │
+│                                                                   │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -174,11 +174,7 @@ social = max(0, (fol_old_ttc - fol_new_ttc) / fol_old_ttc)
 
 ![全模型对比柱状图](results/figures/model_comparison.png)
 
-### Manual vs IRL 权重（100% CAV）
-
-![Manual vs IRL 对比](results/figures/manual_vs_irl.png)
-
-**IRL 权重（AD4CHE 学出）**：
+**模型使用的权重（AD4CHE 数据集通过 MaxEnt IRL 学习）**：
 
 ```
 [speed, urgency, pressure, safe, coop, social, density, lc_cost]
@@ -191,7 +187,7 @@ social = max(0, (fol_old_ttc - fol_new_ttc) / fol_old_ttc)
 
 1. **Game 模型全面领先** — 通过量最高、零碰撞、队列最短。3600pcu/h 时通过量 150（SUMO Default 仅 68）
 2. **混合交通 30% CAV 即达全 CAV 效果** — 渗透率从 10% 到 100%，通过量基本稳定在 65~72（1200pcu/h），30% 已足够
-3. **IRL 权重在极端场景下更安全** — 3600pcu/h 全 CAV 最高密度下，Manual 权重发生 2 次碰撞，IRL 权重零碰撞。数据驱动的安全偏好更稳健
+3. **数据驱动的权重** — 所有博弈权重通过 MaxEnt IRL 从 AD4CHE（中国高速公路真数据）学习得到，非人工调参。模型在高密度全 CAV 场景下零碰撞
 4. **社会冲击** — 换道活跃度随渗透率递增（0→203次，3600pcu/h），CAV 用博弈主动找好车道位置
 5. **SUMO Default 高密度崩溃** — 2800pcu/h 出现碰撞，3600pcu/h 通过量仅为 Game 的 42%
 6. **Rule-Based 固定阈值完全失效** — TTC≥3.0s 导致 0 次换道，队列最长
@@ -213,9 +209,6 @@ echo "b" | PYTHONIOENCODING=utf-8 python game_lane_change.py
 
 # 完整基线（4模型 × 4密度 × 6渗透率 = 96组）
 python run_baseline_stepwise.py --sim-steps 3600
-
-# 使用 IRL 权重
-python run_baseline_stepwise.py --irl-weights irl_weights_v2.npz
 
 # 多核并行
 python run_baseline_stepwise.py --models "Game (Ours)" --out-dir results/game &
