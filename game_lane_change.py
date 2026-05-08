@@ -53,9 +53,6 @@ GAME_MIN_GAIN_INFORMED  = 0.008  # 有序期换道收益最小增益阈值
 LANE_CHANGE_COST        = 0.05   # 换道动作固定代价（舒适性/执行风险）
 TTC_HARD_MIN_SUDDEN     = 2.00   # s，突发期硬安全TTC阈值（CAV 比人类快，1.5~2.0s 足矣）
 TTC_HARD_MIN_INFORMED   = 1.50   # s，有序期硬安全TTC阈值（有全局信息更精确）
-ADAPT_GAIN_DENSITY_GAIN = 0.020  # 局部密度对换道阈值增益
-ADAPT_GAIN_TTC_GAIN     = 0.025  # TTC风险对换道阈值增益
-ADAPT_GAIN_TTC_REF      = 2.80   # s，自适应阈值TTC参考值
 LC_COOLDOWN             = 1.5    # s，单车换道冷却时间（CAV 反应快，不需要等3秒）
 LOCAL_DENSITY_RANGE     = 70.0   # m，局部密度统计范围
 LOCAL_DENSITY_NORM      = 10.0   # 局部密度归一化参考车辆数
@@ -91,6 +88,23 @@ LC_DURATION_CAV  = 2.8    # s，CAV 执行阶段名义换道时长
 LC_PREP_CAV      = 0.4    # s，准备阶段（观察与预判）
 LC_STAB_CAV      = 0.5    # s，稳定阶段（完成后姿态恢复）
 _lc_state: dict = {}      # {vid: {phase, from_lane, target_lane, prep_end, exec_end, stab_end, exec_dur, stab_dur}}
+
+# 仿真性能优化参数
+DECISION_INTERVAL = 3   # 每隔 N 步做一次博弈决策（0.3s 间隔，对换道时序影响可忽略）
+_max_speed_cache: dict = {}  # {type_id: max_speed} 速度缓存
+
+def cached_max_speed(vid: str) -> float:
+    """带缓存的最大速度查询（同类型车速度相同，避免重复 TraCI 调用）。"""
+    try:
+        vtype = traci.vehicle.getTypeID(vid)
+    except traci.exceptions.TraCIException:
+        return 33.33
+    if vtype not in _max_speed_cache:
+        try:
+            _max_speed_cache[vtype] = traci.vehicle.getMaxSpeed(vid)
+        except traci.exceptions.TraCIException:
+            _max_speed_cache[vtype] = 33.33
+    return _max_speed_cache[vtype]
 
 # ====================== 全CAV常态巡航参数 ======================
 NORMAL_HEADWAY          = 1.0    # s，常态巡航目标时距
@@ -151,6 +165,26 @@ PROFILE_PRESETS = {
 }
 ACTIVE_PROFILE = "balanced"
 
+# ====================== 混合交通参数 ======================
+CAV_PENETRATION    = 0.30   # CAV 渗透率 (0.0~1.0)
+HUMAN_SIGMA        = 0.50   # 人类车随机性
+HUMAN_MIN_GAP      = 2.50   # m，人类车最小跟车间距
+
+def is_vehicle_cav(vid: str) -> bool:
+    """判断车辆是否为 CAV（基于车辆类型 ID）。"""
+    try:
+        return traci.vehicle.getTypeID(vid) == "cav"
+    except traci.exceptions.TraCIException:
+        return False
+
+# 互惠记忆（改进 #3）：记录人类车的合作行为
+# {vid: cooperation_score}, 0.0=不合作, 1.0=很合作, 0.5=初始未知
+_human_coop_memory: dict = {}
+
+# ====================== Level-k 认知层级参数 ======================
+LEVEL_K_MAX      = 2                      # 最高认知层级
+LEVEL_K_DIST     = [0.20, 0.60, 0.20]     # Level-0/1/2 分布概率
+
 # ====================== 感知模型 ======================
 PERC_DELAY_STEPS = 1      # 感知延迟步数（1步 = 0.1s = 100ms）
 SPEED_NOISE_STD  = 0.05   # 速度感知噪声标准差（±5%，1σ）
@@ -205,13 +239,23 @@ def apply_parameter_profile(profile_name: str = "balanced") -> str:
     ACTIVE_PROFILE = key
     return key
 
-def gen_rou_xml(n_cav: int, path: str = "tmp_routes.rou.xml"):
-    """按全CAV密度动态生成路由文件"""
+def gen_rou_xml(n_total: int, path: str = "tmp_routes.rou.xml"):
+    """按混合交通动态生成路由文件（CAV + 3种异质人类车）。"""
+    n_cav = int(n_total * CAV_PENETRATION)
+    n_human = n_total - n_cav
+    n_h_each = n_human // 3
+    n_h_rem = n_human - n_h_each * 3
     xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <routes>
     <vType id="cav" accel="2.6" decel="4.5" sigma="0.0" length="4.5" minGap="1.5" maxSpeed="33.33" guiShape="passenger" color="0,200,0" lcKeepRight="0" lcSpeedGain="0" lcStrategic="0" lcCooperative="0"/>
+    <vType id="h_cons" accel="1.8" decel="4.5" sigma="0.3" length="4.5" minGap="3.0" maxSpeed="30.0" guiShape="passenger" color="100,150,255" laneChangeModel="SL2015" lcStrategic="0.8" lcCooperative="1.0" lcSpeedGain="0.6" lcKeepRight="1.0" lcAssertive="0.2"/>
+    <vType id="h_norm" accel="2.0" decel="4.5" sigma="0.5" length="4.5" minGap="2.5" maxSpeed="33.33" guiShape="passenger" color="255,200,0" laneChangeModel="SL2015" lcStrategic="1.0" lcCooperative="1.0" lcSpeedGain="1.0" lcKeepRight="1.0" lcAssertive="0.5"/>
+    <vType id="h_aggr" accel="2.4" decel="4.5" sigma="0.7" length="4.5" minGap="1.8" maxSpeed="33.33" guiShape="passenger" color="255,100,50" laneChangeModel="SL2015" lcStrategic="1.0" lcCooperative="0.6" lcSpeedGain="1.0" lcKeepRight="0.5" lcAssertive="0.8"/>
     <route id="r0" edges="E0"/>
-    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="{n_cav}"  departSpeed="max" departLane="random"/>
+    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="{n_cav}" departSpeed="max" departLane="random"/>
+    <flow id="f_cons" type="h_cons" route="r0" begin="0" end="360" number="{n_h_each + (1 if n_h_rem > 0 else 0)}" departSpeed="max" departLane="random"/>
+    <flow id="f_norm" type="h_norm" route="r0" begin="0" end="360" number="{n_h_each + (1 if n_h_rem > 1 else 0)}" departSpeed="max" departLane="random"/>
+    <flow id="f_aggr" type="h_aggr" route="r0" begin="0" end="360" number="{n_h_each}" departSpeed="max" departLane="random"/>
 </routes>"""
     with open(path, "w", encoding="utf-8") as f:
         f.write(xml)
@@ -234,11 +278,13 @@ def get_neighbors(vid: str, ego_pos: float, tgt_lane_id: str):
 
 def get_accident_broadcast_range(vid: str) -> float:
         """
-        事故感知范围：
-            - 突发期（广播未激活）：局部 V2X(300m)
-            - 有序期（广播已激活）：全局广播(800m)
+        事故感知范围（混合交通）：
+            - CAV 有序期（广播已激活）：全局广播
+            - CAV 突发期 / 人类车：仅局部感知
         """
-        return GLOBAL_V2X_RANGE if _accident_state["broadcast_active"] else V2X_RANGE
+        if _accident_state["broadcast_active"] and is_vehicle_cav(vid):
+            return GLOBAL_V2X_RANGE
+        return V2X_RANGE
 
 def get_vehicle_phase(vid: str, veh_pos: float) -> str:
     """
@@ -370,9 +416,11 @@ def get_platoon_members(vid: str, road_id: str, lane_idx: int) -> list:
     return members
 
 def apply_cooperative_yield(ego_vid: str, fol_id: str, fol_gap: float):
-    """目标车道后车若为CAV，则主动减速让行，形成协同间隙。"""
+    """目标车道后车若为CAV，则主动减速让行，形成协同间隙。混合交通：仅CAV可协同。"""
     if not fol_id:
         return False
+    if not is_vehicle_cav(fol_id):
+        return False  # 人类车不接受协同请求
     if fol_gap >= COOP_REQUEST_GAP:
         return False
     if fol_id in _coop_state:
@@ -642,71 +690,175 @@ def safety_from_gap_ttc(gap: float, rel_speed: float) -> float:
         ttc_term = float(np.clip((gap / rel_speed) / 4.0, 0.0, 1.0))
     return 0.55 * gap_term + 0.45 * ttc_term
 
-# ====================== 博弈核心（解耦特征 + 可学习权重） ======================
+# ====================== 博弈核心（解耦原子特征 + 可学习权重） ======================
 
-# 可学习权重（IRL 目标）：[效率, 安全, 协同共享, 换道代价]
+# 可学习权重（IRL 目标）：[speed, urgency, pressure, safe, coop, social, density, lc_cost]
 # 突发期 vs 有序期共享结构，但数值可以不同
 PAYOFF_WEIGHTS = {
-    "sudden":  np.array([0.22, 0.58, 0.20, 1.0]),
-    "informed": np.array([0.38, 0.42, 0.20, 1.0]),
+    "sudden":  np.array([0.25, 0.15, 0.08, 0.30, 0.10, 0.05, 0.05, 1.0]),
+    "informed": np.array([0.30, 0.10, 0.06, 0.25, 0.12, 0.05, 0.05, 1.0]),
 }
 
 # 特征名称（对应 IRL 的 feature template）
-FEATURE_NAMES = ["eff", "safe", "coop", "lc_cost"]
+FEATURE_NAMES = ["speed", "urgency", "pressure", "safe", "coop", "social", "density", "lc_cost"]
+
+# 后车收益函数权重: [safety, speed, comfort, coop, gap_safe]
+# 每种类型对应不同博弈结构（改进 #1：博弈结构自适应）
+#   Type 0 自私型 → 静态 Nash（双方同时决策，最大化个体收益）
+#   Type 1 合作型 → Stackelberg（本车 Leader，后车最优反应）
+#   Type 2 高度合作型 → Nash 合作（最大化联合收益）
+FOLLOWER_TYPE_WEIGHTS = [
+    np.array([0.45, 0.35, 0.20, 0.00, 0.00]),  # Type 0: 自私型 (20%)
+    np.array([0.40, 0.25, 0.15, 0.20, 0.00]),  # Type 1: 合作型 (60%)
+    np.array([0.35, 0.15, 0.15, 0.35, 0.00]),  # Type 2: 高度合作型 (20%)
+]
+FOLLOWER_TYPE_SHARES = [0.20, 0.60, 0.20]
+
+# 混合策略温度系数（改进 #3）：越低越接近纯策略，越高越随机
+SOFTMAX_TEMPERATURE = 0.15
+
+# 在线学习参数（改进 #5）
+ONLINE_LEARNING_RATE = 0.003  # TD 微调步长
+
+
+def _softmax(x: np.ndarray, temperature: float = SOFTMAX_TEMPERATURE) -> np.ndarray:
+    """温度 softmax：temperature 越低越接近 argmax。"""
+    x_adj = (x - x.max()) / max(temperature, 1e-6)
+    e = np.exp(np.clip(x_adj, -20.0, 20.0))
+    return e / e.sum()
 
 # IRL 特征日志（run_once 每次仿真开始时清空，结束时可供外部读取）
-_irl_feature_log: list = []  # [(action, feature_vector), ...]
+_irl_feature_log: list = []  # [(payoff, feat_dict), ...]
 _irl_feature_log_snapshot: list = []  # run_once 结束时的快照
+
+# 在线学习记录（改进 #5）
+_online_learning_memory: list = []  # [(weights_before, features_chosen, success, hard_brake), ...]
+
+
+def get_adaptive_weights(phase: str, local_density: float, urgency: float) -> np.ndarray:
+    """
+    改进 #4：权重自适应 —— 随场景动态调整。
+
+    堵车/紧迫时 → 安全权重、社会冲击权重 ↑，速度权重 ↓
+    """
+    base = PAYOFF_WEIGHTS[phase].copy()
+
+    # 安全权重随密度和紧迫度上升
+    base[3] += 0.10 * local_density + 0.05 * urgency  # safe ↑
+
+    # 社会冲击在高密度时更敏感
+    base[5] += 0.05 * local_density  # social ↑
+
+    # 紧迫度高时降低速度追求，优先安全
+    base[0] = max(0.05, base[0] - 0.10 * urgency)  # speed ↓
+
+    return np.clip(base, 0.01, 2.0)
+
+
+def online_update_weights(success: bool, hard_brake: bool):
+    """
+    改进 #5：在线 TD 微调 —— 每次换道执行后基于结果即时更新权重。
+
+    success=True, hard_brake=False → 强化当前权重
+    hard_brake=True → 惩罚：提升安全权重，降低社会冲击容忍度
+    """
+    if not _online_learning_memory:
+        return
+    _online_learning_memory.pop()  # 消费本次记忆
+
+    lr = ONLINE_LEARNING_RATE
+    if success and not hard_brake:
+        # 成功换道：轻量强化安全+协同维度
+        PAYOFF_WEIGHTS["informed"][3] += lr * 0.1  # safe
+        PAYOFF_WEIGHTS["informed"][4] += lr * 0.1  # coop
+    elif hard_brake:
+        # 换道导致急刹：惩罚
+        PAYOFF_WEIGHTS["informed"][3] += lr * 0.8  # safe ↑↑
+        PAYOFF_WEIGHTS["informed"][5] -= lr * 0.8  # social ↓↓
+    else:
+        # 失败：适度调整
+        PAYOFF_WEIGHTS["informed"][3] += lr * 0.2  # safe ↑
+
+    PAYOFF_WEIGHTS["informed"] = np.clip(PAYOFF_WEIGHTS["informed"], 0.01, 2.0)
+
 
 def compute_features(vid, ego_speed, vmax, lead_spd, fol_spd, lead_gap, fol_gap,
                      cur_lead_gap, urgency, cur_lane_pressure, coop_bonus,
-                     phase="informed") -> dict:
+                     local_density, delta_vs=(2.0, 0.0, -3.0), phase="informed") -> dict:
     """
-    提取换道决策的原子特征向量。
+    提取换道决策的 8 维原子特征向量。
 
-    返回 dict of (action, fa) -> feature_vector，
-    action ∈ {0=change, 1=keep}，fa ∈ {0=acc, 1=maintain, 2=brake}
+    特征: [speed, urgency, pressure, safe, coop, social, density, lc_cost]
+
+    参数 delta_vs 支持连续（动态）后车反应（改进 #3）。
+    social 字段量化换道对后车 TTC 的冲击（改进 #4）。
+    density 从阈值移入特征空间（改进 #5）。
     """
     features = {}
-    for fa, delta_v in enumerate([2.0, 0.0, -3.0]):
+
+    # 计算社会影响基线：后车当前距目标车道前车的 TTC
+    if lead_gap < 200.0 and fol_gap < 200.0 and lead_spd > 1.0 and fol_spd > 1.0:
+        fol_lead_gap = fol_gap + lead_gap  # 后车到目标车道前车的距离
+        fol_rel_leader = max(fol_spd - lead_spd, 0.1)
+        fol_old_ttc = fol_lead_gap / fol_rel_leader if fol_rel_leader > 1e-3 else 10.0
+    else:
+        fol_old_ttc = 10.0
+
+    for fa, delta_v in enumerate(delta_vs):
         fol_spd_new = float(np.clip(fol_spd + delta_v, 0.0, vmax))
-        rear_rel = max(fol_spd_new - ego_speed, 0.0)
         front_rel = max(ego_speed - lead_spd, 0.0)
+        rear_rel = max(fol_spd_new - ego_speed, 0.0)
 
         # ── 换道 (action=0) ──
-        safe = min(
+        safe_lc = min(
             safety_from_gap_ttc(lead_gap, front_rel),
             safety_from_gap_ttc(fol_gap, rear_rel),
         )
-        eff = (
-            0.55 * float(np.clip(lead_spd / max(vmax, 1e-3), 0.0, 1.0))
-            + 0.45 * urgency
-            + 0.20 * cur_lane_pressure
-        )
-        coop = coop_bonus + (0.12 if fa == 2 else 0.0)
-        features[(0, fa)] = np.array([eff, safe, coop, 1.0])
+
+        # 社会影响：换道后后车 TTC 缩减比例
+        fol_rel_ego = max(fol_spd_new - ego_speed, 0.1)
+        fol_new_ttc = fol_gap / fol_rel_ego if fol_rel_ego > 1e-3 else 10.0
+        social = min(max(fol_old_ttc - fol_new_ttc, 0.0) / max(fol_old_ttc, 0.1), 1.0)
+
+        features[(0, fa)] = np.array([
+            float(np.clip(lead_spd / max(vmax, 1e-3), 0.0, 1.0)),  # speed: 目标车道前车速度比
+            urgency,                                                   # urgency: 距事故区紧迫度
+            cur_lane_pressure,                                         # pressure: 当前车道压力
+            safe_lc,                                                   # safe: 换道后综合 TTC 安全
+            coop_bonus + (0.12 if fa == 2 else 0.0),                   # coop: 后车协同奖励
+            social,                                                    # social: 对后车冲击
+            local_density,                                             # density: 局部密度
+            1.0,                                                       # lc_cost: 换道代价
+        ])
 
         # ── 不换道 (action=1) ──
-        safe = safety_from_gap_ttc(cur_lead_gap, max(ego_speed - min(lead_spd, ego_speed), 0.0))
-        eff = (
-            0.60 * float(np.clip(ego_speed / max(vmax, 1e-3), 0.0, 1.0))
-            + 0.40 * (1.0 - urgency)
+        safe_keep = safety_from_gap_ttc(
+            cur_lead_gap, max(ego_speed - min(lead_spd, ego_speed), 0.0)
         )
-        coop = 0.05
-        features[(1, fa)] = np.array([eff, safe, coop, 0.0])
+        features[(1, fa)] = np.array([
+            float(np.clip(ego_speed / max(vmax, 1e-3), 0.0, 1.0)),  # speed: 自车速度比
+            0.0,                                                       # urgency: 不换道无紧迫度收益
+            0.0,                                                       # pressure: 不换道无压力收益
+            safe_keep,                                                 # safe: 当前车道安全
+            0.05,                                                      # coop: 基础协同值
+            0.0,                                                       # social: 不换道无社会冲击
+            local_density,                                             # density: 局部密度
+            0.0,                                                       # lc_cost: 无换道代价
+        ])
 
     return features
 
 
 def compute_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap,
-                   cur_lead_gap, phase="informed") -> np.ndarray:
+                   cur_lead_gap, road_id, cur_lane, phase="informed") -> np.ndarray:
     """
     2×3 收益矩阵: ego{换道/不换道} × follower{加速/保持/减速}
-    权重由 PAYOFF_WEIGHTS 控制，可被 IRL 学习更新。
-    """
-    weights = PAYOFF_WEIGHTS[phase]
 
-    vmax = traci.vehicle.getMaxSpeed(vid)
+    改进 #3: delta_v 根据后车间距/速度动态计算（连续后车反应）
+    改进 #4: 在 compute_features 内部计算 social impact
+    改进 #5: density 作为特征传入，不再作为阈值修正
+    """
+    vmax = cached_max_speed(vid)
     lead_spd = perc_speed(lead_id) if lead_id else vmax
     fol_spd = perc_speed(fol_id) if fol_id else 0.0
 
@@ -718,9 +870,35 @@ def compute_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap,
     cur_lane_pressure = float(np.clip((30.0 - cur_lead_gap) / 30.0, 0.0, 1.0))
     coop_bonus = 0.18 if fol_id else 0.0
 
+    # 局部密度
+    local_density = estimate_local_density(road_id, cur_lane, ego_pos)
+
+    # 改进 #4：自适应权重（密度/紧迫度 → 安全↑ 速度↓）
+    weights = get_adaptive_weights(phase, local_density, urgency)
+
+    # 连续后车反应：根据间距/速度动态计算 delta_v（改进 #3）
+    if fol_id:
+        fol_max_spd = traci.vehicle.getMaxSpeed(fol_id) if hasattr(traci.vehicle, 'getMaxSpeed') else vmax
+        fol_speed_ratio = fol_spd / max(fol_max_spd, 1e-3)
+        # 制动强度：间距越紧制动越强
+        if fol_gap < COOP_MIN_GAP:
+            brake_dv = -min(4.5, max(1.5, 6.0 / max(fol_gap, 1.0)))
+        else:
+            brake_dv = -1.5
+        # 加速强度：空间越大、速度越低，加速越强
+        if fol_gap > COOP_REQUEST_GAP and fol_speed_ratio < 0.8:
+            accel_dv = min(2.6, 0.5 + 2.0 * min(fol_gap / COOP_REQUEST_GAP, 1.0))
+        else:
+            accel_dv = 0.5
+    else:
+        accel_dv, brake_dv = 2.0, -3.0
+
+    delta_vs = (accel_dv, 0.0, brake_dv)
+
     feats = compute_features(vid, ego_speed, vmax, lead_spd, fol_spd,
                              lead_gap, fol_gap, cur_lead_gap,
-                             urgency, cur_lane_pressure, coop_bonus, phase)
+                             urgency, cur_lane_pressure, coop_bonus,
+                             local_density, delta_vs, phase)
 
     payoff = np.zeros((2, 3))
     for action in (0, 1):
@@ -734,33 +912,181 @@ def compute_payoff(vid, ego_speed, ego_pos, lead_id, lead_gap, fol_id, fol_gap,
     _irl_feature_log.append((payoff, feats))
     return payoff
 
-def get_follower_prior(fol_id: str, fol_gap: float) -> np.ndarray:
-    """根据后车速度和间距动态推算follower行为先验概率"""
-    if not fol_id:
-        return np.array([0.1, 0.5, 0.4])   # 无后车：倾向保持/减速
+
+def compute_follower_payoff(fol_spd: float, fol_gap: float, ego_speed: float,
+                             lead_spd: float, fol_max: float, weight_type: int = 1,
+                             phase: str = "informed") -> np.ndarray:
+    """
+    后车（follower）的收益函数。
+
+    返回 (2, 3) 矩阵: ego_action{换道,不换道} × follower_action{加速,保持,减速}
+
+    特征: [safety, speed, comfort, coop, gap_safe]
+    - safety: 后车追尾前车 TTC 评分
+    - speed: 后车速度有效值
+    - comfort: 制动不舒适代价（负贡献）
+    - coop: 协同让行社会奖励（仅 CAV 环境）
+    - gap_safe: 间距是否低于安全底线
+    """
+    weights = FOLLOWER_TYPE_WEIGHTS[weight_type]
+
+    payoff = np.zeros((2, 3))
+    for ea in (0, 1):  # ego: 0=换道(切入), 1=保持(不切入)
+        for fa, delta_v in enumerate([2.0, 0.0, -3.0]):
+            fol_spd_new = float(np.clip(fol_spd + delta_v, 0.0, fol_max))
+
+            if ea == 0:
+                # 本车换道切入：后车前方变为本车
+                gap_to_leader = fol_gap
+                rel_to_leader = max(fol_spd_new - ego_speed, 0.0)
+                safe_score = safety_from_gap_ttc(gap_to_leader, rel_to_leader)
+            else:
+                # 本车不换道：后车前方不变，安全无新威胁
+                safe_score = 1.0
+
+            speed_ratio = float(np.clip(fol_spd_new / max(fol_max, 1e-3), 0.0, 1.0))
+            comfort = max(0.0, -delta_v / 4.5)  # 制动强度归一化 0~1
+            coop = 1.0 if (ea == 0 and fa == 2) else 0.0  # 本车切入+后车减速=协同
+            gap_safe = 1.0  # 可由更复杂的间距约束计算
+
+            payoff[ea, fa] = float(np.dot(
+                weights, [safe_score, speed_ratio, comfort, coop, gap_safe]))
+
+    return payoff
+
+
+def _solve_static_nash(ego_payoff: np.ndarray, fol_payoff: np.ndarray) -> np.ndarray:
+    """
+    静态 Nash 博弈（Type 0 自私型专用）：双方同时决策，无领导者。
+
+    使用混合策略均衡——后车以 softmax 概率选择动作，
+    本车据此计算期望。迭代至稳定。
+    """
+    ego_strat = np.array([0.5, 0.5])
+    for _ in range(4):  # 4 轮迭代足够收敛（原 8 轮）
+        fol_expected = fol_payoff.T @ ego_strat
+        fol_strat = _softmax(fol_expected)
+        # 本车对后车混合策略的期望
+        ego_expected = ego_payoff @ fol_strat
+        ego_strat = _softmax(ego_expected)
+    return ego_expected  # 本车两个动作的期望收益
+
+
+def _solve_stackelberg_per_type(ego_payoff: np.ndarray,
+                                  fol_payoff: np.ndarray) -> np.ndarray:
+    """
+    Stackelberg 博弈（Type 1 合作型）：本车领导者，后车最优反应（混合策略）。
+    改进 #3：softmax 替代 argmax，模拟行为随机性。
+    """
+    expected = np.zeros(2)
+    for ea in (0, 1):
+        fol_action_probs = _softmax(fol_payoff[ea])
+        expected[ea] = float(np.dot(ego_payoff[ea], fol_action_probs))
+    return expected
+
+
+def _solve_nash_cooperative(ego_payoff: np.ndarray,
+                              fol_payoff: np.ndarray) -> np.ndarray:
+    """
+    Nash 合作博弈（Type 2 高度合作型）：最大化联合收益。
+    改进 #2：CAV↔CAV 合作，双方一起找最优组合。
+    """
+    joint = ego_payoff + fol_payoff  # 2×3 联合收益
+    expected = np.zeros(2)
+    for ea in (0, 1):
+        # 后车选使联合收益最大的动作（softmax 软化）
+        joint_probs = _softmax(joint[ea])
+        expected[ea] = float(np.dot(ego_payoff[ea], joint_probs))
+    return expected
+
+
+def solve_hybrid_game(ego_payoff: np.ndarray, fol_id: str, ego_speed: float,
+                       fol_gap: float, lead_spd: float, phase: str = "informed") -> np.ndarray:
+    """
+    混合博弈求解器（改进 #1）：根据后车类型选择博弈结构。
+
+    Type 0 (20%): 静态 Nash  — 各算各的，同时决策
+    Type 1 (60%): Stackelberg — 本车 Leader，后车最优反应
+    Type 2 (20%): Nash 合作  — 最大化联合收益（CAV↔CAV）
+    """
+    expected = np.zeros(2)
+
     try:
-        fol_spd     = traci.vehicle.getSpeed(fol_id)
-        fol_max     = traci.vehicle.getMaxSpeed(fol_id)
+        fol_spd = traci.vehicle.getSpeed(fol_id)
+        fol_max = cached_max_speed(fol_id)
     except traci.exceptions.TraCIException:
-        fol_spd     = 0.0
-        fol_max     = 33.33
+        fol_spd = 0.0
+        fol_max = 33.33
+
+    for t_idx, share in enumerate(FOLLOWER_TYPE_SHARES):
+        fol_payoff = compute_follower_payoff(
+            fol_spd, fol_gap, ego_speed, lead_spd, fol_max, t_idx, phase)
+
+        if t_idx == 0:
+            ea_expected = _solve_static_nash(ego_payoff, fol_payoff)
+        elif t_idx == 1:
+            ea_expected = _solve_stackelberg_per_type(ego_payoff, fol_payoff)
+        else:  # t_idx == 2
+            ea_expected = _solve_nash_cooperative(ego_payoff, fol_payoff)
+
+        expected += share * ea_expected
+
+    return expected
+
+def get_follower_prior(fol_id: str, fol_gap: float,
+                        level_k: int = 0) -> np.ndarray:
+    """
+    后车行为先验预测（改进 #1, #3）。
+
+    改进 #1（对抗性偏差）：后车=人类 → 加速堵位概率↑，减速让行概率↓
+    改进 #3（互惠记忆）：曾让行的人类车 → 合作先验↑
+
+    返回 [P(加速), P(保持), P(减速)]
+    """
+    if not fol_id:
+        return np.array([0.1, 0.5, 0.4])
+
+    try:
+        fol_spd = traci.vehicle.getSpeed(fol_id)
+        fol_max = cached_max_speed(fol_id)
+    except traci.exceptions.TraCIException:
+        fol_spd = 0.0
+        fol_max = 33.33
+
     speed_ratio = fol_spd / max(fol_max, 1e-3)
-    if fol_gap < COOP_MIN_GAP or speed_ratio > 0.85:    # 间距小/接近最高速 → 倾向制动
+    if fol_gap < COOP_MIN_GAP or speed_ratio > 0.85:
         base = np.array([0.1, 0.3, 0.6], dtype=float)
-    elif fol_gap > COOP_REQUEST_GAP and speed_ratio < 0.5:  # 间距大/低速 → 倾向加速
+    elif fol_gap > COOP_REQUEST_GAP and speed_ratio < 0.5:
         base = np.array([0.4, 0.4, 0.2], dtype=float)
     else:
-        base = np.array([0.2, 0.5, 0.3], dtype=float)        # 一般情况
+        base = np.array([0.2, 0.5, 0.3], dtype=float)
 
-    # 在线行为修正：后车近期加速度偏向制动/加速会改变行为先验
+    # 在线行为修正
     hist = _fol_acc_hist.get(fol_id, [])
     if hist:
-        recent = hist[-FOLLOWER_BEHAV_WINDOW:]
-        mean_acc = float(np.mean(recent))
-        if mean_acc <= -0.2:
+        recent_acc = float(np.mean(hist[-FOLLOWER_BEHAV_WINDOW:]))
+        if recent_acc <= -0.2:
             base += np.array([-0.06, -0.02, 0.08])
-        elif mean_acc >= 0.2:
+        elif recent_acc >= 0.2:
             base += np.array([0.08, -0.03, -0.05])
+
+    # Level-k 认知层级调整
+    if level_k == 1:
+        base += np.array([-0.05, -0.05, 0.10])
+    elif level_k == 2:
+        base += np.array([0.05, 0.10, -0.15])
+
+    # 改进 #1：对抗性偏差 — 后车=人类 → 不配合倾向
+    if fol_id and not is_vehicle_cav(fol_id):
+        # 人类车缺乏合作动机，加速堵位或保持原速，很少主动减速让行
+        base += np.array([0.10, 0.00, -0.10])  # acc ↑, brake ↓
+
+    # 改进 #3：互惠记忆 — 历史上合作过的车提高合作先验
+    coop_score = _human_coop_memory.get(fol_id, None)
+    if coop_score is not None:
+        # cooperation_score 越高 → 越倾向减速让行
+        extra_coop = (coop_score - 0.5) * 0.20  # [-0.06, +0.06] range
+        base += np.array([-extra_coop, 0.0, extra_coop])
 
     base = np.clip(base, 0.01, None)
     base /= np.sum(base)
@@ -803,21 +1129,31 @@ def decide_lanechange(vid, cur_lane, tgt_lane, road_id, phase="informed") -> flo
     if ttc_min < ttc_hard_min:
         return -float('inf')
 
-    # 原始同时博弈路径
-    prior = get_follower_prior(fol_id, fol_gap)
-    payoff = compute_payoff(vid, ego_spd, ego_pos, lead_id, lead_gap, fol_id, fol_gap, cur_lead_gap, phase)
-    expected = payoff @ prior
-    gain = expected[0] - expected[1]
+    # 计算本车（ego）收益矩阵（改进 #4：自适应权重内置于 compute_payoff）
+    payoff = compute_payoff(vid, ego_spd, ego_pos, lead_id, lead_gap,
+                            fol_id, fol_gap, cur_lead_gap,
+                            road_id, cur_lane, phase)
 
+    if fol_id and is_vehicle_cav(fol_id):
+        # 改进 #1, #2, #3：混合博弈 — 按后车类型选博弈结构 + 混合策略
+        lead_spd_est = perc_speed(lead_id) if lead_id else ego_spd
+        expected = solve_hybrid_game(payoff, fol_id, ego_spd, fol_gap,
+                                     lead_spd_est, phase)
+    else:
+        # 无后车 或 后车是人类：概率预测（不博弈）
+        prior = get_follower_prior(fol_id, fol_gap, level_k=0)
+        expected = payoff @ prior
+
+    gain = expected[0] - expected[1]
     base_min_gain = GAME_MIN_GAIN_SUDDEN if phase == "sudden" else GAME_MIN_GAIN_INFORMED
-    local_density = estimate_local_density(road_id, cur_lane, ego_pos)
-    ttc_risk = max(0.0, ADAPT_GAIN_TTC_REF - min(ttc_min, ADAPT_GAIN_TTC_REF))
-    min_gain = (
-        base_min_gain
-        + ADAPT_GAIN_DENSITY_GAIN * local_density
-        + ADAPT_GAIN_TTC_GAIN * ttc_risk
-    )
+
+    # 改进 #2：自适应保守度 — 低渗透率降低阈值，使 CAV 更果断
+    # 理由：周围都是人类车时，犹豫只会错过间隙；高渗透率时可以更挑剔
+    adaptive_factor = 1.0 - 0.6 * (1.0 - CAV_PENETRATION)  # 0%→0.4, 100%→1.0
+    min_gain = base_min_gain * adaptive_factor
+
     if gain > min_gain:
+        _online_learning_memory.append(PAYOFF_WEIGHTS[phase].copy())
         return float(expected[0])
     return -float('inf')
 
@@ -925,6 +1261,9 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     _emergency_brake_vids.clear()
     OBSTACLE_IDS.clear()
     _irl_feature_log.clear()
+    _online_learning_memory.clear()
+    _human_coop_memory.clear()
+    _max_speed_cache.clear()
     for k in _perf_metrics:
         _perf_metrics[k] = 0 if isinstance(_perf_metrics[k], int) else 0.0
     _accident_state["happened"]         = False
@@ -932,12 +1271,21 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     _accident_state["broadcast_active"] = False
     _cur_step = 0
     rou_file = gen_rou_xml(n_cav)
+    # 用 label 生成独立输出文件，避免多实验 tripinfo 冲突
+    safe_label = label.replace(" ", "_").replace("/", "_").replace("\\", "_")
+    tripinfo_file = f"tripinfo_{safe_label}.xml"
+    lc_file = f"lanechanges_{safe_label}.xml"
+    fcd_file = f"fcd_{safe_label}.xml"
     exe      = "sumo-gui" if use_gui else "sumo"
     cmd      = [exe, "-c", "accident_highway.sumocfg",
                 "--route-files", rou_file,
-                "--lanechange.duration", "1.0",
+                "--lateral-resolution", "0.8",
                 "--collision.action", "warn",
                 "--no-warnings", "true",
+                "--no-step-log", "true",
+                "--tripinfo-output", tripinfo_file,
+                "--lanechange-output", lc_file,
+                "--fcd-output", fcd_file,
                 "--gui-settings-file", "viewsettings.xml",
                 "--start", "true",
                 "--quit-on-end", "true"]
@@ -1040,6 +1388,7 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
                         exec_phase = state.get("decision_phase", "informed")
                         if not lanechange_hard_safety_check(v, road_id_v, state["target_lane"], exec_phase):
                             del _lc_state[v]
+                            online_update_weights(success=False, hard_brake=False)
                             continue
                         traci.vehicle.changeLane(v, state["target_lane"], state["exec_dur"])
                         exec_steps = int(np.ceil(state["exec_dur"] / STEP_LEN))
@@ -1050,6 +1399,22 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
 
                         lc_cnt += 1
                         cav_lc += 1
+
+                        # 改进 #3：互惠记忆 — 检测后车是否减速配合
+                        fol_vid = state.get("fol_id", "")
+                        if fol_vid and not is_vehicle_cav(fol_vid):
+                            try:
+                                fol_acc = traci.vehicle.getAcceleration(fol_vid)
+                                prev = _human_coop_memory.get(fol_vid, 0.5)
+                                if fol_acc < -0.3:
+                                    # 后车减速了 → 合作
+                                    _human_coop_memory[fol_vid] = min(1.0, prev + 0.20)
+                                elif fol_acc > 0.2:
+                                    # 后车加速了 → 不合作
+                                    _human_coop_memory[fol_vid] = max(0.1, prev - 0.10)
+                                # 否则保持不变（维持原速）
+                            except traci.exceptions.TraCIException:
+                                pass
 
                         lat_acc = estimate_lat_acc(state["exec_dur"])
                         # 记录此次换道发生时的事故感知阶段
@@ -1085,6 +1450,7 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
                 state["phase"] = "stabilize"
                 state["stab_end"] = step + stab_steps
             elif phase == "stabilize" and step >= state["stab_end"]:
+                online_update_weights(success=True, hard_brake=False)
                 del _lc_state[v]
 
         # ── 阶段0→1：正常行驶期结束，尝试从已有车辆中触发动态事故 ──
@@ -1153,6 +1519,11 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
             except traci.exceptions.TraCIException:
                 continue
 
+            # 混合交通：人类车不参与博弈换道和自定义跟驰，由 SUMO SL2015+Krauss 处理
+            # SL2015 自带碰撞避免，不需要 setSpeed 干预（会打断 Krauss）
+            if not is_vehicle_cav(vid):
+                continue
+
             # 事故区专属限速控制（仅事故发生后启用）
             if _accident_state["happened"]:
                 apply_speed_limit_vehicle(vid, veh_pos)
@@ -1176,6 +1547,10 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
             if vid in _reaction_delays and step == _reaction_delays[vid]:
                 aware_step = _aware_start_steps.get(vid, step)
                 reaction_delay_samples.append((step - aware_step) * STEP_LEN)
+
+            # 决策减频：仅每 DECISION_INTERVAL 步执行博弈，其余步跳过
+            if step % DECISION_INTERVAL != 0:
+                continue
 
             if cur_lane != ACCIDENT_LANE:
                 continue   # 仅对事故车道上的车辆做换道决策
@@ -1247,6 +1622,7 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
                         "phase":       "prepare",
                         "from_lane":   cur_lane,
                         "target_lane": tgt,
+                        "fol_id":      fol_id,      # 用于互惠记忆检测
                         "decision_phase": acc_phase,
                         "prep_dur":    prep_dur,
                         "exec_dur":    exec_dur,
@@ -1260,10 +1636,10 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
 
         total_veh += traci.simulation.getArrivedNumber()
 
-    # 读取 tripinfo
+    # 读取 tripinfo（独立文件名，避免多实验冲突）
     tt_total, time_losses = 0.0, []
-    if os.path.exists("tripinfo.xml"):
-        for trip in sumolib.xml.parse_fast("tripinfo.xml", "tripinfo", ["duration", "timeLoss"]):
+    if os.path.exists(tripinfo_file):
+        for trip in sumolib.xml.parse_fast(tripinfo_file, "tripinfo", ["duration", "timeLoss"]):
             tt_total += float(trip.duration)
             time_losses.append(float(trip.timeLoss))
 
@@ -1323,8 +1699,8 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
     # 公平性需要真实行程时间，但 tripinfo 只存了 duration 和 timeLoss
     # 用 tripinfo 重新解析获得 per-vehicle travel time
     veh_travel_times = []
-    if os.path.exists("tripinfo.xml"):
-        for trip in sumolib.xml.parse_fast("tripinfo.xml", "tripinfo", ["duration"]):
+    if os.path.exists(tripinfo_file):
+        for trip in sumolib.xml.parse_fast(tripinfo_file, "tripinfo", ["duration"]):
             veh_travel_times.append(float(trip.duration))
     fairness_metrics = metrics_mod.compute_fairness_metrics(time_losses, veh_travel_times)
 
@@ -1475,7 +1851,7 @@ def run_simulation():
         generate_profile_comparison_plots(results, timestamp, out_dir)
 
     # 将SUMO输出文件也归档到本次结果目录
-    for name in ["tripinfo.xml", "lanechanges.xml", "fcd.xml"]:
+    for name in [tripinfo_file, lc_file, fcd_file]:
         if os.path.exists(name):
             try:
                 shutil.move(name, os.path.join(out_dir, name))

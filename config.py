@@ -64,10 +64,6 @@ PREP_ADMIT_LIMIT_SUDDEN   = 1    # 每步突发期最多新增 prepare 车辆数
 PREP_ADMIT_LIMIT_INFORMED = 2    # 每步有序期最多新增 prepare 车辆数
 MAX_QUEUE_ALLOWED         = 3    # 队列协调时同时允许换道的最大车辆数
 
-# ====================== 自适应阈值参数 ======================
-ADAPT_GAIN_DENSITY_GAIN = 0.020  # 局部密度对换道阈值增益
-ADAPT_GAIN_TTC_GAIN     = 0.025  # TTC 风险对换道阈值增益
-ADAPT_GAIN_TTC_REF      = 2.80   # s，自适应阈值 TTC 参考值
 LOCAL_DENSITY_RANGE     = 70.0   # m，局部密度统计范围
 LOCAL_DENSITY_NORM      = 10.0   # 局部密度归一化参考车辆数
 
@@ -104,9 +100,6 @@ FOLLOWER_BEHAV_WINDOW = 15  # 步，后车行为在线估计窗口
 LEVEL_K_MAX      = 2                      # 最高认知层级
 LEVEL_K_DIST     = [0.20, 0.60, 0.20]     # Level-0/1/2 分布概率
 
-# ====================== 功能开关 ======================
-USE_STACKELBERG        = False   # 是否启用 Stackelberg 序贯博弈（默认关）
-USE_QUEUE_COORDINATION = False   # 是否启用顺序排队换道协调（默认关）
 ACTIVE_PROFILE         = "balanced"
 
 # ====================== 舒适性 & 公平性评价参数（独立于仿真约束） ======================
@@ -278,10 +271,6 @@ def get_config() -> dict:
         "PREP_ADMIT_LIMIT_SUDDEN": _g["PREP_ADMIT_LIMIT_SUDDEN"],
         "PREP_ADMIT_LIMIT_INFORMED": _g["PREP_ADMIT_LIMIT_INFORMED"],
 
-        # 自适应阈值
-        "ADAPT_GAIN_DENSITY_GAIN": _g["ADAPT_GAIN_DENSITY_GAIN"],
-        "ADAPT_GAIN_TTC_GAIN": _g["ADAPT_GAIN_TTC_GAIN"],
-        "ADAPT_GAIN_TTC_REF": _g["ADAPT_GAIN_TTC_REF"],
         "LOCAL_DENSITY_RANGE": _g["LOCAL_DENSITY_RANGE"],
         "LOCAL_DENSITY_NORM": _g["LOCAL_DENSITY_NORM"],
 
@@ -316,9 +305,6 @@ def get_config() -> dict:
         "LEVEL_K_MAX": _g["LEVEL_K_MAX"],
         "LEVEL_K_DIST": _g["LEVEL_K_DIST"],
 
-        # 功能开关
-        "USE_STACKELBERG": _g["USE_STACKELBERG"],
-        "USE_QUEUE_COORDINATION": _g["USE_QUEUE_COORDINATION"],
         "ACTIVE_PROFILE": _g["ACTIVE_PROFILE"],
 
         # 舒适性 & 公平性评价参数

@@ -70,33 +70,40 @@ if SIM_STEPS <= 0:
     SIM_STEPS = 3600
 
 
-def gen_rou_xml(n_cav: int, path: str = "tmp_routes_baseline.rou.xml",
+def gen_rou_xml(n_total: int, path: str = "tmp_routes_baseline.rou.xml",
                 for_sumo_default: bool = False):
-    """按全CAV密度动态生成路由文件
-    for_sumo_default=True 时：启用SUMO原生换道参数，不关掉LC
+    """按混合交通动态生成路由文件（CAV + 人类车）。
+
+    for_sumo_default=True：所有车用 SUMO SL2015 原生模型（无 CAV/人类区分）。
+    for_sumo_default=False：CAV 关掉 SUMO 原生换道由 Python 控制；人类车用 SL2015。
     """
+    glc.CAV_PENETRATION  # 确保从 game_lane_change 读取渗透率
+    pen = getattr(glc, 'CAV_PENETRATION', 1.0)
+    n_cav = int(n_total * pen)
+    n_human = n_total - n_cav
+
     if for_sumo_default:
-        # SUMO Default: SL2015 子车道换道模型 (sublane)
-        # 子车道分辨率 lateralResolution=0.8m → 每条3.2m车道=4个子车道
-        # SL2015 使用连续横向位置 + 平滑换道轨迹，比LC2013更真实
-        vtype_attrs = ('id="cav" accel="2.6" decel="4.5" sigma="0.5" '
-                       'length="4.5" minGap="1.5" maxSpeed="33.33" '
-                       'guiShape="passenger" color="0,0,255" '
-                       'laneChangeModel="SL2015" '
-                       'lcStrategic="1.0" lcCooperative="1.0" lcSpeedGain="1.0" '
-                       'lcKeepRight="1.0" lcAssertive="0.5" lcSigma="0.5"')
-    else:
-        # 基线/博弈模型: 关掉SUMO原生换道，由Python控制
-        vtype_attrs = ('id="cav" accel="2.6" decel="4.5" sigma="0.0" '
-                       'length="4.5" minGap="1.5" maxSpeed="33.33" '
-                       'guiShape="passenger" color="0,200,0" '
-                       'lcStrategic="0" lcCooperative="0" lcSpeedGain="0" '
-                       'lcKeepRight="0"')
-    xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+        # SUMO Default: 全车使用 SL2015，无类型区分
+        xml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <routes>
-    <vType {vtype_attrs}/>
+    <vType id="cav" accel="2.6" decel="4.5" sigma="0.5" length="4.5" minGap="2.5" maxSpeed="33.33" guiShape="passenger" color="0,0,255" laneChangeModel="SL2015" lcStrategic="1.0" lcCooperative="1.0" lcSpeedGain="1.0" lcKeepRight="1.0" lcAssertive="0.5" lcSigma="0.5"/>
     <route id="r0" edges="E0"/>
-    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="{n_cav}"  departSpeed="max" departLane="random"/>
+    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="{n_total}" departSpeed="max" departLane="random"/>
+</routes>"""
+    else:
+        n_h_each = n_human // 3
+        n_h_rem = n_human - n_h_each * 3
+        xml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<routes>
+    <vType id="cav" accel="2.6" decel="4.5" sigma="0.0" length="4.5" minGap="1.5" maxSpeed="33.33" guiShape="passenger" color="0,200,0" lcKeepRight="0" lcSpeedGain="0" lcStrategic="0" lcCooperative="0"/>
+    <vType id="h_cons" accel="1.8" decel="4.5" sigma="0.3" length="4.5" minGap="3.0" maxSpeed="30.0" guiShape="passenger" color="100,150,255" laneChangeModel="SL2015" lcStrategic="0.8" lcCooperative="1.0" lcSpeedGain="0.6" lcKeepRight="1.0" lcAssertive="0.2"/>
+    <vType id="h_norm" accel="2.0" decel="4.5" sigma="0.5" length="4.5" minGap="2.5" maxSpeed="33.33" guiShape="passenger" color="255,200,0" laneChangeModel="SL2015" lcStrategic="1.0" lcCooperative="1.0" lcSpeedGain="1.0" lcKeepRight="1.0" lcAssertive="0.5"/>
+    <vType id="h_aggr" accel="2.4" decel="4.5" sigma="0.7" length="4.5" minGap="1.8" maxSpeed="33.33" guiShape="passenger" color="255,100,50" laneChangeModel="SL2015" lcStrategic="1.0" lcCooperative="0.6" lcSpeedGain="1.0" lcKeepRight="0.5" lcAssertive="0.8"/>
+    <route id="r0" edges="E0"/>
+    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="{n_cav}" departSpeed="max" departLane="random"/>
+    <flow id="f_cons" type="h_cons" route="r0" begin="0" end="360" number="{n_h_each + (1 if n_h_rem > 0 else 0)}" departSpeed="max" departLane="random"/>
+    <flow id="f_norm" type="h_norm" route="r0" begin="0" end="360" number="{n_h_each + (1 if n_h_rem > 1 else 0)}" departSpeed="max" departLane="random"/>
+    <flow id="f_aggr" type="h_aggr" route="r0" begin="0" end="360" number="{n_h_each}" departSpeed="max" departLane="random"/>
 </routes>"""
     with open(path, "w", encoding="utf-8") as f:
         f.write(xml)
@@ -273,20 +280,20 @@ def collect_ts_data(step, obstacle_ids):
     return t, queue, round(spd, 2)
 
 
-def read_tripinfo():
+def read_tripinfo(filepath: str = "tripinfo.xml"):
     tt_total, time_losses = 0.0, []
-    if os.path.exists("tripinfo.xml"):
-        for trip in sumolib.xml.parse_fast("tripinfo.xml", "tripinfo", ["duration", "timeLoss"]):
+    if os.path.exists(filepath):
+        for trip in sumolib.xml.parse_fast(filepath, "tripinfo", ["duration", "timeLoss"]):
             tt_total += float(trip.duration)
             time_losses.append(float(trip.timeLoss))
     return tt_total, time_losses
 
 
-def read_travel_times():
-    """从 tripinfo.xml 读取各车行程时间。"""
+def read_travel_times(filepath: str = "tripinfo.xml"):
+    """从 tripinfo 读取各车行程时间。"""
     times = []
-    if os.path.exists("tripinfo.xml"):
-        for trip in sumolib.xml.parse_fast("tripinfo.xml", "tripinfo", ["duration"]):
+    if os.path.exists(filepath):
+        for trip in sumolib.xml.parse_fast(filepath, "tripinfo", ["duration"]):
             times.append(float(trip.duration))
     return times
 
@@ -310,12 +317,16 @@ def run_sumo_default(n_cav: int, label: str) -> dict:
     accident_state = {"happened": False, "time_actual": -1.0, "broadcast_active": False}
     lc_cnt = 0
 
+    safe_lbl = label.replace(" ", "_").replace("/", "_").replace("\\", "_")
+    tripinfo_f = f"tripinfo_{safe_lbl}.xml"
     rou_file = gen_rou_xml(n_cav, for_sumo_default=True)
     cmd = [r'C:\Program Files (x86)\Eclipse\Sumo\bin\sumo', "-c", "accident_highway.sumocfg",
            "--route-files", rou_file,
            "--lateral-resolution", "0.8",
            "--collision.action", "warn",
            "--no-warnings", "true",
+           "--no-step-log", "true",
+           "--tripinfo-output", tripinfo_f,
            "--start", "true",
            "--quit-on-end", "true"]
     traci.start(cmd)
@@ -384,8 +395,8 @@ def run_sumo_default(n_cav: int, label: str) -> dict:
 
         total_veh += traci.simulation.getArrivedNumber()
 
-    tt_total, time_losses = read_tripinfo()
-    veh_travel_times = read_travel_times()
+    tt_total, time_losses = read_tripinfo(tripinfo_f)
+    veh_travel_times = read_travel_times(tripinfo_f)
     try:
         traci.close()
     except Exception:
@@ -422,12 +433,16 @@ def run_rule_based(n_cav: int, label: str) -> dict:
     RULE_TTC_THRESHOLD = 3.0
     lc_cnt = 0
 
+    safe_lbl = label.replace(" ", "_").replace("/", "_").replace("\\", "_")
+    tripinfo_f = f"tripinfo_{safe_lbl}.xml"
     rou_file = gen_rou_xml(n_cav, for_sumo_default=False)
     cmd = [r'C:\Program Files (x86)\Eclipse\Sumo\bin\sumo', "-c", "accident_highway.sumocfg",
            "--route-files", rou_file,
+           "--no-warnings", "true",
+           "--no-step-log", "true",
+           "--tripinfo-output", tripinfo_f,
            "--lanechange.duration", "1.0",
            "--collision.action", "warn",
-           "--no-warnings", "true",
            "--start", "true",
            "--quit-on-end", "true"]
     traci.start(cmd)
@@ -497,6 +512,10 @@ def run_rule_based(n_cav: int, label: str) -> dict:
                 if apply_emergency_braking_coverage(vid, road_id, cur_lane, veh_pos, obstacle_anchor):
                     continue
 
+            # 混合交通：人类车不参与规则换道，由 SUMO 原生处理
+            if not glc.is_vehicle_cav(vid):
+                continue
+
             if cur_lane != ACCIDENT_LANE:
                 continue
             acc_phase = glc.get_vehicle_phase(vid, veh_pos)
@@ -538,8 +557,8 @@ def run_rule_based(n_cav: int, label: str) -> dict:
 
         total_veh += traci.simulation.getArrivedNumber()
 
-    tt_total, time_losses = read_tripinfo()
-    veh_travel_times = read_travel_times()
+    tt_total, time_losses = read_tripinfo(tripinfo_f)
+    veh_travel_times = read_travel_times(tripinfo_f)
     try:
         traci.close()
     except Exception:

@@ -43,9 +43,8 @@ MODEL_COLORS = {
     "SUMO Default": "#ff7f0e",
     "Rule-Based":   "#2ca02c",
     "No-V2X":       "#d62728",
-    "LKSQ (Ours)":  "#9467bd",
 }
-MODEL_ORDER = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X", "LKSQ (Ours)"]
+MODEL_ORDER = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X"]
 SCENARIOS = ["1200pcu/h", "2000pcu/h", "2800pcu/h", "3600pcu/h"]
 
 

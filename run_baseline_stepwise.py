@@ -41,6 +41,8 @@ SCENARIOS = [
     (360, "3600pcu/h"),
 ]
 
+PENETRATIONS = [0.0, 0.1, 0.3, 0.5, 0.7, 1.0]
+
 MODELS = {
     "Game (Ours)":   "run_game",
     "SUMO Default":  "run_sumo_default",
@@ -81,6 +83,7 @@ def save_intermediate_results(out_dir: str, all_results: dict, timestamp: str):
         for sc, r in scen_dict.items():
             csv_rows.append({
                 "model": model_name, "scenario": sc,
+                "penetration": r.get("penetration", 0),
                 "total_vehicles": r.get("total_vehicles", 0),
                 "avg_travel_time": r.get("avg_travel_time", 0),
                 "avg_delay": r.get("avg_delay", 0),
@@ -113,6 +116,7 @@ def save_intermediate_results(out_dir: str, all_results: dict, timestamp: str):
         for sc, r in scen_dict.items():
             detail_rows.append({
                 "model": model_name, "scenario": sc,
+                "penetration": r.get("penetration", 0),
                 "n_cav": r.get("n_cav", 0),
                 "total_vehicles": r.get("total_vehicles", 0),
                 "avg_travel_time": r.get("avg_travel_time", 0),
@@ -141,9 +145,14 @@ def cleanup_after_round():
                 _time.sleep(0.5)
 
 
-def run_single(model_name: str, n_cav: int, lbl: str, sim_steps: int) -> dict:
+def run_single(model_name: str, n_cav: int, lbl: str, sim_steps: int,
+               penetration: float = 1.0) -> dict:
     """运行单轮实验"""
     from baseline_comparison import run_game, run_sumo_default, run_rule_based, run_no_v2x
+    import game_lane_change as glc
+
+    # 设置当前渗透率
+    glc.CAV_PENETRATION = penetration
 
     func_map = {
         "Game (Ours)":  run_game,
@@ -155,9 +164,9 @@ def run_single(model_name: str, n_cav: int, lbl: str, sim_steps: int) -> dict:
     if run_func is None:
         raise ValueError(f"未知模型: {model_name}")
 
-    # 通过环境变量控制仿真步数
     os.environ['SIM_STEPS'] = str(sim_steps)
     result = run_func(n_cav, lbl)
+    result["penetration"] = penetration
     return result
 
 
@@ -177,6 +186,10 @@ def run_baseline_stepwise():
                         help="输出目录（默认自动创建）")
     parser.add_argument("--no-plot", action="store_true",
                         help="全部完成后不绘图")
+    parser.add_argument("--penetrations", type=str, default=None,
+                        help="CAV渗透率列表，逗号分隔，默认 0.0,0.1,0.3,0.5,0.7,1.0")
+    parser.add_argument("--irl-weights", type=str, default=None,
+                        help="IRL权重文件路径（如 irl_weights_v2.npz）")
     args = parser.parse_args()
 
     # 解析模型列表
@@ -201,6 +214,13 @@ def run_baseline_stepwise():
     else:
         scens = SCENARIOS
 
+    # 解析渗透率列表
+    if args.penetrations:
+        pen_list = [float(p.strip()) for p in args.penetrations.split(",")]
+        pens = pen_list
+    else:
+        pens = PENETRATIONS
+
     # 输出目录
     if args.resume:
         out_dir = args.resume
@@ -219,12 +239,23 @@ def run_baseline_stepwise():
     if done:
         print(f"[续跑] 已发现 {len(done)} 个已完成轮次")
 
+    # 加载 IRL 权重
+    if args.irl_weights:
+        import numpy as np
+        import game_lane_change as glc
+        data = np.load(args.irl_weights)
+        glc.PAYOFF_WEIGHTS['informed'] = data['informed']
+        glc.PAYOFF_WEIGHTS['sudden'] = data['informed'].copy() * 0.8
+        print(f"[IRL权重] 已加载: {args.irl_weights}")
+        print(f"  informed: {[f'{w:.4f}' for w in glc.PAYOFF_WEIGHTS['informed']]}")
+
     SIM_STEPS = args.sim_steps
-    total_rounds = len(model_names) * len(scens)
+    total_rounds = len(model_names) * len(scens) * len(pens)
     print(f"\n{'='*60}")
-    print(f"  分步基线对比实验")
+    print(f"  分步基线对比实验（混合交通）")
     print(f"  模型: {model_names}")
     print(f"  场景: {[l for _, l in scens]}")
+    print(f"  渗透率: {pens}")
     print(f"  总轮数: {total_rounds}  SIM_STEPS={SIM_STEPS}")
     print(f"  {'[续跑模式]' if args.resume else '[全新模式]'}")
     print(f"{'='*60}\n")
@@ -252,9 +283,11 @@ def run_baseline_stepwise():
                 sc = row["scenario"]
                 if mn not in all_results:
                     all_results[mn] = {}
+                pen_val = float(row.get("penetration", 0))
                 all_results[mn][sc] = {
                     "label": row.get("label", sc),
                     "model": mn,
+                    "penetration": pen_val,
                     "n_cav": int(row["n_cav"]),
                     "total_vehicles": int(row["total_vehicles"]),
                     "avg_travel_time": row["avg_travel_time"],
@@ -291,58 +324,63 @@ def run_baseline_stepwise():
         if model_name not in all_results:
             all_results[model_name] = {}
 
-        for n_cav, lbl in scens:
-            round_idx += 1
-            key = (model_name, lbl)
+        for pen in pens:
+            pen_label = f"{int(pen * 100)}%CAV"
 
-            # 检查是否已完成
-            if key in done and lbl in all_results.get(model_name, {}):
-                r = all_results[model_name][lbl]
-                print(f"  [{round_idx}/{total_rounds}] [OK] 跳过（已完成）: {model_name} / {lbl}  "
-                      f"(通过{r.get('total_vehicles', 0)} 行程{r.get('avg_travel_time', 0)}s)")
-                continue
+            for n_cav, lbl in scens:
+                round_idx += 1
+                full_lbl = f"{lbl}_{pen_label}"
+                key = (model_name, full_lbl)
 
-            print(f"  [{round_idx}/{total_rounds}] => 运行: {model_name} / {lbl}  "
-                  f"(n_cav={n_cav}, steps={SIM_STEPS})", flush=True)
-            print(f"      开始时间: {datetime.now().strftime('%H:%M:%S')}")
+                # 检查是否已完成
+                if key in done and full_lbl in all_results.get(model_name, {}):
+                    r = all_results[model_name][full_lbl]
+                    print(f"  [{round_idx}/{total_rounds}] [OK] 跳过（已完成）: {model_name} / {full_lbl}  "
+                          f"(通过{r.get('total_vehicles', 0)} 行程{r.get('avg_travel_time', 0)}s)")
+                    continue
 
-            # 清理中间文件
-            cleanup_after_round()
+                print(f"  [{round_idx}/{total_rounds}] => 运行: {model_name} / {full_lbl}  "
+                      f"(n_cav={n_cav}, steps={SIM_STEPS}, pen={pen})", flush=True)
+                print(f"      开始时间: {datetime.now().strftime('%H:%M:%S')}")
 
-            try:
-                r = run_single(model_name, n_cav, lbl, SIM_STEPS)
-                all_results[model_name][lbl] = r
-                print(f"      + 完成！通过:{r['total_vehicles']} 行程:{r['avg_travel_time']}s  "
-                      f"延误:{r['avg_delay']}s 换道:{r['lc_cnt']}次  "
-                      f"队列:{r['max_queue']}辆 碰撞:{r['collisions']}次", flush=True)
+                # 清理中间文件
+                cleanup_after_round()
 
-                # 标记完成并增量保存
-                done.add(key)
-                save_checkpoint(out_dir, done)
-                save_intermediate_results(out_dir, all_results, timestamp)
-
-            except Exception as e:
-                print(f"      [错误] {e}", flush=True)
-                import traceback
-                traceback.print_exc()
-                # 创建占位记录
-                all_results[model_name][lbl] = {
-                    "label": lbl, "model": model_name, "n_cav": n_cav,
-                    "total_vehicles": 0, "avg_travel_time": 0, "avg_delay": 0,
-                    "lc_cnt": 0, "collisions": 0, "max_queue": 0,
-                    "ts_time": [], "ts_queue": [], "ts_speed": [],
-                }
-                done.add(key)
-                save_checkpoint(out_dir, done)
-                save_intermediate_results(out_dir, all_results, timestamp)
-
-            finally:
-                # 确保 SUMO 连接关闭
                 try:
-                    import traci
-                    traci.close()
-                except Exception:
-                    pass
+                    r = run_single(model_name, n_cav, full_lbl, SIM_STEPS, penetration=pen)
+                    all_results[model_name][full_lbl] = r
+                    print(f"      + 完成！通过:{r['total_vehicles']} 行程:{r['avg_travel_time']}s  "
+                          f"延误:{r['avg_delay']}s 换道:{r['lc_cnt']}次  "
+                          f"队列:{r['max_queue']}辆 碰撞:{r['collisions']}次", flush=True)
+
+                    # 标记完成并增量保存
+                    done.add(key)
+                    save_checkpoint(out_dir, done)
+                    save_intermediate_results(out_dir, all_results, timestamp)
+
+                except Exception as e:
+                    print(f"      [错误] {e}", flush=True)
+                    import traceback
+                    traceback.print_exc()
+                    # 创建占位记录
+                    all_results[model_name][full_lbl] = {
+                        "label": full_lbl, "model": model_name, "n_cav": n_cav,
+                        "penetration": pen,
+                        "total_vehicles": 0, "avg_travel_time": 0, "avg_delay": 0,
+                        "lc_cnt": 0, "collisions": 0, "max_queue": 0,
+                        "ts_time": [], "ts_queue": [], "ts_speed": [],
+                    }
+                    done.add(key)
+                    save_checkpoint(out_dir, done)
+                    save_intermediate_results(out_dir, all_results, timestamp)
+
+                finally:
+                    # 确保 SUMO 连接关闭
+                    try:
+                        import traci
+                        traci.close()
+                    except Exception:
+                        pass
 
             end_time = datetime.now().strftime('%H:%M:%S')
             print(f"      结束时间: {end_time}\n")

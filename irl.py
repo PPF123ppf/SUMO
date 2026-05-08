@@ -145,32 +145,62 @@ def row_to_features(row: pd.Series, action: int) -> np.ndarray:
     """
     将 AD4CHE 的一帧数据映射到 compute_features 同构的特征空间。
 
+    AD4CHE 含 29 列：ttc, dhw, thw, leftFollowingId, rightFollowingId 等。
     action: 1 = 执行换道, 0 = 不换道
 
-    返回: [eff, safe, coop, lc_cost]
+    返回: [speed, urgency, pressure, safe, coop, social, density, lc_cost]
     """
-    # 纵向速度：取绝对值（AD4CHE 双向车道）
     v = max(abs(float(row.get("xVelocity", 0))), 1e-6)
     vmax = max(v * 1.3, 25.0)
-
-    # 效率特征
     speed_ratio = float(np.clip(v / vmax, 0.0, 1.0))
-    urgency = 0.0  # AD4CHE 无事故场景
-    eff = 0.55 * speed_ratio + 0.45 * urgency
 
-    # 安全特征：用 dhw（车头时距）或 ttc
-    # AD4CHE 中 ttc 负数表示无碰撞风险
-    dhw = float(row.get("dhw", 10.0))
+    # pressure: 从 dhw 计算 —— 前车越近，逃离压力越大
+    dhw = float(row.get("dhw", 30.0))
     if dhw <= 0 or dhw > 100:
-        dhw = 10.0
-    safe = float(np.clip(dhw / 30.0, 0.0, 1.0))  # 30m 以上视为安全
+        dhw = 30.0
+    pressure = float(np.clip(1.0 - dhw / 50.0, 0.0, 1.0)) if action == 1 else 0.0
 
-    # 协同特征
-    has_follower = int(pd.notna(row.get("followingId", None)))
-    coop = 0.18 if has_follower else 0.0
+    # urgency: AD4CHE 无事故，用「低速+前车贴紧」估计逃离紧迫度
+    urgency = float(np.clip((1.0 - speed_ratio) * pressure, 0.0, 1.0))
+
+    # safe: AD4CHE 直接提供 ttc 字段
+    ttc_val = float(row.get("ttc", 5.0))
+    if ttc_val <= 0 or ttc_val > 20:
+        ttc_val = 5.0
+    safe = float(np.clip(ttc_val / 5.0, 0.0, 1.0))
+
+    # 辅助：AD4CHE 用 0 表示 "无邻居"，不是 NaN
+    def _has_neighbor(val) -> bool:
+        if pd.isna(val):
+            return False
+        try:
+            return int(float(val)) != 0
+        except (ValueError, TypeError):
+            return True  # non-numeric string ID → has neighbor
+
+    # coop: 当前车道后车 + 邻道后车
+    has_follower = _has_neighbor(row.get("followingId", 0))
+    has_left_fol = _has_neighbor(row.get("leftFollowingId", 0))
+    has_right_fol = _has_neighbor(row.get("rightFollowingId", 0))
+    coop = 0.18 if (has_follower or has_left_fol or has_right_fol) else 0.05
+
+    # social: 换道时邻道后车受影响的程度
+    if action == 1:
+        neighbor_followers = has_left_fol + has_right_fol
+        social = min(0.6, 0.15 + 0.15 * neighbor_followers)
+    else:
+        social = 0.0
+
+    # density: 从邻道车辆数估算局部密度
+    neighbor_count = 0
+    for key in ["leftPrecedingId", "leftAlongsideId", "leftFollowingId",
+                "rightPrecedingId", "rightAlongsideId", "rightFollowingId"]:
+        if _has_neighbor(row.get(key, 0)):
+            neighbor_count += 1
+    density = float(np.clip(neighbor_count / 6.0, 0.0, 1.0))
 
     lc_cost = 1.0 if action == 1 else 0.0
-    return np.array([eff, safe, coop, lc_cost])
+    return np.array([speed_ratio, urgency, pressure, safe, coop, social, density, lc_cost])
 
 
 # ====================== 3. 仿真 rollout ======================
@@ -197,7 +227,7 @@ def learner_rollout(weights: np.ndarray,
             best_fa = np.argmax(payoff[chosen_action])
             fv = feats[(chosen_action, best_fa)]
             all_feats.append(fv)
-    return np.array(all_feats) if all_feats else np.zeros((1, 4))
+    return np.array(all_feats) if all_feats else np.zeros((1, 8))
 
 
 # ====================== 4. 最大熵 IRL 核心 ======================
