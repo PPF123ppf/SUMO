@@ -1,65 +1,83 @@
-﻿% !Mode:: "TeX:UTF-8"
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%
-%                          澶у伐鑷冲杽锛屽ぇ瀛﹁嚦鑷?
-%
-%                        鍝堝皵婊ㄥ伐绋嬪ぇ瀛﹁鏂囨ā鏉?
-%
-%                      Email: lwh@hrbeu.edu.cn
-%                      https://www.hrbeu.edu.cn
-%
-%              https://github.com/Li-Wenhui/HeuThesis.git
-%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[fontset=windows,AutoFakeBold=2,type=master,stage=opening]{heuthesisart}
+% !Mode:: "TeX:UTF-8"
+\documentclass[fontset=windows,AutoFakeBold=2]{ctexart}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{tocloft}
+\usepackage{amsmath}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{natbib}
+\usepackage{hyperref}
+
+\geometry{a4paper,left=3.17cm,right=3.17cm,top=2.54cm,bottom=2.54cm}
+\renewcommand{\cftsecleader}{\cftdotfill{\cftdotsep}}
+\setlength{\parindent}{2em}
+\linespread{1.5}
+
+\newcommand{\开题报告}{%
+\begin{titlepage}
+\begin{center}
+\vspace*{0.5cm}
+\heiti\erhao\textbf{哈尔滨工程大学}\\[0.5cm]
+\heiti\xiaoer\textbf{攻读硕士学位研究生论文}\\[1.5cm]
+\songti\chubanhao\textbf{开\quad 题\quad 报\quad 告}\\[3cm]
+
+\heiti\xiaosan
+\begin{tabular}{l@{\hspace{1.5cm}}l}
+      专\quad 业 & \underline{\makebox[6cm]{\textbf{电子信息}}} \\[8mm]
+      研究方向 & \underline{\makebox[6cm]{\textbf{基于博弈论的自动驾驶车辆换道决策研究}}} \\[8mm]
+      姓\quad 名 & \underline{\makebox[6cm]{\textbf{庞鹏飞}}} \\[8mm]
+\end{tabular}
+\end{center}
+
+\vspace{3cm}
+
+\songti\sanhao
+\textbf{指导教师审查意见：}\\[1.5cm]
+
+\songti\sihao
+\quad\qquad\qquad 审查合格，同意存档。\\[4cm]
+
+\begin{flushright}
+指导教师签字：\qquad\qquad\qquad\qquad\\[0.5cm]
+\qquad\qquad\qquad 年\quad 月\quad 日
+\end{flushright}
+
+\vfill
+\end{titlepage}
+
+\newpage
+\noindent
+\songti\sihao
+\textbf{题\quad 目：}基于博弈论的自动驾驶车辆换道决策研究\\[3mm]
+\textbf{专\quad 业：}电子信息\\[3mm]
+\textbf{硕\quad 士：}庞鹏飞\\[3mm]
+\textbf{导\quad 师：}王\;\;伟\;\; 教授
+
+\vspace{0.5cm}
+}
+
 \usepackage{xeCJK}
 \setCJKmainfont{SimSun}
 \setCJKsansfont{SimHei}
 \setCJKmonofont{FangSong}
-% 姝ゅ閫夐」涓笉瑕佹湁绌烘牸
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 蹇呭～閫夐」
-% type=doctor|master|bachelor
-% stage=opening|midterm
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 閫夊～閫夐」锛堥€夊～閫夐」鐨勭己鐪佸€煎凡缁忓敖鍙兘婊¤冻浜嗗ぇ澶氭暟闇€姹傦紝闄ら潪鏄庣‘鐭ラ亾鑷繁鏈変粈涔?
-% 闇€姹傦級
-% campus=qingdao|yantai|harbin
-%   鍚箟锛氭牎鍖洪€夐」锛岄粯璁arbin
-% toc=true|false
-%   鍚箟锛氭槸鍚︾敓鎴愮洰褰曪紝榛樿true
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{algorithm}
-\usepackage{algorithmic}
-\usepackage{amsmath}
-\graphicspath{{figures/}}
+\newcommand{\erhao}{\fontsize{22pt}{28pt}\selectfont}
+\newcommand{\xiaoer}{\fontsize{18pt}{22pt}\selectfont}
+\newcommand{\sanhao}{\fontsize{16pt}{20pt}\selectfont}
+\newcommand{\sihao}{\fontsize{14pt}{18pt}\selectfont}
+\newcommand{\xiaosan}{\fontsize{15pt}{18pt}\selectfont}
+\newcommand{\chubanhao}{\fontsize{20pt}{26pt}\selectfont}
 
 \begin{document}
 
-\input{front/coverart.tex}
-\makecover
+\开题报告
 
-% 纭曞崥寮€棰樻姤鍛?-----------------------------------------------
- \input{body/report_opening}
-% -------------------------------------------------------------
+\input{body/report_opening}
 
-% 纭曞崥涓湡鎶ュ憡 -----------------------------------------------
-% \input{body/report_midterm}
-% -------------------------------------------------------------
-
-% 鏈鐢熷紑棰樻姤鍛婄粨鏋?--------------------------------------
-% \input{body/bachelor_opening}
-%
-% 鎸囧鏁欏笀璇勮绛惧瓧椤?----------------------------------------
-% \makebackcover
-% -------------------------------------------------------------
-
-% 鏈鐢熶腑鏈熸姤鍛婄粨鏋?----------------------------------------
-% \input{body/bachelor_midterm}
-%
-% 鎸囧鏁欏笀璇勮绛惧瓧椤?----------------------------------------
-% \makebackcover
-% -------------------------------------------------------------
+\newpage
+\bibliographystyle{plain}
+\bibliography{reference}
 
 \end{document}
