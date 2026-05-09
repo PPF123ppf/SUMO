@@ -1,3 +1,0 @@
-﻿model,scenario,total_vehicles,avg_travel_time,avg_delay,lc_cnt,collisions,max_queue
-Game (Ours),1200pcu/h,51,160.33,1.8,20,0,23
-Game (Ours),2000pcu/h,92,162.3,3.71,55,0,32

@@ -141,7 +141,7 @@
   }%
   \PassOptionsToClass{fontset=\heu@fontset}{ctexart}
 }%
-\LoadClass[a4paper,UTF8,zihao=-4,scheme=plain]{ctexart}
+\LoadClass[a4paper,UTF8,zihao=-4,scheme=chinese]{ctexart}
 
 \RequirePackage{etoolbox}
 \RequirePackage{ifxetex}

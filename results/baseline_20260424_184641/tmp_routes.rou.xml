@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<routes>
-    <vType id="cav" accel="2.6" decel="4.5" sigma="0.0" length="4.5" minGap="1.5" maxSpeed="33.33" guiShape="passenger" color="0,200,0" lcKeepRight="0" lcSpeedGain="0" lcStrategic="0" lcCooperative="0"/>
-    <route id="r0" edges="E0"/>
-    <flow id="f_cav" type="cav" route="r0" begin="0" end="360" number="360"  departSpeed="max" departLane="random"/>
-</routes>

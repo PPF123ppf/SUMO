@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.4.12)  18 APR 2026 23:13
+This is XeTeX, Version 3.141592653-2.6-0.999998 (TeX Live 2026) (preloaded format=xelatex 2026.4.12)  9 MAY 2026 09:56
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -449,10 +449,14 @@ File: zhnumber-utf8.cfg 2022/07/14 v3.0 Chinese numerals with UTF8 encoding
 ))
 \l__ctex_heading_skip=\skip59
 
-(c:/texlive/2026/texmf-dist/tex/latex/ctex/scheme/ctex-scheme-plain-article.def
-File: ctex-scheme-plain-article.def 2022/07/14 v2.5.10 Plain scheme for article
- (CTEX)
-) (c:/texlive/2026/texmf-dist/tex/latex/ctex/ctex-cs4size.clo
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/scheme/ctex-scheme-chinese-article.d
+ef
+File: ctex-scheme-chinese-article.def 2022/07/14 v2.5.10 Chinese scheme for art
+icle (CTEX)
+ (c:/texlive/2026/texmf-dist/tex/latex/ctex/config/ctex-name-utf8.cfg
+File: ctex-name-utf8.cfg 2022/07/14 v2.5.10 Caption with encoding UTF-8 (CTEX)
+))
+(c:/texlive/2026/texmf-dist/tex/latex/ctex/ctex-cs4size.clo
 File: ctex-cs4size.clo 2022/07/14 v2.5.10 cs4size option (CTEX)
 )
 (c:/texlive/2026/texmf-dist/tex/latex/ctex/fontset/ctex-fontset-fandol.def
@@ -1356,13 +1360,14 @@ Package: algorithmic 2009/08/24 v0.1 Document Style `algorithmic'
 \c@ALC@depth=\count432
 \ALC@tlm=\skip116
 \algorithmicindent=\skip117
-) (./report.aux)
+)
+No file report.aux.
 \openout1 = `report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 34.
 LaTeX Font Info:    Trying to load font information for OML+ntxmi on input line
  34.
- (c:/texlive/2026/texmf-dist/tex/latex/newtx/omlntxmi.fd
+(c:/texlive/2026/texmf-dist/tex/latex/newtx/omlntxmi.fd
 File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
 )
 LaTeX Font Info:    ... okay on input line 34.
@@ -1423,11 +1428,12 @@ Package pdflscape Info: Auto-detected driver: dvipdfm (xetex) on input line 98.
 
 ))
 Package hyperref Info: Link coloring OFF on input line 34.
- (./report.out)
-(./report.out)
 \@outlinefile=\write3
 \openout3 = `report.out'.
 
+
+
+Package hyperref Warning: Rerun to get /PageLabels entry.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
@@ -1594,57 +1600,12 @@ LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
 (Font)              scaled to size 8.88824pt on input line 37.
  [1
 
-] (./report.toc
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 6.0pt on input line 2.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 6.0pt on input line 2.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 6.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 6.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 6.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 6.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 12.045pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 8.0pt on input line 2.
-LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 6.0pt on input line 2.
-)
+]
+No file report.toc.
 \tf@toc=\write4
 \openout4 = `report.toc'.
 
-
-[2
-
-] (./body/report_opening.tex
+(./body/report_opening.tex
 
 Package fontspec Info: 
 (fontspec)             Script 'CJK' not explicitly supported within font
@@ -1670,105 +1631,266 @@ Package fontspec Info:
 
  [1
 
-] [2] [3]
 
-Package fontspec Info: 
-(fontspec)             Script 'CJK' not explicitly supported within font
-(fontspec)             'FandolFang-Regular'. Check the typeset output, and if
-(fontspec)             it is okay then ignore this warning. Otherwise a
-(fontspec)             different font should be chosen.
+] [2]
+! Missing $ inserted.
+<inserted text> 
+                $
+l.31 ...如将速度比、紧迫度和车道压力加权为单一效率得分），导致内层系数与外层 PAYOFF_
+                                                  WEIGHTS 两层权重相互干扰，IRL 难以学出干...
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
 
-
-Package fontspec Info: 
-(fontspec)             Font family 'FandolFang-Regular(0)' created for font
-(fontspec)             'FandolFang-Regular' with options
-(fontspec)             [Script={CJK},Extension={.otf},AutoFakeBold={2}].
-(fontspec)              
-(fontspec)              This font family consists of the following NFSS
-(fontspec)             series/shapes:
-(fontspec)              
-(fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <->"[FandolFang-Regular.otf]/OT:script=hani;language=dfl
-t;"
-(fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->"[FandolFang-Regular.otf]/OT:script=hani;language=dfl
-t;embolden=2;"
-
- [4]
-File: figures/sim_results_1.png Graphic file (type bmp)
-<figures/sim_results_1.png>
-File: figures/sim_results_2.png Graphic file (type bmp)
-<figures/sim_results_2.png>
-File: figures/queue_timeseries_20260417_215736.png Graphic file (type bmp)
-<figures/queue_timeseries_20260417_215736.png>
-File: figures/speed_timeseries_20260417_215736.png Graphic file (type bmp)
-<figures/speed_timeseries_20260417_215736.png>
- [5] [6] [7] [8]
-Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
-put line 163.
 LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
-(Font)              scaled to size 5.0pt on input line 167.
+(Font)              scaled to size 6.0pt on input line 31.
 LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
-(Font)              scaled to size 5.0pt on input line 167.
+(Font)              scaled to size 6.0pt on input line 31.
 LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
-(Font)              scaled to size 5.0pt on input line 167.
+(Font)              scaled to size 6.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
-(Font)              scaled to size 5.0pt on input line 167.
+(Font)              scaled to size 6.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
-(Font)              scaled to size 5.0pt on input line 167.
+(Font)              scaled to size 6.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
-(Font)              scaled to size 5.0pt on input line 167.
+(Font)              scaled to size 6.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 10.53937pt on input line 167.
+(Font)              scaled to size 12.045pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 7.0pt on input line 167.
+(Font)              scaled to size 8.0pt on input line 31.
 LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
-(Font)              scaled to size 5.0pt on input line 167.
- [9] [10]
-[11] [12] (./report.bbl))
+(Font)              scaled to size 6.0pt on input line 31.
+! Missing $ inserted.
+<inserted text> 
+                $
+l.32 
+     
+I've inserted a begin-math/end-math symbol since I think
+you left one out. Proceed, with fingers crossed.
+
+Missing character: There is no 两 ("4E24) in font rm-lmr12!
+Missing character: There is no 层 ("5C42) in font rm-lmr12!
+Missing character: There is no 权 ("6743) in font rm-lmr12!
+Missing character: There is no 重 ("91CD) in font rm-lmr12!
+Missing character: There is no 相 ("76F8) in font rm-lmr12!
+Missing character: There is no 互 ("4E92) in font rm-lmr12!
+Missing character: There is no 干 ("5E72) in font rm-lmr12!
+Missing character: There is no 扰 ("6270) in font rm-lmr12!
+Missing character: There is no ， ("FF0C) in font rm-lmr12!
+Missing character: There is no 难 ("96BE) in font rm-lmr12!
+Missing character: There is no 以 ("4EE5) in font rm-lmr12!
+Missing character: There is no 学 ("5B66) in font rm-lmr12!
+Missing character: There is no 出 ("51FA) in font rm-lmr12!
+Missing character: There is no 干 ("5E72) in font rm-lmr12!
+Missing character: There is no 净 ("51C0) in font rm-lmr12!
+Missing character: There is no 的 ("7684) in font rm-lmr12!
+Missing character: There is no 物 ("7269) in font rm-lmr12!
+Missing character: There is no 理 ("7406) in font rm-lmr12!
+Missing character: There is no 解 ("89E3) in font rm-lmr12!
+Missing character: There is no 释 ("91CA) in font rm-lmr12!
+Missing character: There is no 。 ("3002) in font rm-lmr12!
+Missing character: There is no 最 ("6700) in font rm-lmr12!
+Missing character: There is no 后 ("540E) in font rm-lmr12!
+Missing character: There is no ， ("FF0C) in font rm-lmr12!
+Missing character: There is no 在 ("5728) in font rm-lmr12!
+Missing character: There is no 混 ("6DF7) in font rm-lmr12!
+Missing character: There is no 合 ("5408) in font rm-lmr12!
+Missing character: There is no 交 ("4EA4) in font rm-lmr12!
+Missing character: There is no 通 ("901A) in font rm-lmr12!
+Missing character: There is no 环 ("73AF) in font rm-lmr12!
+Missing character: There is no 境 ("5883) in font rm-lmr12!
+Missing character: There is no 下 ("4E0B) in font rm-lmr12!
+Missing character: There is no ， ("FF0C) in font rm-lmr12!
+Missing character: There is no 人 ("4EBA) in font rm-lmr12!
+Missing character: There is no 类 ("7C7B) in font rm-lmr12!
+Missing character: There is no 驾 ("9A7E) in font rm-lmr12!
+Missing character: There is no 驶 ("9A76) in font rm-lmr12!
+Missing character: There is no 与 ("4E0E) in font rm-lmr12!
+Missing character: There is no 之 ("4E4B) in font rm-lmr12!
+Missing character: There is no 间 ("95F4) in font rm-lmr12!
+Missing character: There is no 的 ("7684) in font rm-lmr12!
+Missing character: There is no 交 ("4EA4) in font rm-lmr12!
+Missing character: There is no 互 ("4E92) in font rm-lmr12!
+Missing character: There is no 博 ("535A) in font rm-lmr12!
+Missing character: There is no 弈 ("5F08) in font rm-lmr12!
+Missing character: There is no 模 ("6A21) in font rm-lmr12!
+Missing character: There is no 式 ("5F0F) in font rm-lmr12!
+Missing character: There is no — ("2014) in font rm-lmr12!
+Missing character: There is no — ("2014) in font rm-lmr12!
+Missing character: There is no 应 ("5E94) in font rm-lmr12!
+Missing character: There is no 假 ("5047) in font rm-lmr12!
+Missing character: There is no 设 ("8BBE) in font rm-lmr12!
+Missing character: There is no 后 ("540E) in font rm-lmr12!
+Missing character: There is no 车 ("8F66) in font rm-lmr12!
+Missing character: There is no 是 ("662F) in font rm-lmr12!
+Missing character: There is no 理 ("7406) in font rm-lmr12!
+Missing character: There is no 性 ("6027) in font rm-lmr12!
+Missing character: There is no 的 ("7684) in font rm-lmr12!
+Missing character: There is no 博 ("535A) in font rm-lmr12!
+Missing character: There is no 弈 ("5F08) in font rm-lmr12!
+Missing character: There is no 参 ("53C2) in font rm-lmr12!
+Missing character: There is no 与 ("4E0E) in font rm-lmr12!
+Missing character: There is no 方 ("65B9) in font rm-lmr12!
+Missing character: There is no ， ("FF0C) in font rm-lmr12!
+Missing character: There is no 还 ("8FD8) in font rm-lmr12!
+Missing character: There is no 是 ("662F) in font rm-lmr12!
+Missing character: There is no 应 ("5E94) in font rm-lmr12!
+Missing character: There is no 假 ("5047) in font rm-lmr12!
+Missing character: There is no 设 ("8BBE) in font rm-lmr12!
+Missing character: There is no 后 ("540E) in font rm-lmr12!
+Missing character: There is no 车 ("8F66) in font rm-lmr12!
+Missing character: There is no 是 ("662F) in font rm-lmr12!
+Missing character: There is no 不 ("4E0D) in font rm-lmr12!
+Missing character: There is no 配 ("914D) in font rm-lmr12!
+Missing character: There is no 合 ("5408) in font rm-lmr12!
+Missing character: There is no 的 ("7684) in font rm-lmr12!
+Missing character: There is no 非 ("975E) in font rm-lmr12!
+Missing character: There is no 理 ("7406) in font rm-lmr12!
+Missing character: There is no 性 ("6027) in font rm-lmr12!
+Missing character: There is no 对 ("5BF9) in font rm-lmr12!
+Missing character: There is no 象 ("8C61) in font rm-lmr12!
+Missing character: There is no — ("2014) in font rm-lmr12!
+Missing character: There is no — ("2014) in font rm-lmr12!
+Missing character: There is no 现 ("73B0) in font rm-lmr12!
+Missing character: There is no 有 ("6709) in font rm-lmr12!
+Missing character: There is no 文 ("6587) in font rm-lmr12!
+Missing character: There is no 献 ("732E) in font rm-lmr12!
+Missing character: There is no 大 ("5927) in font rm-lmr12!
+Missing character: There is no 多 ("591A) in font rm-lmr12!
+Missing character: There is no 采 ("91C7) in font rm-lmr12!
+Missing character: There is no 用 ("7528) in font rm-lmr12!
+Missing character: There is no 单 ("5355) in font rm-lmr12!
+Missing character: There is no 一 ("4E00) in font rm-lmr12!
+Missing character: There is no 博 ("535A) in font rm-lmr12!
+Missing character: There is no 弈 ("5F08) in font rm-lmr12!
+Missing character: There is no 结 ("7ED3) in font rm-lmr12!
+Missing character: There is no 构 ("6784) in font rm-lmr12!
+Missing character: There is no ， ("FF0C) in font rm-lmr12!
+Missing character: There is no 缺 ("7F3A) in font rm-lmr12!
+Missing character: There is no 乏 ("4E4F) in font rm-lmr12!
+Missing character: There is no 按 ("6309) in font rm-lmr12!
+Missing character: There is no 后 ("540E) in font rm-lmr12!
+Missing character: There is no 车 ("8F66) in font rm-lmr12!
+Missing character: There is no 异 ("5F02) in font rm-lmr12!
+Missing character: There is no 质 ("8D28) in font rm-lmr12!
+Missing character: There is no 性 ("6027) in font rm-lmr12!
+Missing character: There is no 自 ("81EA) in font rm-lmr12!
+Missing character: There is no 适 ("9002) in font rm-lmr12!
+Missing character: There is no 应 ("5E94) in font rm-lmr12!
+Missing character: There is no 选 ("9009) in font rm-lmr12!
+Missing character: There is no 择 ("62E9) in font rm-lmr12!
+Missing character: There is no 博 ("535A) in font rm-lmr12!
+Missing character: There is no 弈 ("5F08) in font rm-lmr12!
+Missing character: There is no 结 ("7ED3) in font rm-lmr12!
+Missing character: There is no 构 ("6784) in font rm-lmr12!
+Missing character: There is no 的 ("7684) in font rm-lmr12!
+Missing character: There is no 混 ("6DF7) in font rm-lmr12!
+Missing character: There is no 合 ("5408) in font rm-lmr12!
+Missing character: There is no 方 ("65B9) in font rm-lmr12!
+Missing character: There is no 案 ("6848) in font rm-lmr12!
+Missing character: There is no 。 ("3002) in font rm-lmr12!
+LaTeX Font Info:    Font shape `TU/FandolSong-Regular(0)/m/sl' in size <12.045>
+ not available
+(Font)              Font shape `TU/FandolSong-Regular(0)/m/it' tried instead on
+ input line 39.
+[3] [4]
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `OML/ntxmi/m/it' will be
+(Font)              scaled to size 5.0pt on input line 77.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `LMS/ntxsy/m/n' will be
+(Font)              scaled to size 5.0pt on input line 77.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `LMX/ntxexx/m/n' will be
+(Font)              scaled to size 5.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxmia/m/it' will be
+(Font)              scaled to size 5.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxsym/m/n' will be
+(Font)              scaled to size 5.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxsyc/m/n' will be
+(Font)              scaled to size 5.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 10.53937pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 7.0pt on input line 77.
+LaTeX Font Info:    Font shape `U/ntxexa/m/n' will be
+(Font)              scaled to size 5.0pt on input line 77.
+ [5] [6] [7] [8] [9]
+No file report.bbl.
+)
 \tf@thm=\write5
 \openout5 = `report.thm'.
 
- [13] (./report.aux)
+ [10] (./report.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2022/08/05>
  ***********
-Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 1BC6D338413BE17C52B266963A1A14A5;4771.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package rerunfilecheck Warning: File `report.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+Package rerunfilecheck Info: Checksums for `report.out':
+(rerunfilecheck)             Before: <no file>
+(rerunfilecheck)             After:  50C2FEEFAFB97A4F0636F252161CE676;4381.
  )
 (\end occurred when \iffalse on line 37 was incomplete) 
 Here is how much of TeX's memory you used:
- 24411 strings out of 467992
- 501612 string characters out of 5433177
- 912584 words of memory out of 5000000
- 52823 multiletter control sequences out of 15000+600000
- 688924 words of font info for 190 fonts, out of 8000000 for 9000
+ 24137 strings out of 467992
+ 489822 string characters out of 5433177
+ 897878 words of memory out of 5000000
+ 52578 multiletter control sequences out of 15000+600000
+ 707108 words of font info for 188 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 107i,12n,126p,1197b,981s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 107i,12n,126p,1197b,528s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report.xdv (15 pages, 254636 bytes).
+Output written on report.pdf (11 pages).
