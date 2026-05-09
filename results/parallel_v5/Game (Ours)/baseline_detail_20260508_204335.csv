@@ -1,0 +1,25 @@
+﻿model,scenario,penetration,n_cav,total_vehicles,avg_travel_time,avg_delay,lc_cnt,collisions,max_queue,label
+Game (Ours),1200pcu/h_0%CAV,0.0,120,77,139.58,16.91,0,0,11,1200pcu/h_0%CAV
+Game (Ours),2000pcu/h_0%CAV,0.0,200,109,126.81,14.87,0,0,23,2000pcu/h_0%CAV
+Game (Ours),2800pcu/h_0%CAV,0.0,280,97,130.74,20.12,0,0,34,2800pcu/h_0%CAV
+Game (Ours),3600pcu/h_0%CAV,0.0,360,61,137.44,25.54,0,0,47,3600pcu/h_0%CAV
+Game (Ours),1200pcu/h_10%CAV,0.1,120,77,119.07,5.63,4,0,14,1200pcu/h_10%CAV
+Game (Ours),2000pcu/h_10%CAV,0.1,200,118,124.13,11.92,6,0,24,2000pcu/h_10%CAV
+Game (Ours),2800pcu/h_10%CAV,0.1,280,172,135.9,23.03,18,0,35,2800pcu/h_10%CAV
+Game (Ours),3600pcu/h_10%CAV,0.1,360,214,142.72,29.53,22,0,46,3600pcu/h_10%CAV
+Game (Ours),1200pcu/h_30%CAV,0.3,120,79,124.98,8.4,8,0,11,1200pcu/h_30%CAV
+Game (Ours),2000pcu/h_30%CAV,0.3,200,123,130.69,13.97,28,0,23,2000pcu/h_30%CAV
+Game (Ours),2800pcu/h_30%CAV,0.3,280,159,146.02,29.15,33,0,35,2800pcu/h_30%CAV
+Game (Ours),3600pcu/h_30%CAV,0.3,360,213,147.45,31.3,37,0,37,3600pcu/h_30%CAV
+Game (Ours),1200pcu/h_50%CAV,0.5,120,74,129.94,10.15,23,0,11,1200pcu/h_50%CAV
+Game (Ours),2000pcu/h_50%CAV,0.5,200,122,138.84,19.21,35,0,23,2000pcu/h_50%CAV
+Game (Ours),2800pcu/h_50%CAV,0.5,280,171,138.3,17.65,61,0,37,2800pcu/h_50%CAV
+Game (Ours),3600pcu/h_50%CAV,0.5,360,211,147.75,27.76,74,0,41,3600pcu/h_50%CAV
+Game (Ours),1200pcu/h_70%CAV,0.7,120,78,130.83,6.92,33,0,10,1200pcu/h_70%CAV
+Game (Ours),2000pcu/h_70%CAV,0.7,200,124,134.15,10.66,58,0,17,2000pcu/h_70%CAV
+Game (Ours),2800pcu/h_70%CAV,0.7,280,167,138.61,14.42,99,0,27,2800pcu/h_70%CAV
+Game (Ours),3600pcu/h_70%CAV,0.7,360,214,144.25,19.89,134,0,35,3600pcu/h_70%CAV
+Game (Ours),1200pcu/h_100%CAV,1.0,120,77,133.42,4.46,43,0,9,1200pcu/h_100%CAV
+Game (Ours),2000pcu/h_100%CAV,1.0,200,126,135.23,6.63,82,0,17,2000pcu/h_100%CAV
+Game (Ours),2800pcu/h_100%CAV,1.0,280,173,139.79,11.13,115,0,22,2800pcu/h_100%CAV
+Game (Ours),3600pcu/h_100%CAV,1.0,360,204,147.45,18.96,205,0,26,3600pcu/h_100%CAV

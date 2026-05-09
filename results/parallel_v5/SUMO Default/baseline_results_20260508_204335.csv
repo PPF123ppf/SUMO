@@ -1,0 +1,25 @@
+﻿model,scenario,penetration,total_vehicles,avg_travel_time,avg_delay,lc_cnt,collisions,max_queue
+SUMO Default,1200pcu/h_0%CAV,0.0,64,144.56,19.18,0,0,10
+SUMO Default,2000pcu/h_0%CAV,0.0,100,127.76,16.0,0,0,54
+SUMO Default,2800pcu/h_0%CAV,0.0,84,131.99,21.7,0,2,72
+SUMO Default,3600pcu/h_0%CAV,0.0,45,143.76,31.33,0,0,92
+SUMO Default,1200pcu/h_10%CAV,0.1,60,127.31,11.53,0,0,10
+SUMO Default,2000pcu/h_10%CAV,0.1,84,127.68,14.09,0,0,54
+SUMO Default,2800pcu/h_10%CAV,0.1,106,136.08,22.86,0,2,72
+SUMO Default,3600pcu/h_10%CAV,0.1,131,142.4,28.71,0,0,92
+SUMO Default,1200pcu/h_30%CAV,0.3,61,149.45,20.0,0,0,10
+SUMO Default,2000pcu/h_30%CAV,0.3,1,105.2,0.27,0,0,54
+SUMO Default,2800pcu/h_30%CAV,0.3,10,122.13,7.55,0,2,72
+SUMO Default,3600pcu/h_30%CAV,0.3,9,118.84,2.28,0,0,92
+SUMO Default,1200pcu/h_50%CAV,0.5,61,149.45,20.0,0,0,10
+SUMO Default,2000pcu/h_50%CAV,0.5,35,138.83,9.75,0,0,54
+SUMO Default,2800pcu/h_50%CAV,0.5,41,137.69,9.42,0,2,72
+SUMO Default,3600pcu/h_50%CAV,0.5,57,161.82,33.95,0,0,92
+SUMO Default,1200pcu/h_70%CAV,0.7,61,149.45,20.0,0,0,10
+SUMO Default,2000pcu/h_70%CAV,0.7,35,138.83,9.75,0,0,54
+SUMO Default,2800pcu/h_70%CAV,0.7,41,137.69,9.42,0,2,72
+SUMO Default,3600pcu/h_70%CAV,0.7,46,157.8,28.19,0,0,42
+SUMO Default,1200pcu/h_100%CAV,1.0,61,149.45,20.0,0,0,10
+SUMO Default,2000pcu/h_100%CAV,1.0,35,138.83,9.75,0,0,54
+SUMO Default,2800pcu/h_100%CAV,1.0,41,137.69,9.42,0,2,72
+SUMO Default,3600pcu/h_100%CAV,1.0,57,161.82,33.95,0,0,92
