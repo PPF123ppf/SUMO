@@ -27,6 +27,9 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import metrics as metrics_mod  # 综合评价指标
 
+# 模型保存路径 (与 train_drl.py 共享)
+MODEL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "models")
+
 # ─── SUMO 环境 ───
 if 'SUMO_HOME' not in os.environ:
     os.environ['SUMO_HOME'] = r'C:\Program Files (x86)\Eclipse\Sumo'
@@ -70,13 +73,17 @@ if SIM_STEPS <= 0:
     SIM_STEPS = 3600
 
 
-def gen_rou_xml(n_total: int, path: str = "tmp_routes_baseline.rou.xml",
+def gen_rou_xml(n_total: int, path: str = None,
                 for_sumo_default: bool = False):
     """按混合交通动态生成路由文件（CAV + 人类车）。
+    默认路径含 PID, 支持多进程并行.
 
     for_sumo_default=True：所有车用 SUMO SL2015 原生模型（无 CAV/人类区分）。
     for_sumo_default=False：CAV 关掉 SUMO 原生换道由 Python 控制；人类车用 SL2015。
     """
+    if path is None:
+        path = f"tmp_routes_baseline_{os.getpid()}.rou.xml"
+
     glc.CAV_PENETRATION  # 确保从 game_lane_change 读取渗透率
     pen = getattr(glc, 'CAV_PENETRATION', 1.0)
     n_cav = int(n_total * pen)
@@ -306,6 +313,61 @@ def read_travel_times(filepath: str = "tripinfo.xml"):
 def run_game(n_cav: int, label: str) -> dict:
     """模型1: 原博弈模型（同时博弈）"""
     return glc.run_once(n_cav, label)
+
+
+# 全局 PPO 策略缓存 (惰性加载, 避免重复读盘)
+_ppo_policy_cache = None
+
+def _get_ppo_policy():
+    """获取缓存的 PPO 策略."""
+    global _ppo_policy_cache
+    if _ppo_policy_cache is not None:
+        return _ppo_policy_cache
+    model_path = os.path.join(MODEL_DIR, "ppo_lanechange")
+    if not os.path.exists(f"{model_path}.zip"):
+        model_path = os.path.join(os.path.dirname(__file__), "models", "ppo_lanechange")
+    if not os.path.exists(f"{model_path}.zip"):
+        print(f"    [警告] PPO 模型未找到 ({model_path}.zip)，跳过 DRL 基线")
+        return None
+    try:
+        from sumo_env import SumoPPOPolicy
+        _ppo_policy_cache = SumoPPOPolicy.load(model_path)
+        return _ppo_policy_cache
+    except Exception as e:
+        print(f"    [错误] 加载 PPO 模型失败: {e}")
+        return None
+
+
+def run_drl(n_cav: int, label: str) -> dict:
+    """
+    模型5: 深度强化学习 (PPO) 换道决策
+    ──────────────────────────────
+    - 使用 stable-baselines3 PPO 训练的换道策略
+    - 替代博弈求解器, 安全门控保持不变
+    """
+    policy = _get_ppo_policy()
+    if policy is None:
+        return _empty_result(label, "DRL (PPO)", n_cav)
+    try:
+        glc.PPO_POLICY = policy
+        result = glc.run_once(n_cav, label)
+        glc.PPO_POLICY = None
+        return result
+    except Exception as e:
+        print(f"    [错误] DRL 运行失败: {e}")
+        import traceback; traceback.print_exc()
+        glc.PPO_POLICY = None
+        return _empty_result(label, "DRL (PPO)", n_cav)
+
+
+def _empty_result(label: str, model_name: str, n_cav: int) -> dict:
+    """返回空结果字典 (用于错误回退)."""
+    return {"label": label, "model": model_name, "n_cav": n_cav,
+            "total_vehicles": 0, "avg_travel_time": 0, "avg_delay": 0,
+            "lc_cnt": 0, "collisions": 0, "max_queue": 0,
+            "ts_time": [], "ts_queue": [], "ts_speed": [],
+            "jerk_mean": 0, "jerk_p95": 0, "jerk_comfort_violation_rate": 0,
+            "delay_gini": 0, "travel_time_gini": 0, "delay_cv": 0}
 
 
 def run_sumo_default(n_cav: int, label: str) -> dict:
@@ -609,8 +671,9 @@ def plot_baseline_comparison(all_results: dict, ts: str, out_dir: str):
         "SUMO Default": "#ff7f0e",
         "Rule-Based": "#2ca02c",
         "No-V2X": "#d62728",
+        "DRL (PPO)": "#9467bd",
     }
-    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X"]
+    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X", "DRL (PPO)"]
     scenarios = ["1200pcu/h", "2000pcu/h", "2800pcu/h", "3600pcu/h"]
 
     # 图1: 6指标分组柱状图
@@ -627,10 +690,12 @@ def plot_baseline_comparison(all_results: dict, ts: str, out_dir: str):
     for idx, (key, title, show_legend) in enumerate(metrics):
         ax = axes[idx // 3][idx % 3]
         x = np.arange(len(scenarios))
-        width = 0.18
+        n_models = len(model_order)
+        width = 0.15 if n_models > 4 else 0.18
+        offset_start = (n_models - 1) / 2.0
         for mi, model_name in enumerate(model_order):
             vals = [all_results.get(model_name, {}).get(sc, {}).get(key, 0) for sc in scenarios]
-            bars = ax.bar(x + (mi - 1.5) * width, vals, width * 0.85,
+            bars = ax.bar(x + (mi - offset_start) * width, vals, width * 0.85,
                          label=model_name, color=model_colors[model_name])
             for bar, v in zip(bars, vals):
                 if v > 0:
@@ -705,7 +770,7 @@ def plot_baseline_comparison(all_results: dict, ts: str, out_dir: str):
 
 
 def print_results_table(all_results: dict):
-    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X"]
+    model_order = ["Game (Ours)", "SUMO Default", "Rule-Based", "No-V2X", "DRL (PPO)"]
     scenarios = ["1200pcu/h", "2000pcu/h", "2800pcu/h", "3600pcu/h"]
     header = (f"{'模型':<14} {'场景':<10} {'通过':<7} {'行程':<8} {'延误':<7} "
               f"{'换道':<6} {'队列':<6} {'碰撞':<5} {'JerkP95':<8} {'违例率':<7} {'Gini':<6}")
@@ -746,6 +811,7 @@ def run_baseline_comparison():
         "SUMO Default": run_sumo_default,
         "Rule-Based": run_rule_based,
         "No-V2X": run_no_v2x,
+        "DRL (PPO)": run_drl,
     }
     all_results = {name: {} for name in models}
 

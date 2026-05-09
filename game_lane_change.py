@@ -11,6 +11,7 @@ matplotlib.rcParams['axes.unicode_minus'] = False
 import matplotlib.pyplot as plt
 from datetime import datetime
 import metrics as metrics_mod  # 综合评价指标模块
+from v2x_channel_model import V2XChannelModel  # Veins-inspired 真实V2X信道
 
 # ——— SUMO 环境 ———
 if 'SUMO_HOME' not in os.environ:
@@ -170,6 +171,8 @@ CAV_PENETRATION    = 0.30   # CAV 渗透率 (0.0~1.0)
 HUMAN_SIGMA        = 0.50   # 人类车随机性
 HUMAN_MIN_GAP      = 2.50   # m，人类车最小跟车间距
 V2X_ENABLED        = True   # No-V2X 基线设为 False
+V2X_CHANNEL        = "ideal"  # 信道模型: "ideal" | "realistic"
+_v2x_channel       = V2XChannelModel("highway")  # 全局信道模型实例
 
 def is_vehicle_cav(vid: str) -> bool:
     """判断车辆是否为 CAV（基于车辆类型 ID）。"""
@@ -247,8 +250,11 @@ def apply_parameter_profile(profile_name: str = "balanced") -> str:
     ACTIVE_PROFILE = key
     return key
 
-def gen_rou_xml(n_total: int, path: str = "tmp_routes.rou.xml"):
-    """按混合交通动态生成路由文件（CAV + 3种异质人类车）。"""
+def gen_rou_xml(n_total: int, path: str = None):
+    """按混合交通动态生成路由文件（CAV + 3种异质人类车）。
+    默认路径含 PID, 支持多进程并行. """
+    if path is None:
+        path = f"tmp_routes_{os.getpid()}.rou.xml"
     n_cav = int(n_total * CAV_PENETRATION)
     n_human = n_total - n_cav
     n_h_each = n_human // 3
@@ -285,14 +291,28 @@ def get_neighbors(vid: str, ego_pos: float, tgt_lane_id: str):
            fol_id,  (fol_gap  if fol_gap  < float('inf') else 200.0)
 
 def get_accident_broadcast_range(vid: str) -> float:
-        """
-        事故感知范围（混合交通）：
-            - CAV 有序期（广播已激活）：全局广播
-            - CAV 突发期 / 人类车 / V2X禁用：仅局部感知
-        """
-        if _accident_state["broadcast_active"] and can_v2x_communicate(vid):
-            return GLOBAL_V2X_RANGE
-        return V2X_RANGE
+    """
+    事故感知范围（混合交通）：
+        - "realistic" 信道：基于连接质量 (PER < 0.3 视为连通)
+        - "ideal" 信道：CAV 有序期全局广播 vs 局部感知
+    """
+    if _accident_state["broadcast_active"] and can_v2x_communicate(vid):
+        if V2X_CHANNEL == "realistic":
+            # 车辆到事故点的距离决定是否能收到广播
+            try:
+                veh_pos = traci.vehicle.getLanePosition(vid)
+            except traci.exceptions.TraCIException:
+                return V2X_RANGE
+            dist_to_accident = abs(ACCIDENT_START - veh_pos)
+            quality = _v2x_channel.connection_quality(dist_to_accident)
+            if quality > 0.7:  # 连接质量 > 0.7 才算有效广播接收
+                return GLOBAL_V2X_RANGE
+            elif quality > 0.3:  # 弱连接：范围介于局部与全局之间
+                return V2X_RANGE + (GLOBAL_V2X_RANGE - V2X_RANGE) * quality
+            else:
+                return V2X_RANGE
+        return GLOBAL_V2X_RANGE
+    return V2X_RANGE
 
 def get_vehicle_phase(vid: str, veh_pos: float) -> str:
     """
@@ -508,15 +528,34 @@ def perc_speed(vid: str) -> float:
         spd = 0.0
     return _add_noise(spd, SPEED_NOISE_STD)
 
-def sample_perception(vid: str, ego_pos: float, tgt_lane_id: str) -> tuple:
+def sample_perception(vid: str, ego_pos: float, tgt_lane_id: str,
+                      tx_vid: str = "") -> tuple:
     """
     带延迟 + 噪声 + 丢包的邻居感知函数（CAV 专用）:
-       1. 若发生丢包，保留最后一次已知观测
+       1. 若发生丢包，保留最后一次已知观测 (realistic 信道下距离相关 PER)
        2. 施加高斯噪声写入感知缓冲区
-       3. 返回延迟的缓存观测
+       3. 返回延迟的缓存观测 (realistic 信道下 MAC 延迟)
     """
     _perf_metrics["comm_msgs"] += 1
-    packet_lost = (np.random.rand() < PACKET_LOSS_RATE)
+    tx_vid = tx_vid or vid
+
+    # ── 丢包判定 ──
+    if V2X_CHANNEL == "realistic":
+        try:
+            tx_pos = traci.vehicle.getLanePosition(tx_vid)
+            rx_pos = traci.vehicle.getLanePosition(vid)
+        except traci.exceptions.TraCIException:
+            tx_pos = rx_pos = ego_pos
+        ref_dist = max(abs(tx_pos - rx_pos), 5.0)
+        num_cavs = max(1, sum(1 for v in traci.vehicle.getIDList()
+                              if can_v2x_communicate(v)) // 5)  # 粗略估计并发数
+        rx_info = _v2x_channel.get_reception_status(ref_dist, num_cavs)
+        packet_lost = rx_info["packet_loss"]
+        delay_steps = max(1, rx_info["delay_steps"])
+    else:
+        packet_lost = (np.random.rand() < PACKET_LOSS_RATE)
+        delay_steps = PERC_DELAY_STEPS
+
     if packet_lost:
         _perf_metrics["packet_loss_cnt"] += 1
 
@@ -529,16 +568,16 @@ def sample_perception(vid: str, ego_pos: float, tgt_lane_id: str) -> tuple:
         _add_noise(fol_gap, DIST_NOISE_STD),
     )
     buf = _perc_buf.setdefault(vid, [])
-    
+
     # 未丢包或首次强行获取，才能更新最新观测
     if not packet_lost or len(buf) == 0:
         buf.append(cur_obs)
-        
+
     # 保留最多 delay+3 帧，避免缓冲区无限增长
-    keep_n = PERC_DELAY_STEPS + 3
+    keep_n = delay_steps + 3
     if len(buf) > keep_n:
         del buf[:-keep_n]
-    delayed_idx = max(0, len(buf) - 1 - PERC_DELAY_STEPS)
+    delayed_idx = max(0, len(buf) - 1 - delay_steps)
     obs = buf[delayed_idx]
     return obs[1], obs[2], obs[3], obs[4]
 
@@ -727,6 +766,9 @@ SOFTMAX_TEMPERATURE = 0.15
 
 # 在线学习参数（改进 #5）
 ONLINE_LEARNING_RATE = 0.003  # TD 微调步长
+
+# PPO 策略 (DRL 基线, 由 baseline_comparison 设置)
+PPO_POLICY = None  # 或 SumoPPOPolicy 实例
 
 
 def _softmax(x: np.ndarray, temperature: float = SOFTMAX_TEMPERATURE) -> np.ndarray:
@@ -1587,18 +1629,60 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
                 targets.append(cur_lane + 1)
 
             best_score, best_tgt, best_platoon = -float('inf'), None, [vid]
-            for tgt in targets:
-                cand_platoon = get_platoon_members(vid, road_id, cur_lane)
-                # 高密度与突发期不做多车并行编队换道，降低冲突风险
-                if len(cand_platoon) > 1:
-                    local_density = estimate_local_density(road_id, cur_lane, veh_pos)
-                    if acc_phase == "sudden" or local_density > 0.55:
-                        cand_platoon = [vid]
-                score = decide_platoon_lanechange(cand_platoon, cur_lane, tgt, road_id, acc_phase)
-                if score > -float('inf') and tgt == cur_lane - 1:
-                    score += 0.01   # 右侧变道附加微小收益，打破平局
-                if score > best_score:
-                    best_score, best_tgt, best_platoon = score, tgt, list(cand_platoon)
+            if PPO_POLICY is not None:
+                # ── DRL (PPO) 基线 ──
+                # 用精确特征计算, 与 game model 对齐, PPO 决策是否换道
+                for tgt in targets:
+                    tgt_lid_check = f"{road_id}_{tgt}"
+                    lead_id_check, lead_gap_check, fol_id_check, fol_gap_check = \
+                        sample_perception(vid, veh_pos, tgt_lid_check, vid)
+                    ego_spd = _add_noise(traci.vehicle.getSpeed(vid), SPEED_NOISE_STD)
+                    vmax = cached_max_speed(vid)
+                    speed_ratio = float(np.clip(ego_spd / max(vmax, 1e-6), 0.0, 1.0))
+
+                    # urgency: 距事故区越近 + 速度越低 → 越紧迫
+                    dist_to = ACCIDENT_START - veh_pos
+                    urgency = float(np.clip(
+                        (1.0 - max(dist_to, 0) / GLOBAL_V2X_RANGE) * 0.7 + (1.0 - speed_ratio) * 0.3,
+                        0.0, 1.0))
+
+                    # pressure: 前车越近压力越大
+                    pressure = float(np.clip(1.0 - lead_gap_check / 50.0, 0.0, 1.0))
+
+                    # safe: TTC 基准
+                    lead_spd_est = _add_noise(traci.vehicle.getSpeed(lead_id_check), SPEED_NOISE_STD) if lead_id_check else ego_spd
+                    fol_spd_est = _add_noise(traci.vehicle.getSpeed(fol_id_check), SPEED_NOISE_STD) if fol_id_check else 0.0
+                    front_rel = max(ego_spd - lead_spd_est, 0.1)
+                    rear_rel = max(fol_spd_est - ego_spd, 0.1)
+                    ttc_f = lead_gap_check / front_rel
+                    ttc_r = fol_gap_check / rear_rel
+                    ttc_min = min(ttc_f, ttc_r)
+                    safe = float(np.clip(ttc_min / 5.0, 0.0, 1.0))
+
+                    coop = 0.18 if fol_id_check else 0.05
+                    social = 0.0
+
+                    # density: 目标车道局部密度
+                    density = estimate_local_density(road_id, tgt, veh_pos)
+
+                    features = np.array([speed_ratio, urgency, pressure, safe,
+                                         coop, social, density, 0.0], dtype=np.float32)
+                    if PPO_POLICY.predict(features) == 1:
+                        best_score, best_tgt, best_platoon = 1.0, tgt, [vid]
+                    break
+            else:
+                for tgt in targets:
+                    cand_platoon = get_platoon_members(vid, road_id, cur_lane)
+                    # 高密度与突发期不做多车并行编队换道，降低冲突风险
+                    if len(cand_platoon) > 1:
+                        local_density = estimate_local_density(road_id, cur_lane, veh_pos)
+                        if acc_phase == "sudden" or local_density > 0.55:
+                            cand_platoon = [vid]
+                    score = decide_platoon_lanechange(cand_platoon, cur_lane, tgt, road_id, acc_phase)
+                    if score > -float('inf') and tgt == cur_lane - 1:
+                        score += 0.01   # 右侧变道附加微小收益，打破平局
+                    if score > best_score:
+                        best_score, best_tgt, best_platoon = score, tgt, list(cand_platoon)
 
             if best_tgt is not None and best_score > -float('inf'):
                 tgt    = best_tgt

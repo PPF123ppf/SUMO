@@ -26,8 +26,9 @@ OBSTACLE_IDS: list = []         # 障碍物车辆 ID 列表（运行时填充）
 # ====================== 通信参数 ======================
 V2X_RANGE            = 500.0    # m，CAV 常规 V2X 通信范围 (DSRC 典型值)
 GLOBAL_V2X_RANGE     = 1200.0   # m，全局事故广播范围
-PACKET_LOSS_RATE     = 0.05     # 通信丢包率 (<= 5%)
-PERC_DELAY_STEPS     = 1        # 感知延迟步数 (1 步 = 0.1 s = 100 ms)
+PACKET_LOSS_RATE     = 0.05     # 通信丢包率 (<= 5%), 仅 V2X_CHANNEL="ideal" 时生效
+PERC_DELAY_STEPS     = 1        # 感知延迟步数 (1 步 = 0.1 s = 100 ms), 仅 ideal 时生效
+V2X_CHANNEL          = "ideal"  # 信道模型: "ideal" | "realistic"
 SPEED_NOISE_STD      = 0.05     # 速度感知噪声标准差 (±5%, 1σ)
 DIST_NOISE_STD       = 0.03     # 距离感知噪声标准差 (±3%, 1σ)
 
@@ -236,6 +237,7 @@ def get_config() -> dict:
         "GLOBAL_V2X_RANGE": _g["GLOBAL_V2X_RANGE"],
         "PACKET_LOSS_RATE": _g["PACKET_LOSS_RATE"],
         "PERC_DELAY_STEPS": _g["PERC_DELAY_STEPS"],
+        "V2X_CHANNEL": _g["V2X_CHANNEL"],
         "SPEED_NOISE_STD": _g["SPEED_NOISE_STD"],
         "DIST_NOISE_STD": _g["DIST_NOISE_STD"],
 
