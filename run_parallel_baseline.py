@@ -41,9 +41,16 @@ def worker_init():
 
 
 def run_one_task(model_name: str, run_func, n_cav: int, label: str,
-                 cav_rate: float = 1.0) -> dict:
+                 cav_rate: float = 1.0, seed: int = None) -> dict:
     """在单个进程中执行一次 (model, scenario) 仿真.
-    cav_rate: CAV 渗透率 [0,1]"""
+    cav_rate: CAV 渗透率 [0,1]; seed: 随机种子"""
+    if seed is not None:
+        import numpy as _np
+        _np.random.seed(seed)
+        import random as _random
+        _random.seed(seed)
+        os.environ["SUMO_SEED"] = str(seed)
+
     import game_lane_change as _glc
     _glc.PPO_POLICY = None
     _glc.V2X_CHANNEL = "ideal"

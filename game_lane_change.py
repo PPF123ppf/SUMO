@@ -1295,8 +1295,16 @@ def release_normal_cruise_control(vid: str):
     _normal_ctrl_vids.discard(vid)
 
 # ====================== 单次仿真 ======================
-def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
+def run_once(n_cav: int, label: str, use_gui: bool = False, seed: int = None) -> dict:
     global _cur_step
+    if seed is None:
+        seed_env = os.environ.get("SUMO_SEED")
+        if seed_env is not None:
+            seed = int(seed_env)
+    if seed is not None:
+        np.random.seed(seed)
+        import random as _random
+        _random.seed(seed)
     # 每次仿真开始前清空所有全局状态
     _lc_state.clear()
     _last_lc_step.clear()
@@ -1339,6 +1347,8 @@ def run_once(n_cav: int, label: str, use_gui: bool = False) -> dict:
                 "--gui-settings-file", "viewsettings.xml",
                 "--start", "true",
                 "--quit-on-end", "true"]
+    if seed is not None:
+        cmd.extend(["--seed", str(seed)])
     traci.start(cmd)
 
     # GUI演示时：在结果目录下准备截图子目录
