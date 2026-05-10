@@ -446,7 +446,17 @@ DRL 基线使用 Gym 环境 (`sumo_env.py`) + stable-baselines3 PPO 策略进行
 
 格式：`通过车辆 / 换道次数 / 延误 / 队列 / 碰撞`（3 轮种子 0,1,2 平均）
 
-![CAV 渗透率扫描](results/cav_scan_20260510_151257/cav_scan_comparison_avg.png)
+![五模型对比](results/figures/publication/fig1_comparison.png)
+
+*图 1：五模型 × 六渗透率关键指标对比（PDF 矢量图见 `results/figures/publication/fig1_comparison.pdf`）*
+
+![Game 渗透率曲线](results/figures/publication/fig4_game_penetration.png)
+
+*图 2：Game 模型不同密度下渗透率-指标曲线*
+
+![事故区轨迹](results/figures/publication/fig3_trajectory.png)
+
+*图 3：事故区车辆时空轨迹热力图（颜色 = 速度，70% CAV，2800 pcu/h）*
 
 ### 14.2 全模型对比 @ 100% CAV (3600 pcu/h)
 
@@ -565,7 +575,8 @@ SUMO-1/
 ├── config.py                 # 集中参数配置
 ├── metrics.py                # 舒适性/公平性计算
 ├── plot_baseline_results.py  # 结果可视化 (柱状图/热图/雷达图)
-├── accident_highway.net.xml  # SUMO 路网
+├── plot_publication.py       # 出版级图表生成 (PDF+PNG)
+├── accident_highway.net.xml
 ├── accident_highway.sumocfg  # SUMO 配置
 ├── viewsettings.xml          # GUI 视图设置
 ├── irl_weights_v2.npz       # IRL 学出权重 (8 维, AD4CHE)
