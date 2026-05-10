@@ -148,7 +148,7 @@ def fig2_surface(csv_path: str):
 
             for i, cav in enumerate(cav_rates):
                 for j, (slbl, den) in enumerate(density_map.items()):
-                    r = df[(df['cav_rate']==cav) & (df['model']==model) & (df['scenario']==slbl)]
+                    r = df[(df['cav_rate']==cav) & (df['model']==model) & (df['scenario'].str.contains(str(den)))]
                     Z[j, i] = r[metric].values[0] if len(r) else 0
 
             surf = ax.plot_surface(X, Y, Z, cmap='viridis',
@@ -314,7 +314,7 @@ def fig4_game_penetration(csv_path: str):
     for idx, (metric, title, unit) in enumerate(metrics_plot):
         ax = axes[idx // 2][idx % 2]
         for den_label, den_short in density_vals.items():
-            r = d[d['scenario'] == den_label].sort_values('cav_rate')
+            r = d[d['scenario'].str.contains(den_short)].sort_values('cav_rate')
             if len(r):
                 ax.plot(r['cav_rate'], r[metric], 'o-', linewidth=2,
                        markersize=6, label=f'{den_short} pcu/h')
